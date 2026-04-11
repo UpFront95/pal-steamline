@@ -21,32 +21,6 @@ Gemini · OpenAI · Anthropic · Grok · Azure · Ollama · OpenRouter · DIAL �
 
 ---
 
-## 🆕 Now with CLI-to-CLI Bridge
-
-The new **[`clink`](docs/tools/clink.md)** (CLI + Link) tool connects external AI CLIs directly into your workflow:
-
-- **Connect external CLIs** like [Gemini CLI](https://github.com/google-gemini/gemini-cli), [Codex CLI](https://github.com/openai/codex), and [Claude Code](https://www.anthropic.com/claude-code) directly into your workflow
-- **CLI Subagents** - Launch isolated CLI instances from _within_ your current CLI! Claude Code can spawn Codex subagents, Codex can spawn Gemini CLI subagents, etc. Offload heavy tasks (code reviews, bug hunting) to fresh contexts while your main session's context window remains unpolluted. Each subagent returns only final results.
-- **Context Isolation** - Run separate investigations without polluting your primary workspace
-- **Role Specialization** - Spawn `planner`, `codereviewer`, or custom role agents with specialized system prompts
-- **Full CLI Capabilities** - Web search, file inspection, MCP tool access, latest documentation lookups
-- **Seamless Continuity** - Sub-CLIs participate as first-class members with full conversation context between tools
-
-```bash
-# Codex spawns Codex subagent for isolated code review in fresh context
-clink with codex codereviewer to audit auth module for security issues
-# Subagent reviews in isolation, returns final report without cluttering your context as codex reads each file and walks the directory structure
-
-# Consensus from different AI models → Implementation handoff with full context preservation between tools
-Use consensus with gpt-5 and gemini-pro to decide: dark mode or offline support next
-Continue with clink gemini - implement the recommended feature
-# Gemini receives full debate context and starts coding immediately
-```
-
-👉 **[Learn more about clink](docs/tools/clink.md)**
-
----
-
 ## Why PAL MCP?
 
 **Why rely on one AI model when you can orchestrate them all?**
@@ -188,10 +162,8 @@ cd pal-mcp-server
 
 **3. Start Using!**
 ```
-"Use pal to analyze this code for security issues with gemini pro"
-"Debug this error with o3 and then get flash to suggest optimizations"
+"Use pal to debug this error with o3 and then get flash to suggest optimizations"
 "Plan the migration strategy with pal, get consensus from multiple models"
-"clink with cli_name=\"gemini\" role=\"planner\" to draft a phased rollout plan"
 ```
 
 👉 **[Complete Setup Guide](docs/getting-started.md)** with detailed installation, configuration for Gemini / Codex / Qwen, and troubleshooting
@@ -207,7 +179,6 @@ PAL activates any provider that has credentials in your `.env`. See `.env.exampl
 > **Note:** Each tool comes with its own multi-step workflow, parameters, and descriptions that consume valuable context window space even when not in use. To optimize performance, some tools are disabled by default. See [Tool Configuration](#tool-configuration) below to enable them.
 
 **Collaboration & Planning** *(Enabled by default)*
-- **[`clink`](docs/tools/clink.md)** - Bridge requests to external AI CLIs (Gemini planner, codereviewer, etc.)
 - **[`chat`](docs/tools/chat.md)** - Brainstorm ideas, get second opinions, validate approaches. With capable models (GPT-5.2 Pro, Gemini 3.0 Pro), generates complete code / implementation
 - **[`thinkdeep`](docs/tools/thinkdeep.md)** - Extended reasoning, edge case analysis, alternative perspectives
 - **[`planner`](docs/tools/planner.md)** - Break down complex projects into structured, actionable plans

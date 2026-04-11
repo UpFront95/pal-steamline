@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["tools*", "providers*", "systemprompts*", "utils*", "conf*", "clink*"]
+include = ["tools*", "providers*", "systemprompts*", "utils*", "conf*"]
 
 [tool.setuptools]
 py-modules = ["server", "config"]
@@ -20,8 +20,6 @@ py-modules = ["server", "config"]
 [tool.setuptools.package-data]
 "*" = [
     "conf/*.json",
-    "conf/cli_clients/*.json",
-    "systemprompts/clink/*.txt",
 ]
 
 [tool.setuptools.data-files]
