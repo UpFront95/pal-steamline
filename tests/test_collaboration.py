@@ -9,7 +9,6 @@ from unittest.mock import Mock, patch
 import pytest
 
 from tests.mock_helpers import create_mock_provider
-from tools.analyze import AnalyzeTool
 from tools.debug import DebugIssueTool
 from tools.models import FilesNeededRequest, ToolOutput
 
@@ -19,7 +18,7 @@ class TestDynamicContextRequests:
 
     @pytest.fixture
     def analyze_tool(self):
-        return AnalyzeTool()
+        return DebugIssueTool()
 
     @pytest.fixture
     def debug_tool(self):
@@ -356,7 +355,7 @@ class TestCollaborationWorkflow:
     @patch("tools.workflow.workflow_mixin.BaseWorkflowMixin._call_expert_analysis")
     async def test_dependency_analysis_triggers_clarification(self, mock_expert_analysis, mock_get_provider):
         """Test that asking about dependencies without package files triggers clarification"""
-        tool = AnalyzeTool()
+        tool = DebugIssueTool()
 
         # Mock Gemini to request package.json when asked about dependencies
         clarification_json = json.dumps(
@@ -422,7 +421,7 @@ class TestCollaborationWorkflow:
     @patch("tools.workflow.workflow_mixin.BaseWorkflowMixin._call_expert_analysis")
     async def test_multi_step_collaboration(self, mock_expert_analysis, mock_get_provider):
         """Test a multi-step collaboration workflow"""
-        tool = AnalyzeTool()
+        tool = DebugIssueTool()
 
         # Step 1: Initial request returns clarification needed
         clarification_json = json.dumps(

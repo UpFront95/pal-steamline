@@ -48,22 +48,15 @@ from config import (  # noqa: E402
     __version__,
 )
 from tools import (  # noqa: E402
-    AnalyzeTool,
     ChallengeTool,
     ChatTool,
     CodeReviewTool,
     ConsensusTool,
     DebugIssueTool,
-    DocgenTool,
     ListModelsTool,
     LookupTool,
-    PlannerTool,
-    PrecommitTool,
     RefactorTool,
-    SecauditTool,
-    TestGenTool,
     ThinkDeepTool,
-    TracerTool,
     VersionTool,
 )
 from tools.models import ToolOutput  # noqa: E402
@@ -260,17 +253,10 @@ def filter_disabled_tools(all_tools: dict[str, Any]) -> dict[str, Any]:
 TOOLS = {
     "chat": ChatTool(),  # Interactive development chat and brainstorming
     "thinkdeep": ThinkDeepTool(),  # Step-by-step deep thinking workflow with expert analysis
-    "planner": PlannerTool(),  # Interactive sequential planner using workflow architecture
     "consensus": ConsensusTool(),  # Step-by-step consensus workflow with multi-model analysis
     "codereview": CodeReviewTool(),  # Comprehensive step-by-step code review workflow with expert analysis
-    "precommit": PrecommitTool(),  # Step-by-step pre-commit validation workflow
     "debug": DebugIssueTool(),  # Root cause analysis and debugging assistance
-    "secaudit": SecauditTool(),  # Comprehensive security audit with OWASP Top 10 and compliance coverage
-    "docgen": DocgenTool(),  # Step-by-step documentation generation with complexity analysis
-    "analyze": AnalyzeTool(),  # General-purpose file and code analysis
     "refactor": RefactorTool(),  # Step-by-step refactoring analysis workflow with expert validation
-    "tracer": TracerTool(),  # Static call path prediction and control flow analysis
-    "testgen": TestGenTool(),  # Step-by-step test generation workflow with expert validation
     "challenge": ChallengeTool(),  # Critical challenge prompt wrapper to avoid automatic agreement
     "apilookup": LookupTool(),  # Quick web/API lookup instructions
     "listmodels": ListModelsTool(),  # List all available AI models by provider
@@ -290,11 +276,6 @@ PROMPT_TEMPLATES = {
         "description": "Step-by-step deep thinking workflow with expert analysis",
         "template": "Start comprehensive deep thinking workflow with {model} using {thinking_mode} thinking mode",
     },
-    "planner": {
-        "name": "planner",
-        "description": "Break down complex ideas, problems, or projects into multiple manageable steps",
-        "template": "Create a detailed plan with {model}",
-    },
     "consensus": {
         "name": "consensus",
         "description": "Step-by-step consensus workflow with multi-model analysis",
@@ -305,45 +286,15 @@ PROMPT_TEMPLATES = {
         "description": "Perform a comprehensive code review",
         "template": "Perform a comprehensive code review with {model}",
     },
-    "precommit": {
-        "name": "precommit",
-        "description": "Step-by-step pre-commit validation workflow",
-        "template": "Start comprehensive pre-commit validation workflow with {model}",
-    },
     "debug": {
         "name": "debug",
         "description": "Debug an issue or error",
         "template": "Help debug this issue with {model}",
     },
-    "secaudit": {
-        "name": "secaudit",
-        "description": "Comprehensive security audit with OWASP Top 10 coverage",
-        "template": "Perform comprehensive security audit with {model}",
-    },
-    "docgen": {
-        "name": "docgen",
-        "description": "Generate comprehensive code documentation with complexity analysis",
-        "template": "Generate comprehensive documentation with {model}",
-    },
-    "analyze": {
-        "name": "analyze",
-        "description": "Analyze files and code structure",
-        "template": "Analyze these files with {model}",
-    },
     "refactor": {
         "name": "refactor",
         "description": "Refactor and improve code structure",
         "template": "Refactor this code with {model}",
-    },
-    "tracer": {
-        "name": "tracer",
-        "description": "Trace code execution paths",
-        "template": "Generate tracer analysis with {model}",
-    },
-    "testgen": {
-        "name": "testgen",
-        "description": "Generate comprehensive tests",
-        "template": "Generate comprehensive tests with {model}",
     },
     "challenge": {
         "name": "challenge",

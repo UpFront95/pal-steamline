@@ -6,7 +6,6 @@ from unittest.mock import patch
 
 import pytest
 
-from tools.analyze import AnalyzeTool
 from tools.codereview import CodeReviewTool
 from tools.debug import DebugIssueTool
 from tools.thinkdeep import ThinkDeepTool
@@ -27,7 +26,6 @@ class TestThinkingModes:
         """Test that tools have correct default thinking modes"""
         tools = [
             (ThinkDeepTool(), "high"),
-            (AnalyzeTool(), "medium"),
             (CodeReviewTool(), "medium"),
             (DebugIssueTool(), "medium"),
         ]

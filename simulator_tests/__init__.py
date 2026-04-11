@@ -6,7 +6,6 @@ Each test is in its own file for better organization and maintainability.
 """
 
 from .base_test import BaseSimulatorTest
-from .test_analyze_validation import AnalyzeValidationTest
 from .test_basic_conversation import BasicConversationTest
 from .test_chat_simple_validation import ChatSimpleValidationTest
 from .test_codereview_validation import CodeReviewValidationTest
@@ -28,15 +27,10 @@ from .test_ollama_custom_url import OllamaCustomUrlTest
 from .test_openrouter_fallback import OpenRouterFallbackTest
 from .test_openrouter_models import OpenRouterModelsTest
 from .test_per_tool_deduplication import PerToolDeduplicationTest
-from .test_planner_continuation_history import PlannerContinuationHistoryTest
-from .test_planner_validation import PlannerValidationTest
-from .test_precommitworkflow_validation import PrecommitWorkflowValidationTest
 from .test_prompt_size_limit_bug import PromptSizeLimitBugTest
 
 # Redis validation test removed - no longer needed for standalone server
 from .test_refactor_validation import RefactorValidationTest
-from .test_secaudit_validation import SecauditValidationTest
-from .test_testgen_validation import TestGenValidationTest
 from .test_thinkdeep_validation import ThinkDeepWorkflowValidationTest
 from .test_token_allocation_validation import TokenAllocationValidationTest
 from .test_vision_capability import VisionCapabilityTest
@@ -59,14 +53,9 @@ TEST_REGISTRY = {
     "ollama_custom_url": OllamaCustomUrlTest,
     "openrouter_fallback": OpenRouterFallbackTest,
     "openrouter_models": OpenRouterModelsTest,
-    "planner_validation": PlannerValidationTest,
-    "planner_continuation_history": PlannerContinuationHistoryTest,
-    "precommit_validation": PrecommitWorkflowValidationTest,
     "token_allocation_validation": TokenAllocationValidationTest,
-    "testgen_validation": TestGenValidationTest,
     "thinkdeep_validation": ThinkDeepWorkflowValidationTest,
     "refactor_validation": RefactorValidationTest,
-    "secaudit_validation": SecauditValidationTest,
     "debug_validation": DebugValidationTest,
     "debug_certain_confidence": DebugCertainConfidenceTest,
     "conversation_chain_validation": ConversationChainValidationTest,
@@ -75,7 +64,6 @@ TEST_REGISTRY = {
     "consensus_conversation": TestConsensusConversation,
     "consensus_workflow_accurate": TestConsensusWorkflowAccurate,
     "consensus_three_models": TestConsensusThreeModels,
-    "analyze_validation": AnalyzeValidationTest,
     "prompt_size_limit_bug": PromptSizeLimitBugTest,
     # "o3_pro_expensive": O3ProExpensiveTest,  # COMMENTED OUT - too expensive to run by default
 }
@@ -97,14 +85,9 @@ __all__ = [
     "OllamaCustomUrlTest",
     "OpenRouterFallbackTest",
     "OpenRouterModelsTest",
-    "PlannerValidationTest",
-    "PlannerContinuationHistoryTest",
-    "PrecommitWorkflowValidationTest",
     "TokenAllocationValidationTest",
-    "TestGenValidationTest",
     "ThinkDeepWorkflowValidationTest",
     "RefactorValidationTest",
-    "SecauditValidationTest",
     "DebugValidationTest",
     "DebugCertainConfidenceTest",
     "ConversationChainValidationTest",
@@ -113,7 +96,6 @@ __all__ = [
     "TestConsensusConversation",
     "TestConsensusWorkflowAccurate",
     "TestConsensusThreeModels",
-    "AnalyzeValidationTest",
     "PromptSizeLimitBugTest",
     "TEST_REGISTRY",
 ]
