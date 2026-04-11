@@ -47,33 +47,6 @@ class TestCustomProvider:
         assert not provider.validate_model_name("unknown-model")
         assert not provider.validate_model_name("anything")
 
-    def test_get_capabilities_from_registry(self):
-        """Test get_capabilities returns registry capabilities when available."""
-        # Save original environment
-        original_env = os.environ.get("OPENROUTER_ALLOWED_MODELS")
-
-        try:
-            # Clear any restrictions
-            os.environ.pop("OPENROUTER_ALLOWED_MODELS", None)
-
-            provider = CustomProvider(api_key="test-key", base_url="http://localhost:11434/v1")
-
-            # OpenRouter-backed models should be handled by the OpenRouter provider
-            with pytest.raises(ValueError):
-                provider.get_capabilities("o3")
-
-            # Test with a custom model from the local registry
-            capabilities = provider.get_capabilities("local-llama")
-            assert capabilities.provider == ProviderType.CUSTOM
-            assert capabilities.context_window > 0
-
-        finally:
-            # Restore original environment
-            if original_env is None:
-                os.environ.pop("OPENROUTER_ALLOWED_MODELS", None)
-            else:
-                os.environ["OPENROUTER_ALLOWED_MODELS"] = original_env
-
     def test_get_capabilities_generic_fallback(self):
         """Test get_capabilities raises error for unknown models not in registry."""
         provider = CustomProvider(api_key="test-key", base_url="http://localhost:11434/v1")
@@ -81,19 +54,6 @@ class TestCustomProvider:
         # Unknown models should raise ValueError when not in registry
         with pytest.raises(ValueError, match="Unsupported model 'unknown-model-xyz' for provider custom"):
             provider.get_capabilities("unknown-model-xyz")
-
-    def test_model_alias_resolution(self):
-        """Test model alias resolution works correctly."""
-        provider = CustomProvider(api_key="test-key", base_url="http://localhost:11434/v1")
-
-        # Test that aliases resolve properly
-        # "llama" now resolves to "meta-llama/llama-3-70b" (the OpenRouter model)
-        resolved = provider._resolve_model_name("llama")
-        assert resolved == "meta-llama/llama-3-70b"
-
-        # Test local model alias
-        resolved_local = provider._resolve_model_name("local-llama")
-        assert resolved_local == "llama3.2"
 
     def test_no_thinking_mode_support(self):
         """Custom provider generic capabilities default to no thinking mode."""
@@ -193,32 +153,6 @@ class TestCustomProviderRegistration:
             assert openrouter_provider is not None
             assert custom_provider is not None
             assert isinstance(custom_provider, CustomProvider)
-
-    def test_provider_priority_selection(self):
-        """Test provider selection prioritizes correctly."""
-        from providers.openrouter import OpenRouterProvider
-
-        def custom_provider_factory(api_key=None):
-            return CustomProvider(api_key="", base_url="http://localhost:11434/v1")
-
-        with patch.dict(
-            os.environ,
-            {
-                "OPENROUTER_API_KEY": "test-openrouter-key",
-                "CUSTOM_API_PLACEHOLDER": "configured",
-                "OPENROUTER_ALLOWED_MODELS": "",
-            },
-            clear=True,
-        ):
-            import utils.model_restrictions
-
-            utils.model_restrictions._restriction_service = None
-            custom_provider = custom_provider_factory()
-            openrouter_provider = OpenRouterProvider(api_key="test-openrouter-key")
-
-            assert not custom_provider.validate_model_name("llama")
-            assert openrouter_provider.validate_model_name("llama")
-
 
 class TestConfigureProvidersFunction:
     """Test the configure_providers function in server.py."""

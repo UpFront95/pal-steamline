@@ -77,7 +77,7 @@ class TestWorkflowMetadata:
             # Create mock model context like server.py does
             from utils.model_context import ModelContext
 
-            model_name = "flash"
+            model_name = "gemini"
             model_context = ModelContext(model_name)
 
             # Create arguments with model context (like server.py provides)
@@ -158,7 +158,7 @@ class TestWorkflowMetadata:
             debug_tool = DebugIssueTool()
 
             # Create arguments with invalid data to trigger error
-            model_name = "flash"
+            model_name = "gemini"
             arguments = {
                 "step": "Test step",
                 "step_number": "invalid",  # This should cause an error during validation
@@ -285,7 +285,7 @@ class TestWorkflowMetadata:
             # Create mock model context
             from utils.model_context import ModelContext
 
-            model_name = "flash"
+            model_name = "gemini"
             model_context = ModelContext(model_name)
 
             # Create arguments for intermediate step

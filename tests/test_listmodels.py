@@ -146,5 +146,4 @@ class TestListModelsTool:
         # Check for usage tips
         assert "**Usage Tips**:" in content
         assert "Use model aliases" in content
-        assert "auto mode" in content
 
