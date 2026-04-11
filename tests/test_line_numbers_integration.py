@@ -5,7 +5,6 @@ Integration test demonstrating that all tools get line numbers by default.
 from tools.chat import ChatTool
 from tools.codereview import CodeReviewTool
 from tools.debug import DebugIssueTool
-from tools.refactor import RefactorTool
 
 
 class TestLineNumbersIntegration:
@@ -17,7 +16,6 @@ class TestLineNumbersIntegration:
             ChatTool(),
             CodeReviewTool(),
             DebugIssueTool(),
-            RefactorTool(),
         ]
 
         for tool in tools:
@@ -29,7 +27,6 @@ class TestLineNumbersIntegration:
             ChatTool,
             CodeReviewTool,
             DebugIssueTool,
-            RefactorTool,
         ]
 
         for tool_class in tools_classes:

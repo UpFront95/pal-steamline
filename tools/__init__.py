@@ -9,7 +9,6 @@ from .codereview import CodeReviewTool
 from .consensus import ConsensusTool
 from .debug import DebugIssueTool
 from .listmodels import ListModelsTool
-from .refactor import RefactorTool
 from .thinkdeep import ThinkDeepTool
 from .version import VersionTool
 
@@ -22,6 +21,5 @@ __all__ = [
     "ConsensusTool",
     "ListModelsTool",
     "ChallengeTool",
-    "RefactorTool",
     "VersionTool",
 ]

@@ -1,115 +1,200 @@
 """
-Tests for the refactor tool functionality
+Tests for refactor mode of the CodeReview tool.
+
+Since codereview and refactor are now a single merged tool, these tests
+verify that CodeReviewTool behaves correctly when called with mode='refactor'.
 """
 
 import json
 
 import pytest
 
-from tools.refactor import RefactorTool
+from tools.codereview import CodeReviewRequest, CodeReviewTool
 from utils.file_utils import read_file_content
 
 
-class TestRefactorTool:
-    """Test suite for the refactor tool"""
+class TestRefactorMode:
+    """Test suite for the refactor mode of the CodeReview tool."""
 
     @pytest.fixture
     def refactor_tool(self):
-        """Create a refactor tool instance for testing"""
-        return RefactorTool()
+        """Create a CodeReviewTool instance for testing."""
+        return CodeReviewTool()
 
-    @pytest.fixture
-    def mock_model_response(self):
-        """Create a mock model response with valid JSON"""
+    def test_get_name_returns_codereview(self, refactor_tool):
+        """Tool name is always 'codereview' regardless of mode."""
+        assert refactor_tool.get_name() == "codereview"
 
-        def _create_response(content=None):
-            if content is None:
-                content = json.dumps(
-                    {
-                        "refactor_opportunities": [
-                            {
-                                "id": "refactor-001",
-                                "type": "codesmells",
-                                "severity": "high",
-                                "file": "/test/file.py",
-                                "start_line": 10,
-                                "end_line": 25,
-                                "context_start_text": "def long_method():",
-                                "context_end_text": "    return result",
-                                "issue": "Method too long with multiple responsibilities",
-                                "suggestion": "Extract helper methods",
-                                "rationale": "Improves readability and maintainability",
-                                "code_to_replace": "# original code",
-                                "replacement_code_snippet": "# refactored code",
-                                "new_code_snippets": [],
-                            }
-                        ],
-                        "priority_sequence": ["refactor-001"],
-                        "next_actions": [],
-                    },
-                    ensure_ascii=False,
-                )
-
-            from unittest.mock import Mock
-
-            return Mock(
-                content=content,
-                usage={"input_tokens": 100, "output_tokens": 200, "total_tokens": 300},
-                model_name="test-model",
-                metadata={"finish_reason": "STOP"},
-            )
-
-        return _create_response
-
-    def test_get_name(self, refactor_tool):
-        """Test that the tool returns the correct name"""
-        assert refactor_tool.get_name() == "refactor"
-
-    def test_get_description(self, refactor_tool):
-        """Test that the tool returns a comprehensive description"""
+    def test_get_description_mentions_refactor(self, refactor_tool):
+        """Description covers both modes."""
         description = refactor_tool.get_description()
-        assert "refactoring" in description
-        assert "code smell detection" in description
-        assert "decomposition planning" in description
-        assert "modernization" in description
-        assert "maintainability improvements" in description
+        assert "refactor" in description.lower()
+        assert "code smell" in description.lower()
+        assert "decomposition" in description.lower()
 
-    def test_get_input_schema(self, refactor_tool):
-        """Test that the input schema includes all required workflow fields"""
+    def test_get_input_schema_includes_refactor_fields(self, refactor_tool):
+        """Input schema includes all refactor-specific fields."""
         schema = refactor_tool.get_input_schema()
 
         assert schema["type"] == "object"
 
-        # Check workflow-specific fields
-        assert "step" in schema["properties"]
-        assert "step_number" in schema["properties"]
-        assert "total_steps" in schema["properties"]
-        assert "next_step_required" in schema["properties"]
-        assert "findings" in schema["properties"]
-        assert "files_checked" in schema["properties"]
-        assert "relevant_files" in schema["properties"]
+        # Shared workflow fields
+        for field in ("step", "step_number", "total_steps", "next_step_required", "findings",
+                      "files_checked", "relevant_files"):
+            assert field in schema["properties"], f"Missing field: {field}"
 
-        # Check refactor-specific fields
+        # Refactor-specific fields
+        assert "mode" in schema["properties"]
         assert "refactor_type" in schema["properties"]
         assert "confidence" in schema["properties"]
+        assert "focus_areas" in schema["properties"]
+        assert "style_guide_examples" in schema["properties"]
 
-        # Check refactor_type enum values
+        # refactor_type enum values
         refactor_enum = schema["properties"]["refactor_type"]["enum"]
         expected_types = ["codesmells", "decompose", "modernize", "organization"]
         assert all(rt in refactor_enum for rt in expected_types)
 
-    # Note: Old language detection and execution tests removed -
-    # new workflow-based refactor tool has different architecture
-
+        # confidence enum values
+        confidence_enum = schema["properties"]["confidence"]["enum"]
+        expected_confidence = ["exploring", "incomplete", "partial", "complete"]
+        assert all(c in confidence_enum for c in expected_confidence)
 
     def test_default_temperature(self, refactor_tool):
-        """Test that the refactor tool uses analytical temperature"""
+        """Refactor mode uses analytical temperature."""
         from config import TEMPERATURE_ANALYTICAL
 
-        temp = refactor_tool.get_default_temperature()
-        assert temp == TEMPERATURE_ANALYTICAL
+        assert refactor_tool.get_default_temperature() == TEMPERATURE_ANALYTICAL
 
-    # Note: format_response tests removed - workflow tools use different response format
+    def test_refactor_mode_request_validation(self):
+        """CodeReviewRequest validates correctly in refactor mode."""
+        req = CodeReviewRequest(
+            mode="refactor",
+            step="Analysing code for smells",
+            step_number=1,
+            total_steps=2,
+            next_step_required=True,
+            findings="Initial findings",
+            relevant_files=["/some/file.py"],
+            refactor_type="codesmells",
+        )
+        assert req.mode == "refactor"
+        # confidence should default to "incomplete" when not provided
+        assert req.confidence == "incomplete"
+        assert req.refactor_type == "codesmells"
+
+    def test_review_mode_request_validation(self):
+        """CodeReviewRequest validates correctly in review mode (default)."""
+        req = CodeReviewRequest(
+            step="Reviewing code quality",
+            step_number=1,
+            total_steps=2,
+            next_step_required=True,
+            findings="Initial findings",
+            relevant_files=["/some/file.py"],
+        )
+        assert req.mode == "review"
+        assert req.confidence is None  # excluded from review mode
+        assert req.review_type is None  # optional
+
+    def test_cross_mode_validation_refactor_fields_in_review(self):
+        """Cross-mode field validation: refactor fields rejected in review mode."""
+        with pytest.raises(ValueError, match="refactor_type"):
+            CodeReviewRequest(
+                mode="review",
+                step="step",
+                step_number=1,
+                total_steps=1,
+                next_step_required=False,
+                findings="findings",
+                relevant_files=["/f.py"],
+                refactor_type="codesmells",
+            )
+
+    def test_cross_mode_validation_confidence_in_review(self):
+        """confidence is rejected in review mode."""
+        with pytest.raises(ValueError, match="confidence"):
+            CodeReviewRequest(
+                mode="review",
+                step="step",
+                step_number=1,
+                total_steps=1,
+                next_step_required=False,
+                findings="findings",
+                relevant_files=["/f.py"],
+                confidence="partial",
+            )
+
+    def test_cross_mode_validation_review_fields_in_refactor(self):
+        """Cross-mode field validation: review fields rejected in refactor mode."""
+        with pytest.raises(ValueError, match="review_type"):
+            CodeReviewRequest(
+                mode="refactor",
+                step="step",
+                step_number=1,
+                total_steps=1,
+                next_step_required=False,
+                findings="findings",
+                relevant_files=["/f.py"],
+                review_type="security",
+            )
+
+    def test_should_skip_expert_analysis_complete_confidence(self, refactor_tool):
+        """Skip expert analysis when confidence='complete' and no more steps."""
+        req = CodeReviewRequest(
+            mode="refactor",
+            step="done",
+            step_number=2,
+            total_steps=2,
+            next_step_required=False,
+            findings="All opportunities identified",
+            relevant_files=["/f.py"],
+            confidence="complete",
+        )
+        from unittest.mock import MagicMock
+
+        refactor_tool._current_mode = "refactor"
+        assert refactor_tool.should_skip_expert_analysis(req, MagicMock())
+
+    def test_should_not_skip_expert_analysis_partial_confidence(self, refactor_tool):
+        """Do not skip expert analysis when confidence is partial."""
+        req = CodeReviewRequest(
+            mode="refactor",
+            step="partial analysis",
+            step_number=2,
+            total_steps=2,
+            next_step_required=False,
+            findings="Some opportunities identified",
+            relevant_files=["/f.py"],
+            confidence="partial",
+        )
+        from unittest.mock import MagicMock
+
+        refactor_tool._current_mode = "refactor"
+        assert not refactor_tool.should_skip_expert_analysis(req, MagicMock())
+
+    def test_system_prompt_switches_by_mode(self, refactor_tool):
+        """get_system_prompt returns different prompts for each mode."""
+        from systemprompts import CODEREVIEW_PROMPT, REFACTOR_PROMPT
+
+        refactor_tool._current_mode = "refactor"
+        assert refactor_tool.get_system_prompt() == REFACTOR_PROMPT
+
+        refactor_tool._current_mode = "review"
+        assert refactor_tool.get_system_prompt() == CODEREVIEW_PROMPT
+
+    def test_step_one_requires_relevant_files(self):
+        """Step 1 must provide relevant_files regardless of mode."""
+        with pytest.raises(ValueError, match="relevant_files"):
+            CodeReviewRequest(
+                mode="refactor",
+                step="step",
+                step_number=1,
+                total_steps=2,
+                next_step_required=True,
+                findings="findings",
+                relevant_files=[],  # empty — should fail
+            )
 
 
 class TestFileUtilsLineNumbers:
@@ -292,33 +377,13 @@ class TestFileUtilsLineNumbers:
         # Read with line numbers enabled
         content, tokens = read_file_content(str(temp_path), include_line_numbers=True)
 
-        # Calculate actual line numbers based on file structure (4 lines per function)
-        # Function 1: lines 1-4, Function 2: lines 5-8, etc.
-        # Line 1: def function_1():
-        # Line 2: # This is function number 1
-        # Line 3: return 1
-        # Line 4: (empty)
-
-        # Test various line number formats in the actual file content
         assert "   1│ def function_1():" in content
-
-        # Function 13 starts at line 49 (12*4 + 1), so line 50 is "    # This is function number 13"
         assert "  50│     # This is function number 13" in content
-
-        # Line 100 is actually an empty line after function 25 (line 99 was "return 25")
         assert " 100│ " in content  # Empty line
-
-        # Line 99 is "return 25" from function 25
         assert "  99│     return 25" in content
-
-        # Test more line numbers - line 147 is "return 37" from function 37
         assert " 147│     return 37" in content
-
-        # Test that we have the final lines (600 total lines)
         assert " 599│     return 150" in content
         assert " 600│ " in content  # Final empty line
-
-        # Verify the file structure is preserved
         assert "--- BEGIN FILE:" in content
         assert "--- END FILE:" in content
         assert str(temp_path) in content
@@ -335,8 +400,6 @@ class TestFileUtilsLineNumbers:
         content = "\n".join(lines)
         numbered_content = _add_line_numbers(content)
 
-        # Test that width dynamically adjusts to 5 digits for large files
-        # Small line numbers should now have 5-digit width
         assert "    1│ // Large file line 1" in numbered_content
         assert "    9│ // Large file line 9" in numbered_content
         assert "   10│ // Large file line 10" in numbered_content
@@ -349,12 +412,10 @@ class TestFileUtilsLineNumbers:
         assert "22500│ // Large file line 22500" in numbered_content
         assert "25000│ // Large file line 25000" in numbered_content
 
-        # Verify consistent alignment - all line numbers should end with "│ "
         lines_with_numbers = numbered_content.split("\n")
-        for i, line in enumerate(lines_with_numbers[:100]):  # Check first 100 lines
+        for i, line in enumerate(lines_with_numbers[:100]):
             if "│" in line:
                 pipe_pos = line.find("│")
-                # For large files, should be 5-character width plus pipe
                 assert line[pipe_pos - 1].isdigit(), f"Line {i+1} format issue: {line}"
                 assert line[pipe_pos + 1] == " ", f"Line {i+1} format issue: {line}"
 
@@ -367,7 +428,6 @@ class TestFileUtilsLineNumbers:
         content_9999 = "\n".join(lines_9999)
         numbered_9999 = _add_line_numbers(content_9999)
 
-        # Should use 4-digit format
         assert "   1│ Line 1" in numbered_9999
         assert "9999│ Line 9999" in numbered_9999
 
@@ -376,7 +436,6 @@ class TestFileUtilsLineNumbers:
         content_10000 = "\n".join(lines_10000)
         numbered_10000 = _add_line_numbers(content_10000)
 
-        # Should use 5-digit format
         assert "    1│ Line 1" in numbered_10000
         assert "10000│ Line 10000" in numbered_10000
 

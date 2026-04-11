@@ -55,7 +55,6 @@ from tools import (  # noqa: E402
     DebugIssueTool,
     ListModelsTool,
     LookupTool,
-    RefactorTool,
     ThinkDeepTool,
     VersionTool,
 )
@@ -256,7 +255,6 @@ TOOLS = {
     "consensus": ConsensusTool(),  # Step-by-step consensus workflow with multi-model analysis
     "codereview": CodeReviewTool(),  # Comprehensive step-by-step code review workflow with expert analysis
     "debug": DebugIssueTool(),  # Root cause analysis and debugging assistance
-    "refactor": RefactorTool(),  # Step-by-step refactoring analysis workflow with expert validation
     "challenge": ChallengeTool(),  # Critical challenge prompt wrapper to avoid automatic agreement
     "apilookup": LookupTool(),  # Quick web/API lookup instructions
     "listmodels": ListModelsTool(),  # List all available AI models by provider
@@ -294,7 +292,7 @@ PROMPT_TEMPLATES = {
     "refactor": {
         "name": "refactor",
         "description": "Refactor and improve code structure",
-        "template": "Refactor this code with {model}",
+        "template": "Refactor this code with {model}. Use the codereview tool with mode='refactor'.",
     },
     "challenge": {
         "name": "challenge",
