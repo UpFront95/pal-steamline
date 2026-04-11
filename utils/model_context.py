@@ -49,7 +49,7 @@ class TokenAllocation:
     @property
     def available_for_prompt(self) -> int:
         """Tokens available for the actual prompt after allocations."""
-        return self.content_tokens - self.file_tokens - self.history_tokens
+        return max(0, self.content_tokens - self.file_tokens - self.history_tokens)
 
 
 class ModelContext:
@@ -139,7 +139,7 @@ class ModelContext:
 
         # Calculate allocations
         content_tokens = int(total_tokens * content_ratio)
-        response_tokens = reserved_for_response or int(total_tokens * response_ratio)
+        response_tokens = min(reserved_for_response, total_tokens) if reserved_for_response else int(total_tokens * response_ratio)
 
         # Sub-allocations within content budget
         file_tokens = int(content_tokens * file_ratio)

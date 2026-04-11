@@ -128,7 +128,8 @@ def _calculate_mcp_prompt_limit() -> int:
             character_limit = input_token_budget * 4
             return character_limit
         except (ValueError, TypeError):
-            # Fall back to default if MAX_MCP_OUTPUT_TOKENS is not a valid integer
+            import logging
+            logging.warning(f"Invalid MAX_MCP_OUTPUT_TOKENS value '{max_tokens_str}', using default limit")
             pass
 
     # Default fallback: 60,000 characters (equivalent to ~15k tokens input of 25k total)
@@ -144,7 +145,7 @@ MCP_PROMPT_SIZE_LIMIT = _calculate_mcp_prompt_limit()
 # Examples: "fr-FR", "en-US", "zh-CN", "zh-TW", "ja-JP", "ko-KR", "es-ES",
 # "de-DE", "it-IT", "pt-PT"
 # Leave empty for default language (English)
-LOCALE = get_env("LOCALE", "") or ""
+LOCALE = get_env("LOCALE", "")
 
 # Threading configuration
 # Simple in-memory conversation threading for stateless MCP environment
