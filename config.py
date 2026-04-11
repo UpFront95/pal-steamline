@@ -64,6 +64,12 @@ TEMPERATURE_CREATIVE = 1.0  # For architecture, deep thinking
 # Higher modes use more computational budget but provide deeper analysis
 DEFAULT_THINKING_MODE_THINKDEEP = get_env("DEFAULT_THINKING_MODE_THINKDEEP", "high") or "high"
 
+# Expert escalation model for workflow tools (thinkdeep, debug, codereview, consensus)
+# When set, the expert validation pass uses a different model than the primary analysis model.
+# Use an alias (mimo, gemini, gpt, qwen) or a full model name.
+# Set to empty string to disable cross-model escalation (expert uses same model as primary).
+EXPERT_MODEL = get_env("EXPERT_MODEL", "gemini")
+
 # Consensus Tool Defaults
 # Consensus timeout and rate limiting settings
 DEFAULT_CONSENSUS_TIMEOUT = 120.0  # 2 minutes per model

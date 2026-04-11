@@ -1456,6 +1456,28 @@ class BaseWorkflowMixin(ABC):
             else:
                 model_name = self._current_model_name
 
+            # Switch to dedicated expert model if configured and different from primary
+            from config import EXPERT_MODEL
+            from utils.model_context import ModelContext
+
+            if EXPERT_MODEL:
+                try:
+                    expert_context = ModelContext(EXPERT_MODEL)
+                    # Resolve canonical names to avoid alias vs full-name false-positives
+                    primary_canonical = self._model_context.capabilities.model_name
+                    expert_canonical = expert_context.capabilities.model_name
+                    if expert_canonical == primary_canonical:
+                        logger.warning(
+                            f"EXPERT_MODEL '{EXPERT_MODEL}' resolves to the same model as primary "
+                            f"('{primary_canonical}'). Expert validation will use the same model."
+                        )
+                    else:
+                        logger.info(f"Expert analysis: switching from '{primary_canonical}' to '{expert_canonical}'")
+                        model_name = EXPERT_MODEL
+                        self._model_context = expert_context
+                except Exception as e:
+                    logger.warning(f"Could not resolve EXPERT_MODEL '{EXPERT_MODEL}', using primary model: {e}")
+
             provider = self._model_context.provider
 
             # Prepare expert analysis context
