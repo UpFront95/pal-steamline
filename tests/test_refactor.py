@@ -101,12 +101,6 @@ class TestRefactorTool:
     # Note: Old language detection and execution tests removed -
     # new workflow-based refactor tool has different architecture
 
-    def test_model_category(self, refactor_tool):
-        """Test that the refactor tool uses EXTENDED_REASONING category"""
-        from tools.models import ToolModelCategory
-
-        category = refactor_tool.get_model_category()
-        assert category == ToolModelCategory.EXTENDED_REASONING
 
     def test_default_temperature(self, refactor_tool):
         """Test that the refactor tool uses analytical temperature"""

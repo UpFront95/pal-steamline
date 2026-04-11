@@ -141,7 +141,7 @@ class WorkflowTool(BaseTool, BaseWorkflowMixin):
         """
         requires_model = self.requires_model()
         model_field_schema = self.get_model_field_schema() if requires_model else None
-        auto_mode = self.is_effective_auto_mode() if requires_model else False
+        auto_mode = False
         return WorkflowSchemaBuilder.build_schema(
             tool_specific_fields=self.get_tool_fields(),
             required_fields=self.get_required_fields(),

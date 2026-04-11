@@ -24,8 +24,9 @@
     {
       "model_name": "o3-2025-04-16",
       "friendly_name": "DIAL (O3)",
-      "aliases": ["o3"],
-      "intelligence_score": 14,
+      "aliases": [
+        "o3"
+      ],
       "description": "OpenAI O3 via DIAL - Strong reasoning model",
       "context_window": 200000,
       "max_output_tokens": 100000,
@@ -40,8 +41,9 @@
     {
       "model_name": "o4-mini-2025-04-16",
       "friendly_name": "DIAL (O4-mini)",
-      "aliases": ["o4-mini"],
-      "intelligence_score": 11,
+      "aliases": [
+        "o4-mini"
+      ],
       "description": "OpenAI O4-mini via DIAL - Fast reasoning model",
       "context_window": 200000,
       "max_output_tokens": 100000,
@@ -56,8 +58,10 @@
     {
       "model_name": "anthropic.claude-sonnet-4.1-20250805-v1:0",
       "friendly_name": "DIAL (Sonnet 4.1)",
-      "aliases": ["sonnet-4.1", "sonnet-4"],
-      "intelligence_score": 10,
+      "aliases": [
+        "sonnet-4.1",
+        "sonnet-4"
+      ],
       "description": "Claude Sonnet 4.1 via DIAL - Balanced performance",
       "context_window": 200000,
       "max_output_tokens": 64000,
@@ -72,8 +76,10 @@
     {
       "model_name": "anthropic.claude-sonnet-4.1-20250805-v1:0-with-thinking",
       "friendly_name": "DIAL (Sonnet 4.1 Thinking)",
-      "aliases": ["sonnet-4.1-thinking", "sonnet-4-thinking"],
-      "intelligence_score": 11,
+      "aliases": [
+        "sonnet-4.1-thinking",
+        "sonnet-4-thinking"
+      ],
       "description": "Claude Sonnet 4.1 with thinking mode via DIAL",
       "context_window": 200000,
       "max_output_tokens": 64000,
@@ -88,8 +94,10 @@
     {
       "model_name": "anthropic.claude-opus-4.1-20250805-v1:0",
       "friendly_name": "DIAL (Opus 4.1)",
-      "aliases": ["opus-4.1", "opus-4"],
-      "intelligence_score": 14,
+      "aliases": [
+        "opus-4.1",
+        "opus-4"
+      ],
       "description": "Claude Opus 4.1 via DIAL - Most capable Claude model",
       "context_window": 200000,
       "max_output_tokens": 64000,
@@ -104,8 +112,10 @@
     {
       "model_name": "anthropic.claude-opus-4.1-20250805-v1:0-with-thinking",
       "friendly_name": "DIAL (Opus 4.1 Thinking)",
-      "aliases": ["opus-4.1-thinking", "opus-4-thinking"],
-      "intelligence_score": 15,
+      "aliases": [
+        "opus-4.1-thinking",
+        "opus-4-thinking"
+      ],
       "description": "Claude Opus 4.1 with thinking mode via DIAL",
       "context_window": 200000,
       "max_output_tokens": 64000,
@@ -120,8 +130,9 @@
     {
       "model_name": "gemini-2.5-pro-preview-03-25-google-search",
       "friendly_name": "DIAL (Gemini 2.5 Pro Search)",
-      "aliases": ["gemini-2.5-pro-search"],
-      "intelligence_score": 17,
+      "aliases": [
+        "gemini-2.5-pro-search"
+      ],
       "description": "Gemini 2.5 Pro with Google Search via DIAL",
       "context_window": 1000000,
       "max_output_tokens": 65536,
@@ -136,8 +147,9 @@
     {
       "model_name": "gemini-2.5-pro-preview-05-06",
       "friendly_name": "DIAL (Gemini 2.5 Pro)",
-      "aliases": ["gemini-2.5-pro"],
-      "intelligence_score": 18,
+      "aliases": [
+        "gemini-2.5-pro"
+      ],
       "description": "Gemini 2.5 Pro via DIAL - Deep reasoning",
       "context_window": 1000000,
       "max_output_tokens": 65536,
@@ -152,8 +164,9 @@
     {
       "model_name": "gemini-2.5-flash-preview-05-20",
       "friendly_name": "DIAL (Gemini Flash 2.5)",
-      "aliases": ["gemini-2.5-flash"],
-      "intelligence_score": 10,
+      "aliases": [
+        "gemini-2.5-flash"
+      ],
       "description": "Gemini 2.5 Flash via DIAL - Ultra-fast",
       "context_window": 1000000,
       "max_output_tokens": 65536,

@@ -772,18 +772,11 @@ def build_conversation_history(context: ThreadContext, model_context=None, read_
 
     # Get model-specific token allocation early (needed for both files and turns)
     if model_context is None:
-        from config import DEFAULT_MODEL, IS_AUTO_MODE
+        from config import DEFAULT_MODEL
         from utils.model_context import ModelContext
 
-        # In auto mode, use an intelligent fallback model for token calculations
-        # since "auto" is not a real model with a provider
-        model_name = DEFAULT_MODEL
-        if IS_AUTO_MODE and model_name.lower() == "auto":
-            # Use intelligent fallback based on available API keys
-            from providers.registry import ModelProviderRegistry
-
-            model_name = ModelProviderRegistry.get_preferred_fallback_model()
-
+        stored_model = DEFAULT_MODEL
+        model_name = DEFAULT_MODEL if (not stored_model or stored_model.lower() == "auto") else stored_model
         model_context = ModelContext(model_name)
 
     token_allocation = model_context.calculate_token_allocation()

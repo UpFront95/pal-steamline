@@ -23,12 +23,8 @@ __author__ = "Fahad Gilani"
 # Model configuration
 # DEFAULT_MODEL: The default model used for all AI operations
 # This should be a stable, high-performance model suitable for code analysis
-# Can be overridden by setting DEFAULT_MODEL environment variable
-# Special value "auto" means Claude should pick the best model for each task
-DEFAULT_MODEL = get_env("DEFAULT_MODEL", "auto") or "auto"
-
-# Auto mode detection - when DEFAULT_MODEL is "auto", Claude picks the model
-IS_AUTO_MODE = DEFAULT_MODEL.lower() == "auto"
+# Override via DEFAULT_MODEL env var in your .env file (see .env.example)
+DEFAULT_MODEL = get_env("DEFAULT_MODEL", "gemini-2.5-flash") or "gemini-2.5-flash"
 
 # Each provider (gemini.py, openai.py, xai.py, dial.py, openrouter.py, custom.py, azure_openai.py)
 # defines its own MODEL_CAPABILITIES

@@ -104,7 +104,6 @@ def test_deployment_overrides_capabilities(dummy_azure_client):
             "gpt-4o": {
                 "deployment": "prod-gpt4o",
                 "friendly_name": "Azure GPT-4o EU",
-                "intelligence_score": 19,
                 "supports_temperature": False,
                 "temperature_constraint": "fixed",
             }
@@ -113,7 +112,6 @@ def test_deployment_overrides_capabilities(dummy_azure_client):
 
     caps = provider.get_capabilities("gpt-4o")
     assert caps.friendly_name == "Azure GPT-4o EU"
-    assert caps.intelligence_score == 19
     assert not caps.supports_temperature
 
 

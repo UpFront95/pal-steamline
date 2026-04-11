@@ -1,15 +1,12 @@
 """Model provider registry for managing available providers."""
 
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from utils.env import get_env
 
 from .base import ModelProvider
 from .shared import ProviderType
-
-if TYPE_CHECKING:
-    from tools.models import ToolModelCategory
 
 
 class ModelProviderRegistry:
@@ -379,58 +376,6 @@ class ModelProviderRegistry:
                 allowed_models.append(model_name)
 
         return allowed_models
-
-    @classmethod
-    def get_preferred_fallback_model(cls, tool_category: Optional["ToolModelCategory"] = None) -> str:
-        """Get the preferred fallback model based on provider priority and tool category.
-
-        This method orchestrates model selection by:
-        1. Getting allowed models for each provider (respecting restrictions)
-        2. Asking providers for their preference from the allowed list
-        3. Falling back to first available model if no preference given
-
-        Args:
-            tool_category: Optional category to influence model selection
-
-        Returns:
-            Model name string for fallback use
-        """
-        from tools.models import ToolModelCategory
-
-        effective_category = tool_category or ToolModelCategory.BALANCED
-        first_available_model = None
-
-        # Ask each provider for their preference in priority order
-        for provider_type in cls.PROVIDER_PRIORITY_ORDER:
-            provider = cls.get_provider(provider_type)
-            if provider:
-                # 1. Registry filters the models first
-                allowed_models = cls._get_allowed_models_for_provider(provider, provider_type)
-
-                if not allowed_models:
-                    continue
-
-                # 2. Keep track of the first available model as fallback
-                if not first_available_model:
-                    first_available_model = sorted(allowed_models)[0]
-
-                # 3. Ask provider to pick from allowed list
-                preferred_model = provider.get_preferred_model(effective_category, allowed_models)
-
-                if preferred_model:
-                    logging.debug(
-                        f"Provider {provider_type.value} selected '{preferred_model}' for category '{effective_category.value}'"
-                    )
-                    return preferred_model
-
-        # If no provider returned a preference, use first available model
-        if first_available_model:
-            logging.debug(f"No provider preference, using first available: {first_available_model}")
-            return first_available_model
-
-        # Ultimate fallback if no providers have models
-        logging.warning("No models available from any provider, using default fallback")
-        return "gemini-2.5-flash"
 
     @classmethod
     def get_available_providers_with_keys(cls) -> list[ProviderType]:

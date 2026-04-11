@@ -64,7 +64,7 @@ class TestThinkingModes:
 
             ModelProviderRegistry._instance = None
 
-            tool = AnalyzeTool()
+            tool = DebugIssueTool()
 
             # This should attempt to use the real OpenAI provider
             # Even with a fake API key, we can test the provider resolution logic
@@ -72,8 +72,12 @@ class TestThinkingModes:
             try:
                 result = await tool.execute(
                     {
-                        "absolute_file_paths": ["/absolute/path/test.py"],
-                        "prompt": "What is this?",
+                        "step": "Investigate potential issue",
+                        "step_number": 1,
+                        "total_steps": 1,
+                        "next_step_required": False,
+                        "findings": "What is this?",
+                        "relevant_files": ["/absolute/path/test.py"],
                         "model": "o3-mini",
                         "thinking_mode": "minimal",
                     }
@@ -306,14 +310,18 @@ class TestThinkingModes:
 
             ModelProviderRegistry._instance = None
 
-            tool = AnalyzeTool()
+            tool = DebugIssueTool()
 
             # Test with real provider resolution
             try:
                 result = await tool.execute(
                     {
-                        "absolute_file_paths": ["/absolute/path/complex.py"],
-                        "prompt": "Analyze architecture",
+                        "step": "Analyze architecture",
+                        "step_number": 1,
+                        "total_steps": 1,
+                        "next_step_required": False,
+                        "findings": "Analyzing architecture",
+                        "relevant_files": ["/absolute/path/complex.py"],
                         "thinking_mode": "high",
                         "model": "o3-mini",
                     }

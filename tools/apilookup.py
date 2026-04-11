@@ -12,7 +12,7 @@ from tools.shared.base_models import ToolRequest
 from tools.simple.base import SimpleTool
 
 if TYPE_CHECKING:
-    from tools.models import ToolModelCategory
+    pass
 
 
 LOOKUP_FIELD_DESCRIPTIONS = {
@@ -88,10 +88,6 @@ class LookupTool(SimpleTool):
     def requires_model(self) -> bool:
         return False
 
-    def get_model_category(self) -> ToolModelCategory:
-        from tools.models import ToolModelCategory
-
-        return ToolModelCategory.FAST_RESPONSE
 
     def get_request_model(self):
         return LookupRequest

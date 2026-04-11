@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from pydantic import Field
 
 if TYPE_CHECKING:
-    from tools.models import ToolModelCategory
+    pass
 
 from config import TEMPERATURE_ANALYTICAL
 from tools.shared.base_models import ToolRequest
@@ -65,11 +65,6 @@ class ChallengeTool(SimpleTool):
     def get_default_temperature(self) -> float:
         return TEMPERATURE_ANALYTICAL
 
-    def get_model_category(self) -> "ToolModelCategory":
-        """Challenge doesn't need a model category since it doesn't use AI"""
-        from tools.models import ToolModelCategory
-
-        return ToolModelCategory.FAST_RESPONSE  # Default, but not used
 
     def requires_model(self) -> bool:
         """

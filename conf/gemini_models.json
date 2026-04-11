@@ -33,7 +33,6 @@
         "gemini3",
         "gemini-pro"
       ],
-      "intelligence_score": 18,
       "description": "Deep reasoning + thinking mode (1M context) - Complex problems, architecture, deep analysis",
       "context_window": 1048576,
       "max_output_tokens": 65536,
@@ -54,7 +53,6 @@
       "aliases": [
         "gemini-pro-2.5"
       ],
-      "intelligence_score": 18,
       "description": "Older Model. 1M context - Complex problems, architecture, deep analysis",
       "context_window": 1048576,
       "max_output_tokens": 65536,
@@ -76,7 +74,6 @@
         "flash-2.0",
         "flash2"
       ],
-      "intelligence_score": 9,
       "description": "Gemini 2.0 Flash (1M context) - Latest fast model with experimental thinking, supports audio/video input",
       "context_window": 1048576,
       "max_output_tokens": 65536,
@@ -97,7 +94,6 @@
         "flashlite",
         "flash-lite"
       ],
-      "intelligence_score": 7,
       "description": "Gemini 2.0 Flash Lite (1M context) - Lightweight fast model, text-only",
       "context_window": 1048576,
       "max_output_tokens": 65536,
@@ -116,7 +112,6 @@
         "flash",
         "flash2.5"
       ],
-      "intelligence_score": 10,
       "description": "Ultra-fast (1M context) - Quick analysis, simple queries, rapid iterations",
       "context_window": 1048576,
       "max_output_tokens": 65536,

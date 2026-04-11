@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from pydantic import Field
 
 if TYPE_CHECKING:
-    from tools.models import ToolModelCategory
+    pass
 
 from config import TEMPERATURE_CREATIVE
 from systemprompts import THINKDEEP_PROMPT
@@ -123,11 +123,6 @@ class ThinkDeepTool(WorkflowTool):
         """Return the tool description"""
         return self.description
 
-    def get_model_category(self) -> "ToolModelCategory":
-        """Return the model category for this tool"""
-        from tools.models import ToolModelCategory
-
-        return ToolModelCategory.EXTENDED_REASONING
 
     def get_workflow_request_model(self):
         """Return the workflow request model for this tool"""
@@ -154,7 +149,7 @@ class ThinkDeepTool(WorkflowTool):
         return WorkflowSchemaBuilder.build_schema(
             tool_specific_fields=thinkdeep_field_overrides,
             model_field_schema=self.get_model_field_schema(),
-            auto_mode=self.is_effective_auto_mode(),
+            auto_mode=False,
             tool_name=self.get_name(),
         )
 

@@ -148,8 +148,3 @@ class TestListModelsTool:
         assert "Use model aliases" in content
         assert "auto mode" in content
 
-    def test_model_category(self, tool):
-        """Test that tool uses FAST_RESPONSE category"""
-        from tools.models import ToolModelCategory
-
-        assert tool.get_model_category() == ToolModelCategory.FAST_RESPONSE

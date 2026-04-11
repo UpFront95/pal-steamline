@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING, Any, Literal, Optional
 from pydantic import Field, model_validator
 
 if TYPE_CHECKING:
-    from tools.models import ToolModelCategory
+    pass
 
 from config import TEMPERATURE_ANALYTICAL
 from systemprompts import REFACTOR_PROMPT
@@ -170,11 +170,6 @@ class RefactorTool(WorkflowTool):
     def get_default_temperature(self) -> float:
         return TEMPERATURE_ANALYTICAL
 
-    def get_model_category(self) -> "ToolModelCategory":
-        """Refactor workflow requires thorough analysis and reasoning"""
-        from tools.models import ToolModelCategory
-
-        return ToolModelCategory.EXTENDED_REASONING
 
     def get_workflow_request_model(self):
         """Return the refactor workflow-specific request model."""
@@ -258,7 +253,7 @@ class RefactorTool(WorkflowTool):
         return WorkflowSchemaBuilder.build_schema(
             tool_specific_fields=refactor_field_overrides,
             model_field_schema=self.get_model_field_schema(),
-            auto_mode=self.is_effective_auto_mode(),
+            auto_mode=False,
             tool_name=self.get_name(),
         )
 
