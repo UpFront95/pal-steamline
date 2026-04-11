@@ -18,7 +18,8 @@ List the operational tools and available model aliases:
 - `chat` — ask a model a question, get code, explanations, analysis
 - `thinkdeep` — extended reasoning on hard problems
 - `debug` — systematic multi-step debugging workflow
-- `codereview` — code review (`mode="review"`) or refactor analysis (`mode="refactor"`)
+- `codereview` — quality, security, and performance audit
+- `refactor` — code smell detection, decomposition, and modernization analysis
 - `consensus` — get multiple models to weigh in on a question
 
 **Model aliases:** `mimo` (default), `gemini`, `gpt`, `qwen`
@@ -30,7 +31,8 @@ List the operational tools and available model aliases:
 | Ask another model a question | `chat` |
 | Reason through something hard | `thinkdeep` |
 | Debug a specific issue | `debug` |
-| Review or refactor code | `codereview` |
+| Audit code for quality/security/perf | `codereview` |
+| Restructure or clean up code | `refactor` |
 | Get multiple models to weigh in | `consensus` |
 
 ## Invocation notes
