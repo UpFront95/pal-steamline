@@ -3,7 +3,6 @@ Tool implementations for PAL MCP Server
 """
 
 from .apilookup import LookupTool
-from .challenge import ChallengeTool
 from .chat import ChatTool
 from .codereview import CodeReviewTool
 from .consensus import ConsensusTool
@@ -20,6 +19,5 @@ __all__ = [
     "ChatTool",
     "ConsensusTool",
     "ListModelsTool",
-    "ChallengeTool",
     "VersionTool",
 ]

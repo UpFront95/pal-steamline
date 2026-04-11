@@ -48,7 +48,6 @@ from config import (  # noqa: E402
     __version__,
 )
 from tools import (  # noqa: E402
-    ChallengeTool,
     ChatTool,
     CodeReviewTool,
     ConsensusTool,
@@ -255,7 +254,6 @@ TOOLS = {
     "consensus": ConsensusTool(),  # Step-by-step consensus workflow with multi-model analysis
     "codereview": CodeReviewTool(),  # Comprehensive step-by-step code review workflow with expert analysis
     "debug": DebugIssueTool(),  # Root cause analysis and debugging assistance
-    "challenge": ChallengeTool(),  # Critical challenge prompt wrapper to avoid automatic agreement
     "apilookup": LookupTool(),  # Quick web/API lookup instructions
     "listmodels": ListModelsTool(),  # List all available AI models by provider
     "version": VersionTool(),  # Display server version and system information
@@ -293,11 +291,6 @@ PROMPT_TEMPLATES = {
         "name": "refactor",
         "description": "Refactor and improve code structure",
         "template": "Refactor this code with {model}. Use the codereview tool with mode='refactor'.",
-    },
-    "challenge": {
-        "name": "challenge",
-        "description": "Challenge a statement critically without automatic agreement",
-        "template": "Challenge this statement critically",
     },
     "version": {
         "name": "version",
