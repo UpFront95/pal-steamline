@@ -290,7 +290,14 @@ PROMPT_TEMPLATES = {
     "refactor": {
         "name": "refactor",
         "description": "Refactor and improve code structure",
-        "template": "Refactor this code with {model}. Use the codereview tool with mode='refactor'.",
+        "template": (
+            "Use the codereview tool with mode='refactor' and model='mimo'. "
+            "refactor_type options: 'codesmells' (default — find anti-patterns and bad practices), "
+            "'decompose' (break up large functions/classes), "
+            "'modernize' (update to current language idioms), "
+            "'organization' (restructure file/module layout). "
+            "Pick the most appropriate refactor_type based on the user's request, or default to 'codesmells' if unspecified."
+        ),
     },
     "version": {
         "name": "version",

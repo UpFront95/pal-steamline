@@ -19,7 +19,7 @@ List the operational tools and available model aliases:
 - `thinkdeep` — extended reasoning on hard problems
 - `debug` — systematic multi-step debugging workflow
 - `codereview` — quality, security, and performance audit
-- `refactor` — code smell detection, decomposition, and modernization analysis
+- `refactor` — structural code improvement; types: `codesmells` (default), `decompose`, `modernize`, `organization`
 - `consensus` — get multiple models to weigh in on a question
 
 **Model aliases:** `mimo` (default), `gemini`, `gpt`, `qwen`
