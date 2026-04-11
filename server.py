@@ -299,16 +299,6 @@ PROMPT_TEMPLATES = {
         "description": "Challenge a statement critically without automatic agreement",
         "template": "Challenge this statement critically",
     },
-    "apilookup": {
-        "name": "apilookup",
-        "description": "Look up the latest API or SDK information",
-        "template": "Lookup latest API docs for {model}",
-    },
-    "listmodels": {
-        "name": "listmodels",
-        "description": "List available AI models",
-        "template": "List all available models",
-    },
     "version": {
         "name": "version",
         "description": "Show server version and system information",
@@ -1208,15 +1198,6 @@ async def handle_list_prompts() -> list[Prompt]:
                 )
             )
 
-    # Add special "continue" prompt
-    prompts.append(
-        Prompt(
-            name="continue",
-            description="Continue the previous conversation using the chat tool",
-            arguments=[],
-        )
-    )
-
     logger.debug(f"Returning {len(prompts)} prompts to MCP client")
     return prompts
 
@@ -1246,40 +1227,28 @@ async def handle_get_prompt(name: str, arguments: dict[str, Any] = None) -> GetP
     """
     logger.debug(f"MCP client requested prompt: {name} with args: {arguments}")
 
-    # Handle special "continue" case
-    if name.lower() == "continue":
-        # This is "/pal:continue" - use chat tool as default for continuation
-        tool_name = "chat"
+    # Find the corresponding tool by checking prompt names
+    tool_name = None
+    template_info = None
+
+    for t_name, t_info in PROMPT_TEMPLATES.items():
+        if t_info["name"] == name:
+            tool_name = t_name
+            template_info = t_info
+            break
+
+    # If not found, check if it's a direct tool name
+    if not tool_name and name in TOOLS:
+        tool_name = name
         template_info = {
-            "name": "continue",
-            "description": "Continue the previous conversation",
-            "template": "Continue the conversation",
+            "name": name,
+            "description": f"Use {name} tool",
+            "template": f"Use {name}",
         }
-        logger.debug("Using /pal:continue - defaulting to chat tool")
-    else:
-        # Find the corresponding tool by checking prompt names
-        tool_name = None
-        template_info = None
 
-        # Check if it's a known prompt name
-        for t_name, t_info in PROMPT_TEMPLATES.items():
-            if t_info["name"] == name:
-                tool_name = t_name
-                template_info = t_info
-                break
-
-        # If not found, check if it's a direct tool name
-        if not tool_name and name in TOOLS:
-            tool_name = name
-            template_info = {
-                "name": name,
-                "description": f"Use {name} tool",
-                "template": f"Use {name}",
-            }
-
-        if not tool_name:
-            logger.error(f"Unknown prompt requested: {name}")
-            raise ValueError(f"Unknown prompt: {name}")
+    if not tool_name:
+        logger.error(f"Unknown prompt requested: {name}")
+        raise ValueError(f"Unknown prompt: {name}")
 
     # Get the template
     template = template_info.get("template", f"Use {tool_name}")
@@ -1296,23 +1265,10 @@ async def handle_get_prompt(name: str, arguments: dict[str, Any] = None) -> GetP
 
     # Safely format the template
     try:
-        prompt_text = template.format(**prompt_args)
+        tool_instruction = template.format(**prompt_args)
     except KeyError as e:
         logger.warning(f"Missing template argument {e} for prompt {name}, using raw template")
-        prompt_text = template  # Fallback to raw template
-
-    # Generate tool call instruction
-    if name.lower() == "continue":
-        # "/pal:continue" case
-        tool_instruction = (
-            f"Continue the previous conversation using the {tool_name} tool. "
-            "CRITICAL: You MUST provide the continuation_id from the previous response to maintain conversation context. "
-            "Additionally, you should reuse the same model that was used in the previous exchange for consistency, unless "
-            "the user specifically asks for a different model name to be used."
-        )
-    else:
-        # Simple prompt case
-        tool_instruction = prompt_text
+        tool_instruction = template
 
     return GetPromptResult(
         prompt=Prompt(
