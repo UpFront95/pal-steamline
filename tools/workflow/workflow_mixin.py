@@ -7,7 +7,7 @@ perform multi-step work with structured findings and expert analysis.
 Key Components:
 - BaseWorkflowMixin: Abstract base class providing comprehensive workflow functionality
 
-The workflow pattern enables tools like debug, precommit, and codereview to perform
+The workflow pattern enables tools like debug, codereview, and thinkdeep to perform
 systematic multi-step work with pause/resume capabilities, context-aware file embedding,
 and seamless integration with external AI models for expert analysis.
 
@@ -212,7 +212,7 @@ class BaseWorkflowMixin(ABC):
         Override this to completely disable expert analysis for the tool.
 
         Returns True if the tool supports expert analysis (default).
-        Returns False if the tool is self-contained (like planner).
+        Returns False if the tool is self-contained.
         """
         return True
 
@@ -1333,7 +1333,7 @@ class BaseWorkflowMixin(ABC):
         else:
             # Tool doesn't require expert analysis or local work was sufficient
             if not self.requires_expert_analysis():
-                # Tool is self-contained (like planner)
+                # Tool is self-contained
                 response_data["status"] = f"{self.get_name()}_complete"
                 response_data["next_steps"] = (
                     f"{self.get_name().capitalize()} work complete. Present results to the user."

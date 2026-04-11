@@ -226,11 +226,6 @@ All tools that work with files support **both individual files and entire direct
 "Use o3 to think deeper about the logical flow in this algorithm"
 ```
 
-**`testgen`** - Comprehensive test generation with edge case coverage
-- `files`: Code files or directories to generate tests for (required)
-- `prompt`: Description of what to test, testing objectives, and scope (required)
-- `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5.2|gpt5.1-codex|gpt5.1-codex-mini|gpt5|gpt5-mini|gpt5-nano (default: server default)
-- `test_examples`: Optional existing test files as style/pattern reference
 - `thinking_mode`: minimal|low|medium|high|max (default: medium, Gemini only)
 
 ```
@@ -302,21 +297,19 @@ the top and landing with animation. Once done, codereview with gemini pro and o3
 work. Fix medium to critical bugs / concerns / issues and show me the final product
 ```
 
-### Debug → Analyze → Solution → Precommit Check → Publish
+### Debug → Solution → Publish
 ```
 Take a look at these log files saved under subfolder/diagnostics.log there's a bug where the user says the app
 crashes at launch. Think hard and go over each line, tallying it with corresponding code within the project. After
 you've performed initial investigation, ask gemini pro to analyze the log files and the related code where you 
-suspect lies the bug and then formulate and implement a bare minimal fix. Must not regress. Perform a precommit
-with pal in the end using gemini pro to confirm we're okay to publish the fix 
+suspect lies the bug and then formulate and implement a bare minimal fix. Must not regress.
 ```
 
-### Refactor → Review → Implement → Test
+### Refactor → Review → Implement
 ```
 Use pal to analyze this legacy authentication module for decomposition opportunities. The code is getting hard to 
 maintain and we need to break it down. Use gemini pro with high thinking mode to identify code smells and suggest 
-a modernization strategy. After reviewing the refactoring plan, implement the changes step by step and then 
-generate comprehensive tests with pal to ensure nothing breaks.
+a modernization strategy. After reviewing the refactoring plan, implement the changes step by step.
 ```
 
 ### Tool Selection Guidance
@@ -325,19 +318,14 @@ To help choose the right tool for your needs:
 **Decision Flow:**
 1. **Have a specific error/exception?** → Use `debug`
 2. **Want to find bugs/issues in code?** → Use `codereview`
-3. **Want to understand how code works?** → Use `analyze`
-4. **Need comprehensive test coverage?** → Use `testgen`
-5. **Want to refactor/modernize code?** → Use `refactor`
-6. **Have analysis that needs extension/validation?** → Use `thinkdeep`
-7. **Want to brainstorm or discuss?** → Use `chat`
+3. **Want to refactor/modernize code?** → Use `refactor`
+4. **Have analysis that needs extension/validation?** → Use `thinkdeep`
+5. **Want to brainstorm or discuss?** → Use `chat`
 
 **Key Distinctions:**
-- `analyze` vs `codereview`: analyze explains, codereview prescribes fixes
 - `chat` vs `thinkdeep`: chat is open-ended, thinkdeep extends specific analysis
 - `debug` vs `codereview`: debug diagnoses runtime errors, review finds static issues
-- `testgen` vs `debug`: testgen creates test suites, debug just finds issues and recommends solutions
 - `refactor` vs `codereview`: refactor suggests structural improvements, codereview finds bugs/issues
-- `refactor` vs `analyze`: refactor provides actionable refactoring steps, analyze provides understanding
 
 ## Vision Support
 

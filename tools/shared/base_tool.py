@@ -56,7 +56,7 @@ class BaseTool(ABC):
     1. FILE DEDUPLICATION WITH NEWEST-FIRST PRIORITY:
        - When same file appears in multiple conversation turns, newest reference wins
        - Prevents redundant file embedding while preserving most recent file state
-       - Cross-tool file tracking ensures consistent behavior across analyze → codereview → debug
+       - Cross-tool file tracking ensures consistent behavior across codereview → debug
 
     2. CONVERSATION CONTEXT INTEGRATION:
        - All tools receive enhanced prompts with conversation history via reconstruct_thread_context()
@@ -121,7 +121,7 @@ class BaseTool(ABC):
         unique across all registered tools.
 
         Returns:
-            str: The tool's unique name (e.g., "review_code", "analyze")
+            str: The tool's unique name (e.g., "chat", "debug", "codereview")
         """
         pass
 
@@ -218,7 +218,7 @@ class BaseTool(ABC):
         """
         Return whether this tool requires AI model access.
 
-        Tools that override execute() to do pure data processing (like planner)
+        Tools that override execute() to do pure data processing (like challenge, listmodels)
         should return False to skip model resolution at the MCP boundary.
 
         Returns:

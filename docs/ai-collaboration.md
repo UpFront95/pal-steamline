@@ -9,7 +9,7 @@ This server enables **true AI collaboration** between Claude and multiple AI mod
 - **Claude can respond** with additional information, files, or refined instructions
 - **Claude can work independently** between exchanges - implementing solutions, gathering data, or performing analysis
 - **Claude can return to Gemini** with progress updates and new context for further collaboration
-- **Cross-tool continuation** - Start with one tool (e.g., `analyze`) and continue with another (e.g., `codereview`) using the same conversation thread
+- **Cross-tool continuation** - Start with one tool (e.g., `debug`) and continue with another (e.g., `codereview`) using the same conversation thread
 - **Both AIs coordinate their approaches** - questioning assumptions, validating solutions, and building on each other's insights
 - Each conversation maintains full context while only sending incremental updates
 - Conversations are automatically managed in memory for the session duration

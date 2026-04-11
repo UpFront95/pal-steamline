@@ -70,7 +70,7 @@ class ChallengeTool(SimpleTool):
         """
         Challenge tool doesn't require model resolution at the MCP boundary.
 
-        Like the planner tool, this is a pure data processing tool that transforms
+        This is a pure data processing tool that transforms
         the input without calling external AI models.
 
         Returns:

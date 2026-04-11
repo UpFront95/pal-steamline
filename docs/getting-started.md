@@ -420,16 +420,15 @@ Versions 0.2.1 and newer currently ignore values above ~60 seconds for some tran
 **Multi-model workflows:**
 ```
 "Use pal to get consensus from pro and o3 on this architecture"
-"Code review with gemini, then precommit validation with o3"  
-"Analyze with flash, then deep dive with pro if issues found"
+"Code review with gemini and o3"
+"Debug with flash, then deep dive with pro if issues found"
 ```
 
 ### Quick Tool Reference:
 
-**🤝 Collaboration**: `chat`, `thinkdeep`, `planner`, `consensus`
-**🔍 Code Analysis**: `analyze`, `codereview`, `debug`, `precommit`  
-**⚒️ Development**: `refactor`, `testgen`, `secaudit`, `docgen`
-**🔧 Utilities**: `challenge`, `tracer`, `listmodels`, `version`
+**🤝 Collaboration**: `chat`, `thinkdeep`, `consensus`
+**🔍 Code Analysis**: `codereview`, `debug`, `refactor`
+**🔧 Utilities**: `challenge`, `apilookup`, `listmodels`, `version`
 
 👉 **[Complete Tools Reference](tools/)** with detailed examples and parameters
 

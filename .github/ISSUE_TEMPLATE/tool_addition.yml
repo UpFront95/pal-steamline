@@ -6,8 +6,8 @@ body:
     id: tool-name
     attributes:
       label: Proposed Tool Name
-      description: "What would the tool be called? (e.g., `summarize`, `docgen`, `refactor`)"
-      placeholder: "e.g., `docgen`"
+      description: "What would the tool be called? (e.g., `summarize`, `translate`, `benchmark`)"
+      placeholder: "e.g., `summarize`"
     validations:
       required: true
 
@@ -45,7 +45,7 @@ body:
       label: Tool Category
       description: What category does this tool fit into?
       options:
-        - Code Analysis (like analyze)
+        - Code Analysis (like debug)
         - Code Quality (like codereview)
         - Code Generation/Refactoring
         - Documentation Generation
@@ -71,5 +71,5 @@ body:
       label: Contribution
       options:
         - label: I am willing to submit a Pull Request to implement this new tool.
-        - label: I have checked that this tool doesn't overlap significantly with existing tools (analyze, codereview, debug, thinkdeep, chat).
+        - label: I have checked that this tool doesn't overlap significantly with existing tools (codereview, debug, refactor, thinkdeep, chat).
 

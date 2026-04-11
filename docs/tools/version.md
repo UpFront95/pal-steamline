@@ -61,17 +61,15 @@ The tool provides:
 • Conversation Memory: Active ✅
 • Web Search: Enabled
 
-🛠️ Available Tools (12):
+🛠️ Available Tools (10):
 • chat - General development chat & collaborative thinking
 • thinkdeep - Extended reasoning partner  
 • consensus - Multi-model perspective gathering
 • codereview - Professional code review
-• precommit - Pre-commit validation
-• debug - Expert debugging assistant
-• analyze - Smart file analysis
 • refactor - Intelligent code refactoring
-• tracer - Static code analysis prompt generator
-• testgen - Comprehensive test generation
+• debug - Expert debugging assistant
+• apilookup - API/SDK documentation lookup
+• challenge - Critical thinking and analysis
 • listmodels - List available models
 • version - Server information
 

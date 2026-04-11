@@ -634,8 +634,8 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
     1. THREAD RESUMPTION: When continuation_id is present, it reconstructs complete conversation
        context from in-memory storage including conversation history and file references
 
-    2. CROSS-TOOL CONTINUATION: Enables seamless handoffs between different tools (analyze →
-       codereview → debug) while preserving full conversation context and file references
+    2. CROSS-TOOL CONTINUATION: Enables seamless handoffs between different tools (codereview →
+       debug → thinkdeep) while preserving full conversation context and file references
 
     3. CONTEXT INJECTION: Reconstructed conversation history is embedded into tool prompts
        using the dual prioritization strategy:
@@ -653,7 +653,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
     - Supporting conversation chains across different tool types
 
     Args:
-        name: The name of the tool to execute (e.g., "analyze", "chat", "codereview")
+        name: The name of the tool to execute (e.g., "chat", "debug", "codereview")
         arguments: Dictionary of arguments to pass to the tool, potentially including:
                   - continuation_id: UUID for conversation thread resumption
                   - files: File paths for analysis (subject to deduplication)
@@ -671,7 +671,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
         Exception: For tool-specific errors or execution failures
 
     Example Conversation Flow:
-        1. The CLI calls analyze tool with files → creates new thread
+        1. The CLI calls debug tool with files → creates new thread
         2. Thread ID returned in continuation offer
         3. The CLI continues with codereview tool + continuation_id → full context preserved
         4. Multiple tools can collaborate using same thread ID
@@ -733,7 +733,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
         # Consensus tool handles its own model configuration validation
         # No special handling needed at server level
 
-        # Skip model resolution for tools that don't require models (e.g., planner)
+        # Skip model resolution for tools that don't require models (e.g., challenge, listmodels)
         if not tool.requires_model():
             logger.debug(f"Tool {name} doesn't require model resolution - skipping model validation")
             # Execute tool directly without model context
@@ -953,10 +953,10 @@ async def reconstruct_thread_context(arguments: dict[str, Any]) -> dict[str, Any
         - Optimized file deduplication minimizes redundant content
 
     Example Usage Flow:
-        1. CLI: "Continue analyzing the security issues" + continuation_id
-        2. reconstruct_thread_context() loads previous analyze conversation
+        1. CLI: "Continue reviewing the security issues" + continuation_id
+        2. reconstruct_thread_context() loads previous conversation
         3. Debug tool receives full context including previous file analysis
-        4. Debug tool can reference specific findings from analyze tool
+        4. Debug tool can reference specific findings from codereview
         5. Natural cross-tool collaboration without context loss
     """
     from utils.conversation_memory import add_turn, build_conversation_history, get_thread

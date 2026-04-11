@@ -195,8 +195,7 @@ After analysis: "Recommended searches for Claude: 'Django 4.2 migration error sp
 
 - **Use `debug`** for: Specific runtime errors, exceptions, crashes, performance issues requiring systematic investigation
 - **Use `codereview`** for: Finding potential bugs in code without specific errors or symptoms
-- **Use `analyze`** for: Understanding code structure and flow without troubleshooting specific issues
-- **Use `precommit`** for: Validating changes before commit to prevent introducing bugs
+- **Use `refactor`** for: Structural improvements and code quality concerns
 
 ## Investigation Example
 
