@@ -86,9 +86,7 @@
     },
     {
       "model_name": "google/gemini-3-pro-preview",
-      "aliases": [
-        "gemini"
-      ],
+      "aliases": [],
       "context_window": 1048576,
       "max_output_tokens": 65536,
       "supports_extended_thinking": true,
@@ -405,7 +403,9 @@
     },
     {
       "model_name": "google/gemini-3.1-pro-preview",
-      "aliases": [],
+      "aliases": [
+        "gemini"
+      ],
       "context_window": 1048576,
       "supports_extended_thinking": true,
       "supports_json_mode": true,

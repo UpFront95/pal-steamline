@@ -127,6 +127,10 @@ class Calculator:
     def call_mcp_tool(self, tool_name: str, params: dict) -> tuple[Optional[str], Optional[str]]:
         """Call an MCP tool via standalone server"""
         try:
+            # Inject required working_directory_absolute_path for chat tool if missing
+            if tool_name == "chat" and "working_directory_absolute_path" not in params:
+                params = {**params, "working_directory_absolute_path": os.getcwd()}
+
             # Prepare the MCP initialization and tool call sequence
             init_request = {
                 "jsonrpc": "2.0",

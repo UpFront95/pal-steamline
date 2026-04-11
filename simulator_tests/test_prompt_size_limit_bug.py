@@ -82,7 +82,7 @@ protocol View {
                 {
                     "prompt": initial_prompt,
                     "absolute_file_paths": [test_file_path],
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -109,7 +109,7 @@ protocol View {
                     {
                         "prompt": prompt,
                         "continuation_id": continuation_id,
-                        "model": "flash",
+                        "model": "mimo",
                     },
                 )
 
@@ -132,7 +132,7 @@ protocol View {
                 {
                     "prompt": short_prompt,
                     "continuation_id": continuation_id,
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 

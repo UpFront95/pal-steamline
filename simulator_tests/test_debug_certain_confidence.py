@@ -190,7 +190,7 @@ This happens every time a user tries to log in. The error occurs in the password
                     "hypothesis": "Missing 'import hashlib' statement causes NameError when hash_password method executes",
                     "confidence": "certain",  # Use certain - should skip expert analysis
                     "continuation_id": continuation_id,
-                    "model": "flash",  # Specify model for consistency
+                    "model": "mimo",  # Specify model for consistency
                 },
             )
 
@@ -269,7 +269,7 @@ This happens every time a user tries to log in. The error occurs in the password
                     "relevant_context": ["Calculator.calculate_total", "Calculator.add_numbers"],
                     "hypothesis": "Method name typo in calculate_total() calls non-existent add_number() instead of add_numbers()",
                     "confidence": "certain",  # Should always be trusted
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -323,7 +323,7 @@ This happens every time a user tries to log in. The error occurs in the password
                     "relevant_context": ["process_data"],
                     "hypothesis": "Incorrect indentation causes IndentationError in process_data function",
                     "confidence": "high",  # Regular high confidence, NOT certain
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -429,7 +429,7 @@ This happens every time a user tries to log in. The error occurs in the password
                     "hypothesis": "IndentationError on line 8 due to incorrect indentation level - needs 4 more spaces",
                     "confidence": "certain",  # Final step with certain
                     "continuation_id": continuation_id,
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 

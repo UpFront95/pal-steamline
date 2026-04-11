@@ -179,7 +179,7 @@ if __name__ == "__main__":
                 {
                     "prompt": "Please analyze this math functions file and explain what it does.",
                     "absolute_file_paths": [file1_path],
-                    "model": "flash",
+                    "model": "mimo",
                     "temperature": 0.7,
                 },
             )
@@ -200,11 +200,11 @@ if __name__ == "__main__":
 
             # Step 2: Different tool continuing same conversation - should build conversation history
             self.logger.info(
-                "  Step 2: Analyze tool continuing chat conversation - checking conversation history buildup"
+                "  Step 2: Debug tool continuing chat conversation - checking conversation history buildup"
             )
 
             response2, continuation_id2 = self.call_mcp_tool(
-                "analyze",
+                "debug",
                 {
                     "step": "Analyze the performance implications of these recursive functions.",
                     "step_number": 1,
@@ -213,7 +213,7 @@ if __name__ == "__main__":
                     "findings": "Continuing from chat conversation to analyze performance implications of recursive functions.",
                     "relevant_files": [file1_path],
                     "continuation_id": continuation_id1,  # Continue the chat conversation
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -250,7 +250,7 @@ if __name__ == "__main__":
                     "prompt": "Now compare the math functions with this calculator class. How do they differ in approach?",
                     "absolute_file_paths": [file1_path, file2_path],
                     "continuation_id": continuation_id2,  # Continue the conversation from step 2
-                    "model": "flash",
+                    "model": "mimo",
                     "temperature": 0.7,
                 },
             )

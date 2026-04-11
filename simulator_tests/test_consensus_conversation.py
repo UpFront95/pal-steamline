@@ -57,7 +57,7 @@ class TestConsensusConversation(ConversationBaseTest):
                 {
                     "prompt": "Please use low thinking mode. I'm working on a web application and need advice on authentication. Can you look at this code?",
                     "absolute_file_paths": [self.test_files["python"]],
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -85,18 +85,18 @@ class TestConsensusConversation(ConversationBaseTest):
                     "findings": "Initial analysis needed on OAuth2 vs session-based authentication approaches for our web application",
                     "models": [
                         {
-                            "model": "flash",
+                            "model": "mimo",
                             "stance": "for",
                             "stance_prompt": "Focus on OAuth2 benefits: security, scalability, and industry standards.",
                         },
                         {
-                            "model": "flash",
+                            "model": "mimo",
                             "stance": "against",
                             "stance_prompt": "Focus on OAuth2 complexity: implementation challenges and simpler alternatives.",
                         },
                     ],
                     "continuation_id": continuation_id,
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -213,7 +213,7 @@ class TestConsensusConversation(ConversationBaseTest):
                 {
                     "prompt": "Based on our consensus discussion about authentication, can you summarize the key points?",
                     "continuation_id": continuation_id,
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
