@@ -18,7 +18,6 @@ from mcp.types import TextContent
 
 if TYPE_CHECKING:
     from providers.shared import ModelCapabilities
-    from tools.models import ToolModelCategory
 
 from config import MCP_PROMPT_SIZE_LIMIT
 from providers import ModelProvider, ModelProviderRegistry
@@ -57,7 +56,7 @@ class BaseTool(ABC):
     1. FILE DEDUPLICATION WITH NEWEST-FIRST PRIORITY:
        - When same file appears in multiple conversation turns, newest reference wins
        - Prevents redundant file embedding while preserving most recent file state
-       - Cross-tool file tracking ensures consistent behavior across analyze → codereview → debug
+       - Cross-tool file tracking ensures consistent behavior across codereview → debug
 
     2. CONVERSATION CONTEXT INTEGRATION:
        - All tools receive enhanced prompts with conversation history via reconstruct_thread_context()
@@ -122,7 +121,7 @@ class BaseTool(ABC):
         unique across all registered tools.
 
         Returns:
-            str: The tool's unique name (e.g., "review_code", "analyze")
+            str: The tool's unique name (e.g., "chat", "debug", "codereview")
         """
         pass
 
@@ -219,38 +218,13 @@ class BaseTool(ABC):
         """
         Return whether this tool requires AI model access.
 
-        Tools that override execute() to do pure data processing (like planner)
+        Tools that override execute() to do pure data processing (like challenge, listmodels)
         should return False to skip model resolution at the MCP boundary.
 
         Returns:
             bool: True if tool needs AI model access (default), False for data-only tools
         """
         return True
-
-    def is_effective_auto_mode(self) -> bool:
-        """
-        Check if we're in effective auto mode for schema generation.
-
-        This determines whether the model parameter should be required in the tool schema.
-        Used at initialization time when schemas are generated.
-
-        Returns:
-            bool: True if model parameter should be required in the schema
-        """
-        from config import DEFAULT_MODEL
-        from providers.registry import ModelProviderRegistry
-
-        # Case 1: Explicit auto mode
-        if DEFAULT_MODEL.lower() == "auto":
-            return True
-
-        # Case 2: Model not available (fallback to auto mode)
-        if DEFAULT_MODEL.lower() != "auto":
-            provider = ModelProviderRegistry.get_provider_for_model(DEFAULT_MODEL)
-            if not provider:
-                return True
-
-        return False
 
     def _should_require_model_selection(self, model_name: str) -> bool:
         """
@@ -265,11 +239,6 @@ class BaseTool(ABC):
         Returns:
             bool: True if we should require model selection
         """
-        # Case 1: Model is explicitly "auto"
-        if model_name.lower() == "auto":
-            return True
-
-        # Case 2: Requested model is not available
         from providers.registry import ModelProviderRegistry
 
         provider = ModelProviderRegistry.get_provider_for_model(model_name)
@@ -333,21 +302,6 @@ class BaseTool(ABC):
 
         return unique_models
 
-    def _format_available_models_list(self) -> str:
-        """Return a human-friendly list of available models or guidance when none found."""
-
-        summaries, total, has_restrictions = self._get_ranked_model_summaries()
-        if not summaries:
-            return (
-                "No models detected. Configure provider credentials or set DEFAULT_MODEL to a valid option. "
-                "If the user requested a specific model, respond with this notice instead of substituting another model."
-            )
-        display = "; ".join(summaries)
-        remainder = total - len(summaries)
-        if remainder > 0:
-            display = f"{display}; +{remainder} more (use the `listmodels` tool for the full roster)"
-        return display
-
     @staticmethod
     def _format_context_window(tokens: int) -> Optional[str]:
         """Convert a raw context window into a short display string."""
@@ -367,30 +321,6 @@ class BaseTool(ABC):
 
         return f"{tokens} ctx"
 
-    def _collect_ranked_capabilities(self) -> list[tuple[int, str, Any]]:
-        """Gather available model capabilities sorted by capability rank."""
-
-        from providers.registry import ModelProviderRegistry
-
-        ranked: list[tuple[int, str, Any]] = []
-        available = ModelProviderRegistry.get_available_models(respect_restrictions=True)
-
-        for model_name, provider_type in available.items():
-            provider = ModelProviderRegistry.get_provider(provider_type)
-            if not provider:
-                continue
-
-            try:
-                capabilities = provider.get_capabilities(model_name)
-            except ValueError:
-                continue
-
-            rank = capabilities.get_effective_capability_rank()
-            ranked.append((rank, model_name, capabilities))
-
-        ranked.sort(key=lambda item: (-item[0], item[1]))
-        return ranked
-
     @staticmethod
     def _normalize_model_identifier(name: str) -> str:
         """Normalize model names for deduplication across providers."""
@@ -401,71 +331,6 @@ class BaseTool(ABC):
         if "/" in normalized:
             normalized = normalized.split("/", 1)[-1]
         return normalized
-
-    def _get_ranked_model_summaries(self, limit: int = 5) -> tuple[list[str], int, bool]:
-        """Return formatted, ranked model summaries and restriction status."""
-
-        ranked = self._collect_ranked_capabilities()
-
-        # Build allowlist map (provider -> lowercase names) when restrictions are active
-        allowed_map: dict[Any, set[str]] = {}
-        try:
-            from utils.model_restrictions import get_restriction_service
-
-            restriction_service = get_restriction_service()
-            if restriction_service:
-                from providers.shared import ProviderType
-
-                for provider_type in ProviderType:
-                    allowed = restriction_service.get_allowed_models(provider_type)
-                    if allowed:
-                        allowed_map[provider_type] = {name.lower() for name in allowed if name}
-        except Exception:
-            allowed_map = {}
-
-        filtered: list[tuple[int, str, Any]] = []
-        seen_normalized: set[str] = set()
-
-        for rank, model_name, capabilities in ranked:
-            canonical_name = getattr(capabilities, "model_name", model_name)
-            canonical_lower = canonical_name.lower()
-            alias_lower = model_name.lower()
-            provider_type = getattr(capabilities, "provider", None)
-
-            if allowed_map:
-                if provider_type not in allowed_map:
-                    continue
-                allowed_set = allowed_map[provider_type]
-                if canonical_lower not in allowed_set and alias_lower not in allowed_set:
-                    continue
-
-            normalized = self._normalize_model_identifier(canonical_name)
-            if normalized in seen_normalized:
-                continue
-
-            seen_normalized.add(normalized)
-            filtered.append((rank, canonical_name, capabilities))
-
-        summaries: list[str] = []
-        for rank, canonical_name, capabilities in filtered[:limit]:
-            details: list[str] = []
-
-            context_str = self._format_context_window(capabilities.context_window)
-            if context_str:
-                details.append(context_str)
-
-            if capabilities.supports_extended_thinking:
-                details.append("thinking")
-
-            if capabilities.allow_code_generation:
-                details.append("code-gen")
-
-            base = f"{canonical_name} (score {rank}"
-            if details:
-                base = f"{base}, {', '.join(details)}"
-            summaries.append(f"{base})")
-
-        return summaries, len(filtered), bool(allowed_map)
 
     def _get_restriction_note(self) -> Optional[str]:
         """Return a string describing active per-provider allowlists, if any."""
@@ -498,93 +363,27 @@ class BaseTool(ABC):
     def _build_model_unavailable_message(self, model_name: str) -> str:
         """Compose a consistent error message for unavailable model scenarios."""
 
-        tool_category = self.get_model_category()
-        suggested_model = ModelProviderRegistry.get_preferred_fallback_model(tool_category)
-        available_models_text = self._format_available_models_list()
-
         return (
             f"Model '{model_name}' is not available with current API keys. "
-            f"Available models: {available_models_text}. "
-            f"Suggested model for {self.get_name()}: '{suggested_model}' "
-            f"(category: {tool_category.value}). If the user explicitly requested a model, you MUST use that exact name or report this error back—do not substitute another model."
-        )
-
-    def _build_auto_mode_required_message(self) -> str:
-        """Compose the auto-mode prompt when an explicit model selection is required."""
-
-        tool_category = self.get_model_category()
-        suggested_model = ModelProviderRegistry.get_preferred_fallback_model(tool_category)
-        available_models_text = self._format_available_models_list()
-
-        return (
-            "Model parameter is required in auto mode. "
-            f"Available models: {available_models_text}. "
-            f"Suggested model for {self.get_name()}: '{suggested_model}' "
-            f"(category: {tool_category.value}). When the user names a model, relay that exact name—never swap in another option."
+            "Use the `listmodels` tool to see available models. "
+            "If the user explicitly requested a model, you MUST report this error back—do not substitute another model."
         )
 
     def get_model_field_schema(self) -> dict[str, Any]:
         """
-        Generate the model field schema based on auto mode configuration.
-
-        When auto mode is enabled, the model parameter becomes required
-        and includes detailed descriptions of each model's capabilities.
+        Generate the model field schema.
 
         Returns:
             Dict containing the model field JSON schema
         """
-
         from config import DEFAULT_MODEL
-
-        # Use the centralized effective auto mode check
-        if self.is_effective_auto_mode():
-            description = (
-                "Currently in auto model selection mode. CRITICAL: When the user names a model, you MUST use that exact name unless the server rejects it. "
-                "If no model is provided, you may use the `listmodels` tool to review options and select an appropriate match."
-            )
-            summaries, total, restricted = self._get_ranked_model_summaries()
-            remainder = max(0, total - len(summaries))
-            if summaries:
-                top_line = "; ".join(summaries)
-                if remainder > 0:
-                    label = "Allowed models" if restricted else "Top models"
-                    top_line = f"{label}: {top_line}; +{remainder} more via `listmodels`."
-                else:
-                    label = "Allowed models" if restricted else "Top models"
-                    top_line = f"{label}: {top_line}."
-                description = f"{description} {top_line}"
-
-            restriction_note = self._get_restriction_note()
-            if restriction_note and (remainder > 0 or not summaries):
-                description = f"{description} {restriction_note}."
-            return {
-                "type": "string",
-                "description": description,
-            }
-
-        description = (
-            f"The default model is '{DEFAULT_MODEL}'. Override only when the user explicitly requests a different model, and use that exact name. "
-            "If the requested model fails validation, surface the server error instead of substituting another model. When unsure, use the `listmodels` tool for details."
-        )
-        summaries, total, restricted = self._get_ranked_model_summaries()
-        remainder = max(0, total - len(summaries))
-        if summaries:
-            top_line = "; ".join(summaries)
-            if remainder > 0:
-                label = "Allowed models" if restricted else "Preferred alternatives"
-                top_line = f"{label}: {top_line}; +{remainder} more via `listmodels`."
-            else:
-                label = "Allowed models" if restricted else "Preferred alternatives"
-                top_line = f"{label}: {top_line}."
-            description = f"{description} {top_line}"
-
-        restriction_note = self._get_restriction_note()
-        if restriction_note and (remainder > 0 or not summaries):
-            description = f"{description} {restriction_note}."
 
         return {
             "type": "string",
-            "description": description,
+            "description": (
+                f"Model name. Defaults to '{DEFAULT_MODEL}'. Override only when the user "
+                "explicitly names a different model, and use that exact name."
+            ),
         }
 
     def get_default_temperature(self) -> float:
@@ -622,21 +421,6 @@ class BaseTool(ABC):
             str: One of "minimal", "low", "medium", "high", "max"
         """
         return "medium"  # Default to medium thinking for better reasoning
-
-    def get_model_category(self) -> "ToolModelCategory":
-        """
-        Return the model category for this tool.
-
-        Model category influences which model is selected in auto mode.
-        Override to specify whether your tool needs extended reasoning,
-        fast response, or balanced capabilities.
-
-        Returns:
-            ToolModelCategory: Category that influences model selection
-        """
-        from tools.models import ToolModelCategory
-
-        return ToolModelCategory.BALANCED
 
     @abstractmethod
     def get_request_model(self):
@@ -1280,32 +1064,7 @@ When recommending searches, be specific about what information you need and why 
         # for backward compatibility during the migration
         raise NotImplementedError("Subclasses must implement execute method")
 
-    def _should_require_model_selection(self, model_name: str) -> bool:
-        """
-        Check if we should require the CLI to select a model at runtime.
-
-        This is called during request execution to determine if we need
-        to return an error asking the CLI to provide a model parameter.
-
-        Args:
-            model_name: The model name from the request or DEFAULT_MODEL
-
-        Returns:
-            bool: True if we should require model selection
-        """
-        # Case 1: Model is explicitly "auto"
-        if model_name.lower() == "auto":
-            return True
-
-        # Case 2: Requested model is not available
-        from providers.registry import ModelProviderRegistry
-
-        provider = ModelProviderRegistry.get_provider_for_model(model_name)
-        if not provider:
-            logger.warning(f"Model '{model_name}' is not available with current API keys. Requiring model selection.")
-            return True
-
-        return False
+    # (duplicate _should_require_model_selection removed — see base class method above)
 
     def _get_available_models(self) -> list[str]:
         """
@@ -1395,14 +1154,9 @@ When recommending searches, be specific about what information you need and why 
                 model_name = DEFAULT_MODEL
             logger.debug(f"Using fallback model resolution for '{model_name}' (test mode)")
 
-            # For tests: Check if we should require model selection (auto mode)
+            # For tests: Check if we should require model selection
             if self._should_require_model_selection(model_name):
-                # Build error message based on why selection is required
-                if model_name.lower() == "auto":
-                    error_message = self._build_auto_mode_required_message()
-                else:
-                    error_message = self._build_model_unavailable_message(model_name)
-                raise ValueError(error_message)
+                raise ValueError(self._build_model_unavailable_message(model_name))
 
             # Create model context for tests
             from utils.model_context import ModelContext

@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Callable, Optional
 
 if TYPE_CHECKING:
-    from tools.models import ToolModelCategory
+    pass
 
 from .shared import ModelCapabilities, ModelResponse, ProviderType
 
@@ -94,7 +94,7 @@ class ModelProvider(ABC):
             return []
 
         items = list(model_configs.items())
-        items.sort(key=lambda item: (-item[1].get_effective_capability_rank(), item[0]))
+        items.sort(key=lambda item: item[0])
         self._sorted_capabilities_cache = items
         return list(items)
 
@@ -340,11 +340,6 @@ class ModelProvider(ABC):
     # ------------------------------------------------------------------
     # Preference / registry hooks
     # ------------------------------------------------------------------
-    def get_preferred_model(self, category: "ToolModelCategory", allowed_models: list[str]) -> Optional[str]:
-        """Get the preferred model from this provider for a given category."""
-
-        return None
-
     def get_model_registry(self) -> Optional[dict[str, Any]]:
         """Return the model registry backing this provider, if any."""
 

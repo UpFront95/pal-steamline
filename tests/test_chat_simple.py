@@ -28,7 +28,6 @@ class TestChatTool:
         assert "collaborative thinking" in self.tool.get_description()
         assert self.tool.get_system_prompt() is not None
         assert self.tool.get_default_temperature() > 0
-        assert self.tool.get_model_category() is not None
 
     def test_schema_structure(self):
         """Test that schema has correct structure"""
@@ -91,14 +90,9 @@ class TestChatTool:
         assert schema["type"] == "string"
         assert "description" in schema
 
-        # Description should route callers to listmodels, regardless of mode
-        assert "listmodels" in schema["description"]
-        if self.tool.is_effective_auto_mode():
-            assert "auto mode" in schema["description"].lower()
-        else:
-            import config
+        import config
 
-            assert f"'{config.DEFAULT_MODEL}'" in schema["description"]
+        assert f"'{config.DEFAULT_MODEL}'" in schema["description"]
 
     @pytest.mark.asyncio
     async def test_prompt_preparation(self):

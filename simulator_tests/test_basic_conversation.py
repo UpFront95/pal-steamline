@@ -37,7 +37,7 @@ class BasicConversationTest(BaseSimulatorTest):
                 {
                     "prompt": "Please use low thinking mode. Analyze this Python code and explain what it does",
                     "absolute_file_paths": [self.test_files["python"]],
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -55,7 +55,7 @@ class BasicConversationTest(BaseSimulatorTest):
                     "prompt": "Please use low thinking mode. Now focus on the Calculator class specifically. Are there any improvements you'd suggest?",
                     "absolute_file_paths": [self.test_files["python"]],  # Same file - should be deduplicated
                     "continuation_id": continuation_id,
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -71,7 +71,7 @@ class BasicConversationTest(BaseSimulatorTest):
                     "prompt": "Please use low thinking mode. Now also analyze this configuration file and see how it might relate to the Python code",
                     "absolute_file_paths": [self.test_files["python"], self.test_files["config"]],
                     "continuation_id": continuation_id,
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 

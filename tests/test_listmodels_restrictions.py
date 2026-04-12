@@ -30,7 +30,6 @@ class TestListModelsRestrictions(unittest.TestCase):
                 provider=ProviderType.OPENROUTER,
                 model_name=canonical,
                 friendly_name=friendly,
-                intelligence_score=20,
                 description=friendly,
                 aliases=aliases or [],
                 context_window=context,

@@ -23,12 +23,8 @@ __author__ = "Fahad Gilani"
 # Model configuration
 # DEFAULT_MODEL: The default model used for all AI operations
 # This should be a stable, high-performance model suitable for code analysis
-# Can be overridden by setting DEFAULT_MODEL environment variable
-# Special value "auto" means Claude should pick the best model for each task
-DEFAULT_MODEL = get_env("DEFAULT_MODEL", "auto") or "auto"
-
-# Auto mode detection - when DEFAULT_MODEL is "auto", Claude picks the model
-IS_AUTO_MODE = DEFAULT_MODEL.lower() == "auto"
+# Override via DEFAULT_MODEL env var in your .env file (see .env.example)
+DEFAULT_MODEL = get_env("DEFAULT_MODEL", "gemini-2.5-flash") or "gemini-2.5-flash"
 
 # Each provider (gemini.py, openai.py, xai.py, dial.py, openrouter.py, custom.py, azure_openai.py)
 # defines its own MODEL_CAPABILITIES
@@ -67,6 +63,12 @@ TEMPERATURE_CREATIVE = 1.0  # For architecture, deep thinking
 # DEFAULT_THINKING_MODE_THINKDEEP: Default thinking depth for extended reasoning tool
 # Higher modes use more computational budget but provide deeper analysis
 DEFAULT_THINKING_MODE_THINKDEEP = get_env("DEFAULT_THINKING_MODE_THINKDEEP", "high") or "high"
+
+# Expert escalation model for workflow tools (thinkdeep, debug, codereview, consensus)
+# When set, the expert validation pass uses a different model than the primary analysis model.
+# Use an alias (mimo, gemini, gpt, qwen) or a full model name.
+# Set to empty string to disable cross-model escalation (expert uses same model as primary).
+EXPERT_MODEL = get_env("EXPERT_MODEL", "gemini")
 
 # Consensus Tool Defaults
 # Consensus timeout and rate limiting settings
@@ -132,7 +134,8 @@ def _calculate_mcp_prompt_limit() -> int:
             character_limit = input_token_budget * 4
             return character_limit
         except (ValueError, TypeError):
-            # Fall back to default if MAX_MCP_OUTPUT_TOKENS is not a valid integer
+            import logging
+            logging.warning(f"Invalid MAX_MCP_OUTPUT_TOKENS value '{max_tokens_str}', using default limit")
             pass
 
     # Default fallback: 60,000 characters (equivalent to ~15k tokens input of 25k total)
@@ -148,7 +151,7 @@ MCP_PROMPT_SIZE_LIMIT = _calculate_mcp_prompt_limit()
 # Examples: "fr-FR", "en-US", "zh-CN", "zh-TW", "ja-JP", "ko-KR", "es-ES",
 # "de-DE", "it-IT", "pt-PT"
 # Leave empty for default language (English)
-LOCALE = get_env("LOCALE", "") or ""
+LOCALE = get_env("LOCALE", "")
 
 # Threading configuration
 # Simple in-memory conversation threading for stateless MCP environment

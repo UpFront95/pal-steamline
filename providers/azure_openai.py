@@ -128,7 +128,10 @@ class AzureOpenAIProvider(OpenAICompatibleProvider):
                     )
 
             if overrides:
-                overrides = dict(overrides)
+                from dataclasses import fields as dc_fields
+
+                valid_fields = {f.name for f in dc_fields(ModelCapabilities)}
+                overrides = {k: v for k, v in dict(overrides).items() if k in valid_fields}
                 temp_override = overrides.get("temperature_constraint")
                 if isinstance(temp_override, str):
                     overrides["temperature_constraint"] = TemperatureConstraint.create(temp_override)

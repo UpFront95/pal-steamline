@@ -8,7 +8,7 @@ import tempfile
 
 import pytest
 
-from tools import AnalyzeTool, ChatTool, CodeReviewTool, ThinkDeepTool
+from tools import ChatTool, CodeReviewTool, ThinkDeepTool
 from tools.shared.exceptions import ToolExecutionError
 
 
@@ -206,27 +206,26 @@ class TestCodeReviewTool:
             ModelProviderRegistry._instance = None
 
 
-class TestAnalyzeTool:
-    """Test the analyze tool"""
+class TestDebugTool:
+    """Test the debug tool (used as canonical workflow-tool fixture)"""
 
     @pytest.fixture
     def tool(self):
-        return AnalyzeTool()
+        from tools.debug import DebugIssueTool
+        return DebugIssueTool()
 
     def test_tool_metadata(self, tool):
         """Test tool metadata"""
-        assert tool.get_name() == "analyze"
-        assert "code analysis" in tool.get_description()
+        assert tool.get_name() == "debug"
         assert tool.get_default_temperature() == 1.0
 
         schema = tool.get_input_schema()
-        # New workflow tool requires step-based fields
+        # Workflow tool requires step-based fields
         assert "step" in schema["properties"]
         assert "step_number" in schema["properties"]
         assert "total_steps" in schema["properties"]
         assert "next_step_required" in schema["properties"]
         assert "findings" in schema["properties"]
-        # Workflow tools use relevant_files instead of files
         assert "relevant_files" in schema["properties"]
 
         # Required fields for workflow
@@ -234,8 +233,8 @@ class TestAnalyzeTool:
         assert expected_required.issubset(set(schema["required"]))
 
     @pytest.mark.asyncio
-    async def test_execute_with_analysis_type(self, tool, tmp_path):
-        """Test execution with specific analysis type using real provider resolution"""
+    async def test_execute_step(self, tool, tmp_path):
+        """Test execution with workflow step using real provider resolution"""
         import importlib
         import os
 
@@ -251,7 +250,7 @@ class TestAnalyzeTool:
 
         try:
             # Set up environment for testing
-            os.environ["OPENAI_API_KEY"] = "sk-test-key-analyze-test-not-real"
+            os.environ["OPENAI_API_KEY"] = "sk-test-key-debug-test-not-real"
             os.environ["DEFAULT_MODEL"] = "o3-mini"
 
             # Clear other provider keys
@@ -270,14 +269,12 @@ class TestAnalyzeTool:
             try:
                 result = await tool.execute(
                     {
-                        "step": "Analyze the structure of this code",
+                        "step": "Investigate why the service fails to start",
                         "step_number": 1,
-                        "total_steps": 1,
-                        "next_step_required": False,
-                        "findings": "Initial analysis of code structure",
+                        "total_steps": 2,
+                        "next_step_required": True,
+                        "findings": "Initial investigation of the failure",
                         "relevant_files": [str(test_file)],
-                        "analysis_type": "architecture",
-                        "output_format": "summary",
                         "model": "o3-mini",
                     }
                 )
@@ -365,12 +362,13 @@ class TestAbsolutePathValidation:
         assert "code.py" in response["content"]
 
     @pytest.mark.asyncio
-    async def test_analyze_tool_accepts_absolute_paths(self):
-        """Test that analyze tool accepts absolute paths using real provider resolution"""
+    async def test_debug_tool_accepts_absolute_paths(self):
+        """Test that debug tool accepts absolute paths using real provider resolution"""
         import importlib
         import os
 
-        tool = AnalyzeTool()
+        from tools.debug import DebugIssueTool
+        tool = DebugIssueTool()
 
         # Save original environment
         original_env = {

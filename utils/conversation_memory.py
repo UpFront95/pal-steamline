@@ -31,8 +31,8 @@ with no memory of previous interactions. This module bridges that gap by:
    while maintaining full conversation context and file references
 
 CROSS-TOOL CONTINUATION:
-A conversation started with one tool (e.g., 'analyze') can be continued with
-any other tool (e.g., 'codereview', 'debug', 'chat') using the same continuation_id.
+A conversation started with one tool (e.g., 'debug') can be continued with
+any other tool (e.g., 'codereview', 'thinkdeep', 'chat') using the same continuation_id.
 The second tool will have access to:
 - All previous conversation turns and responses
 - File context from previous tools (preserved in conversation history)
@@ -82,8 +82,8 @@ This dual approach ensures optimal context preservation (newest-first) with natu
 conversation flow (chronological) for maximum LLM comprehension and relevance.
 
 USAGE EXAMPLE:
-1. Tool A creates thread: create_thread("analyze", request_data) → returns UUID
-2. Tool A adds response: add_turn(UUID, "assistant", response, files=[...], tool_name="analyze")
+1. Tool A creates thread: create_thread("debug", request_data) → returns UUID
+2. Tool A adds response: add_turn(UUID, "assistant", response, files=[...], tool_name="debug")
 3. Tool B continues thread: get_thread(UUID) → retrieves full context
 4. Tool B sees conversation history via build_conversation_history()
 5. Tool B adds its response: add_turn(UUID, "assistant", response, tool_name="codereview")
@@ -226,7 +226,7 @@ def create_thread(tool_name: str, initial_request: dict[str, Any], parent_thread
     or when Claude explicitly starts a multi-turn interaction.
 
     Args:
-        tool_name: Name of the tool creating this thread (e.g., "analyze", "chat")
+        tool_name: Name of the tool creating this thread (e.g., "debug", "chat")
         initial_request: Original request parameters (will be filtered for serialization)
         parent_thread_id: Optional parent thread ID for conversation chains
 
@@ -711,7 +711,7 @@ def build_conversation_history(context: ThreadContext, model_context=None, read_
 
         <turn_content>
 
-        --- Turn 2 (gemini-2.5-flash using analyze via google) ---
+        --- Turn 2 (gemini-2.5-flash using debug via google) ---
         Files used in this turn: file3.py
 
         <turn_content>
@@ -723,8 +723,8 @@ def build_conversation_history(context: ThreadContext, model_context=None, read_
 
     Cross-Tool Collaboration:
         This formatted history allows any tool to "see" both conversation context AND
-        file contents from previous tools, enabling seamless handoffs between analyze,
-        codereview, debug, chat, and other tools while maintaining complete context.
+        file contents from previous tools, enabling seamless handoffs between debug,
+        codereview, thinkdeep, chat, and other tools while maintaining complete context.
 
     Performance Characteristics:
         - O(n) file collection with newest-first prioritization
@@ -772,18 +772,11 @@ def build_conversation_history(context: ThreadContext, model_context=None, read_
 
     # Get model-specific token allocation early (needed for both files and turns)
     if model_context is None:
-        from config import DEFAULT_MODEL, IS_AUTO_MODE
+        from config import DEFAULT_MODEL
         from utils.model_context import ModelContext
 
-        # In auto mode, use an intelligent fallback model for token calculations
-        # since "auto" is not a real model with a provider
-        model_name = DEFAULT_MODEL
-        if IS_AUTO_MODE and model_name.lower() == "auto":
-            # Use intelligent fallback based on available API keys
-            from providers.registry import ModelProviderRegistry
-
-            model_name = ModelProviderRegistry.get_preferred_fallback_model()
-
+        stored_model = DEFAULT_MODEL
+        model_name = DEFAULT_MODEL if (not stored_model or stored_model.lower() == "auto") else stored_model
         model_context = ModelContext(model_name)
 
     token_allocation = model_context.calculate_token_allocation()

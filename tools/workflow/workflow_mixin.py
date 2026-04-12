@@ -7,7 +7,7 @@ perform multi-step work with structured findings and expert analysis.
 Key Components:
 - BaseWorkflowMixin: Abstract base class providing comprehensive workflow functionality
 
-The workflow pattern enables tools like debug, precommit, and codereview to perform
+The workflow pattern enables tools like debug, codereview, and thinkdeep to perform
 systematic multi-step work with pause/resume capabilities, context-aware file embedding,
 and seamless integration with external AI models for expert analysis.
 
@@ -212,7 +212,7 @@ class BaseWorkflowMixin(ABC):
         Override this to completely disable expert analysis for the tool.
 
         Returns True if the tool supports expert analysis (default).
-        Returns False if the tool is self-contained (like planner).
+        Returns False if the tool is self-contained.
         """
         return True
 
@@ -1333,7 +1333,7 @@ class BaseWorkflowMixin(ABC):
         else:
             # Tool doesn't require expert analysis or local work was sufficient
             if not self.requires_expert_analysis():
-                # Tool is self-contained (like planner)
+                # Tool is self-contained
                 response_data["status"] = f"{self.get_name()}_complete"
                 response_data["next_steps"] = (
                     f"{self.get_name().capitalize()} work complete. Present results to the user."
@@ -1455,6 +1455,28 @@ class BaseWorkflowMixin(ABC):
                     self._current_model_name = model_name
             else:
                 model_name = self._current_model_name
+
+            # Switch to dedicated expert model if configured and different from primary
+            from config import EXPERT_MODEL
+            from utils.model_context import ModelContext
+
+            if EXPERT_MODEL:
+                try:
+                    expert_context = ModelContext(EXPERT_MODEL)
+                    # Resolve canonical names to avoid alias vs full-name false-positives
+                    primary_canonical = self._model_context.capabilities.model_name
+                    expert_canonical = expert_context.capabilities.model_name
+                    if expert_canonical == primary_canonical:
+                        logger.warning(
+                            f"EXPERT_MODEL '{EXPERT_MODEL}' resolves to the same model as primary "
+                            f"('{primary_canonical}'). Expert validation will use the same model."
+                        )
+                    else:
+                        logger.info(f"Expert analysis: switching from '{primary_canonical}' to '{expert_canonical}'")
+                        model_name = EXPERT_MODEL
+                        self._model_context = expert_context
+                except Exception as e:
+                    logger.warning(f"Could not resolve EXPERT_MODEL '{EXPERT_MODEL}', using primary model: {e}")
 
             provider = self._model_context.provider
 

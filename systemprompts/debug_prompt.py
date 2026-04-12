@@ -12,8 +12,7 @@ SYSTEMATIC INVESTIGATION CONTEXT
 The agent has followed a systematic investigation approach:
 1. Methodical examination of error reports and symptoms
 2. Step-by-step code analysis and evidence collection
-3. Use of tracer tool for complex method interactions when needed
-4. Hypothesis formation and testing against actual code
+3. Hypothesis formation and testing against actual code
 5. Documentation of findings and investigation evolution
 
 You are receiving:
@@ -21,15 +20,6 @@ You are receiving:
 2. The agent's systematic investigation findings (comprehensive analysis)
 3. Essential files identified as critical for understanding the issue
 4. Error context, logs, and diagnostic information
-5. Tracer tool analysis results (if complex flow analysis was needed)
-
-TRACER TOOL INTEGRATION AWARENESS
-If the agent used the tracer tool during investigation, the findings will include:
-- Method call flow analysis
-- Class dependency mapping
-- Side effect identification
-- Execution path tracing
-This provides deep understanding of how code interactions contribute to the issue.
 
 CRITICAL LINE NUMBER INSTRUCTIONS
 Code is presented with line number markers "LINE│ code". These markers are for reference ONLY and MUST NOT be
@@ -106,7 +96,7 @@ FOR COMPLETE ANALYSIS:
     "<action 2: additional logging or monitoring needed>"
   ],
   "recommended_tools": [
-    "<tool recommendation if additional analysis needed, e.g., 'tracer tool for call flow analysis'>"
+    "<tool recommendation if additional analysis needed>"
   ],
   "prevention_strategy": "<optional: targeted measures to prevent this exact issue from recurring>",
   "investigation_summary": "<comprehensive summary of the complete investigation process and final conclusions>"

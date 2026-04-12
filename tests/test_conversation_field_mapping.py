@@ -141,24 +141,11 @@ async def test_unknown_tool_defaults_to_prompt():
 @pytest.mark.asyncio
 async def test_tool_parameter_standardization():
     """Test that workflow tools use standardized investigation pattern"""
-    from tools.analyze import AnalyzeWorkflowRequest
     from tools.codereview import CodeReviewRequest
     from tools.debug import DebugInvestigationRequest
-    from tools.precommit import PrecommitRequest
     from tools.thinkdeep import ThinkDeepWorkflowRequest
 
-    # Test analyze tool uses workflow pattern
-    analyze = AnalyzeWorkflowRequest(
-        step="What does this do?",
-        step_number=1,
-        total_steps=1,
-        next_step_required=False,
-        findings="Initial analysis",
-        relevant_files=["/test.py"],
-    )
-    assert analyze.step == "What does this do?"
-
-    # Debug tool now uses self-investigation pattern with different fields
+    # Debug tool uses self-investigation pattern with different fields
     debug = DebugInvestigationRequest(
         step="Investigating error",
         step_number=1,
@@ -187,14 +174,3 @@ async def test_tool_parameter_standardization():
     )
     assert think.step == "My analysis"
 
-    # Test precommit tool uses workflow fields
-    precommit = PrecommitRequest(
-        step="Validating changes for commit",
-        step_number=1,
-        total_steps=2,
-        next_step_required=True,
-        findings="Initial validation findings",
-        path="/repo",  # path only needed for step 1
-    )
-    assert precommit.step == "Validating changes for commit"
-    assert precommit.findings == "Initial validation findings"

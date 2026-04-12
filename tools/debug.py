@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from pydantic import Field
 
 if TYPE_CHECKING:
-    from tools.models import ToolModelCategory
+    pass
 
 from config import TEMPERATURE_ANALYTICAL
 from systemprompts import DEBUG_ISSUE_PROMPT
@@ -130,11 +130,6 @@ class DebugIssueTool(WorkflowTool):
     def get_default_temperature(self) -> float:
         return TEMPERATURE_ANALYTICAL
 
-    def get_model_category(self) -> "ToolModelCategory":
-        """Debug requires deep analysis and reasoning"""
-        from tools.models import ToolModelCategory
-
-        return ToolModelCategory.EXTENDED_REASONING
 
     def get_workflow_request_model(self):
         """Return the debug-specific request model."""
@@ -198,7 +193,7 @@ class DebugIssueTool(WorkflowTool):
         return WorkflowSchemaBuilder.build_schema(
             tool_specific_fields=debug_field_overrides,
             model_field_schema=self.get_model_field_schema(),
-            auto_mode=self.is_effective_auto_mode(),
+            auto_mode=False,
             tool_name=self.get_name(),
         )
 

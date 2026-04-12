@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING, Any
 from pydantic import Field, model_validator
 
 if TYPE_CHECKING:
-    from tools.models import ToolModelCategory
+    pass
 
 from mcp.types import TextContent
 
@@ -178,11 +178,6 @@ of the evidence, even when it strongly points in one direction.""",
     def get_default_temperature(self) -> float:
         return TEMPERATURE_ANALYTICAL
 
-    def get_model_category(self) -> ToolModelCategory:
-        """Consensus workflow requires extended reasoning"""
-        from tools.models import ToolModelCategory
-
-        return ToolModelCategory.EXTENDED_REASONING
 
     def get_workflow_request_model(self):
         """Return the consensus workflow-specific request model."""
@@ -257,31 +252,11 @@ of the evidence, even when it strongly points in one direction.""",
             },
         }
 
-        # Provide guidance on available models similar to single-model tools
+        # Provide guidance on available models
         model_description = (
             "When the user names a model, you MUST use that exact value or report the "
             "provider error—never swap in another option. Use the `listmodels` tool for the full roster."
         )
-
-        summaries, total, restricted = self._get_ranked_model_summaries()
-        remainder = max(0, total - len(summaries))
-        if summaries:
-            label = "Allowed models" if restricted else "Top models"
-            top_line = "; ".join(summaries)
-            if remainder > 0:
-                top_line = f"{label}: {top_line}; +{remainder} more via `listmodels`."
-            else:
-                top_line = f"{label}: {top_line}."
-            model_description = f"{model_description} {top_line}"
-        else:
-            model_description = (
-                f"{model_description} No models detected—configure provider credentials or use the `listmodels` tool "
-                "to inspect availability."
-            )
-
-        restriction_note = self._get_restriction_note()
-        if restriction_note and (remainder > 0 or not summaries):
-            model_description = f"{model_description} {restriction_note}."
 
         existing_models_desc = consensus_field_overrides["models"]["description"]
         consensus_field_overrides["models"]["description"] = f"{existing_models_desc} {model_description}"
@@ -303,7 +278,7 @@ of the evidence, even when it strongly points in one direction.""",
 
         requires_model = self.requires_model()
         model_field_schema = self.get_model_field_schema() if requires_model else None
-        auto_mode = self.is_effective_auto_mode() if requires_model else False
+        auto_mode = False
 
         return WorkflowSchemaBuilder.build_schema(
             tool_specific_fields=consensus_field_overrides,

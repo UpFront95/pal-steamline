@@ -38,7 +38,7 @@ class TestConsensusWorkflowAccurate(ConversationBaseTest):
             # ============================================================================
             # STEP 1: Claude analysis + first model consultation
             # ============================================================================
-            self.logger.info("=== STEP 1: Claude analysis + flash:for consultation ===")
+            self.logger.info("=== STEP 1: Claude analysis + mimo:for consultation ===")
 
             step1_response, continuation_id = self.call_mcp_tool_direct(
                 "consensus",
@@ -50,17 +50,17 @@ class TestConsensusWorkflowAccurate(ConversationBaseTest):
                     "findings": "Initial assessment of AI search feature proposal considering user needs, technical constraints, and business value.",
                     "models": [
                         {
-                            "model": "flash",
+                            "model": "mimo",
                             "stance": "for",
                             "stance_prompt": "Focus on innovation benefits and competitive advantages.",
                         },
                         {
-                            "model": "flash",
+                            "model": "mimo",
                             "stance": "against",
                             "stance_prompt": "Focus on implementation complexity and resource requirements.",
                         },
                     ],
-                    "model": "flash",  # Claude's execution model
+                    "model": "mimo",  # Claude's execution model
                 },
             )
 
@@ -97,18 +97,18 @@ class TestConsensusWorkflowAccurate(ConversationBaseTest):
                 return False
 
             model1_response = step1_data["model_response"]
-            if model1_response.get("model") != "flash" or model1_response.get("stance") != "for":
+            if model1_response.get("model")  != "mimo" or model1_response.get("stance") != "for":
                 self.logger.error(
-                    f"Expected flash:for model response in step 1, got: {model1_response.get('model')}:{model1_response.get('stance')}"
+                    f"Expected mimo:for model response in step 1, got: {model1_response.get('model')}:{model1_response.get('stance')}"
                 )
                 return False
 
-            self.logger.info("✓ Step 1 completed - Claude analysis + first model (flash:for) consulted")
+            self.logger.info("✓ Step 1 completed - Claude analysis + first model (mimo:for) consulted")
 
             # ============================================================================
             # STEP 2: Final step - second model consultation + synthesis
             # ============================================================================
-            self.logger.info("=== STEP 2: Final step - second model (flash:against) + synthesis ===")
+            self.logger.info("=== STEP 2: Final step - second model (mimo:against) + synthesis ===")
 
             step2_response, _ = self.call_mcp_tool_direct(
                 "consensus",
@@ -119,7 +119,7 @@ class TestConsensusWorkflowAccurate(ConversationBaseTest):
                     "next_step_required": False,  # Final step
                     "findings": "Analyzed first model's 'for' perspective. Now ready for second model's 'against' stance and final synthesis.",
                     "continuation_id": continuation_id,
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -136,7 +136,7 @@ class TestConsensusWorkflowAccurate(ConversationBaseTest):
                 self.logger.error(f"Expected status 'consensus_workflow_complete', got: {step2_data.get('status')}")
                 return False
 
-            if step2_data.get("model_consulted") != "flash":
+            if step2_data.get("model_consulted")  != "mimo":
                 self.logger.error(f"Expected model_consulted 'flash', got: {step2_data.get('model_consulted')}")
                 return False
 
@@ -150,7 +150,7 @@ class TestConsensusWorkflowAccurate(ConversationBaseTest):
                 return False
 
             model2_response = step2_data["model_response"]
-            if model2_response.get("model") != "flash":
+            if model2_response.get("model")  != "mimo":
                 self.logger.error(f"Expected model_response.model 'flash', got: {model2_response.get('model')}")
                 return False
 
@@ -163,7 +163,7 @@ class TestConsensusWorkflowAccurate(ConversationBaseTest):
                 self.logger.error("Expected complete_consensus data in final step")
                 return False
 
-            self.logger.info("✓ Step 2 completed - Second model (flash:against) consulted and consensus complete")
+            self.logger.info("✓ Step 2 completed - Second model (mimo:against) consulted and consensus complete")
             self.logger.info(f"Model 2 verdict preview: {model2_response.get('verdict', 'No verdict')[:100]}...")
 
             # Validate final consensus completion data
@@ -173,7 +173,7 @@ class TestConsensusWorkflowAccurate(ConversationBaseTest):
                 return False
 
             models_consulted = complete_consensus.get("models_consulted", [])
-            expected_models = ["flash:for", "flash:against"]
+            expected_models = ["mimo:for", "mimo:against"]
             if models_consulted != expected_models:
                 self.logger.error(f"Expected models {expected_models}, got: {models_consulted}")
                 return False
@@ -192,15 +192,15 @@ class TestConsensusWorkflowAccurate(ConversationBaseTest):
                 self.logger.error(f"Expected 2 accumulated responses, got: {len(accumulated)}")
                 return False
 
-            # Verify first response (flash:for)
+            # Verify first response (mimo:for)
             response1 = accumulated[0]
-            if response1.get("model") != "flash" or response1.get("stance") != "for":
+            if response1.get("model")  != "mimo" or response1.get("stance") != "for":
                 self.logger.error(f"First response incorrect: {response1}")
                 return False
 
-            # Verify second response (flash:against)
+            # Verify second response (mimo:against)
             response2 = accumulated[1]
-            if response2.get("model") != "flash" or response2.get("stance") != "against":
+            if response2.get("model")  != "mimo" or response2.get("stance") != "against":
                 self.logger.error(f"Second response incorrect: {response2}")
                 return False
 
@@ -210,8 +210,8 @@ class TestConsensusWorkflowAccurate(ConversationBaseTest):
             # SUCCESS
             # ============================================================================
             self.logger.info("🎉 CONSENSUS WORKFLOW TEST PASSED")
-            self.logger.info("✓ Step 1: Claude analysis + first model (flash:for) consulted")
-            self.logger.info("✓ Step 2: Second model (flash:against) consulted + synthesis completed")
+            self.logger.info("✓ Step 1: Claude analysis + first model (mimo:for) consulted")
+            self.logger.info("✓ Step 2: Second model (mimo:against) consulted + synthesis completed")
             self.logger.info("✓ All model responses accumulated correctly")
             self.logger.info("✓ New efficient workflow: 2 models = 2 steps (not 4)")
             self.logger.info("✓ Workflow progression validated at each step")

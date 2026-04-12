@@ -4,7 +4,7 @@ import logging
 from typing import TYPE_CHECKING, ClassVar, Optional
 
 if TYPE_CHECKING:
-    from tools.models import ToolModelCategory
+    pass
 
 from .openai_compatible import OpenAICompatibleProvider
 from .registries.xai import XAIModelRegistry
@@ -42,44 +42,6 @@ class XAIModelProvider(RegistryBackedProviderMixin, OpenAICompatibleProvider):
         """Get the provider type."""
         return ProviderType.XAI
 
-    def get_preferred_model(self, category: "ToolModelCategory", allowed_models: list[str]) -> Optional[str]:
-        """Get XAI's preferred model for a given category from allowed models.
-
-        Args:
-            category: The tool category requiring a model
-            allowed_models: Pre-filtered list of models allowed by restrictions
-
-        Returns:
-            Preferred model name or None
-        """
-        from tools.models import ToolModelCategory
-
-        if not allowed_models:
-            return None
-
-        if category == ToolModelCategory.EXTENDED_REASONING:
-            # Prefer Grok 4.1 Fast Reasoning for advanced tasks
-            if self.PRIMARY_MODEL in allowed_models:
-                return self.PRIMARY_MODEL
-            if self.FALLBACK_MODEL in allowed_models:
-                return self.FALLBACK_MODEL
-            return allowed_models[0]
-
-        elif category == ToolModelCategory.FAST_RESPONSE:
-            # Prefer Grok 4.1 Fast Reasoning for speed as well (latest fast SKU).
-            if self.PRIMARY_MODEL in allowed_models:
-                return self.PRIMARY_MODEL
-            if self.FALLBACK_MODEL in allowed_models:
-                return self.FALLBACK_MODEL
-            return allowed_models[0]
-
-        else:  # BALANCED or default
-            # Prefer Grok 4.1 Fast Reasoning for balanced use.
-            if self.PRIMARY_MODEL in allowed_models:
-                return self.PRIMARY_MODEL
-            if self.FALLBACK_MODEL in allowed_models:
-                return self.FALLBACK_MODEL
-            return allowed_models[0]
 
 
 # Load registry data at import time

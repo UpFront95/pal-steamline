@@ -9,8 +9,8 @@ Available simple tools:
 - chat: General chat and collaborative thinking
 - consensus: Multi-perspective analysis
 - listmodels: Model listing and information
-- testgen: Test generation
-- tracer: Execution tracing
+- challenge: Critical thinking and disagreement encouragement
+- apilookup: API documentation lookup
 """
 
 from .base import SimpleTool

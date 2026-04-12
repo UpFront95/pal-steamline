@@ -10,8 +10,8 @@ This test validates that:
 5. Thread relationships are properly maintained in Redis
 
 Test Flow:
-Chain A: chat -> analyze -> debug (3 linked threads)
-Chain B: chat -> analyze (2 linked threads, independent)
+Chain A: chat -> debug -> debug (3 linked threads)
+Chain B: chat -> debug (2 linked threads, independent)
 Chain A Branch: debug (continue from original chat, creating branch)
 
 This validates the conversation threading system's ability to:
@@ -73,7 +73,7 @@ class TestClass:
                 {
                     "prompt": "Analyze this test file and explain what it does.",
                     "absolute_file_paths": [test_file_path],
-                    "model": "flash",
+                    "model": "mimo",
                     "temperature": 0.7,
                 },
             )
@@ -85,11 +85,11 @@ class TestClass:
             self.logger.info(f"    ✅ Step A1 completed - thread_id: {continuation_id_a1[:8]}...")
             conversation_chains["A1"] = continuation_id_a1
 
-            # Step A2: Continue with analyze tool (creates thread_id_2 with parent=thread_id_1)
-            self.logger.info("    Step A2: Analyze tool - continue Chain A")
+            # Step A2: Continue with debug tool (creates thread_id_2 with parent=thread_id_1)
+            self.logger.info("    Step A2: Debug tool - continue Chain A")
 
             response_a2, continuation_id_a2 = self.call_mcp_tool(
-                "analyze",
+                "debug",
                 {
                     "step": "Now analyze the code quality and suggest improvements.",
                     "step_number": 1,
@@ -98,7 +98,7 @@ class TestClass:
                     "findings": "Continuing analysis from previous chat conversation to analyze code quality.",
                     "relevant_files": [test_file_path],
                     "continuation_id": continuation_id_a1,
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -117,7 +117,7 @@ class TestClass:
                 {
                     "prompt": "Thank you for the analysis. Can you summarize the key points?",
                     "continuation_id": continuation_id_a2,
-                    "model": "flash",
+                    "model": "mimo",
                     "temperature": 0.7,
                 },
             )
@@ -139,7 +139,7 @@ class TestClass:
                 "chat",
                 {
                     "prompt": "This is a completely new conversation. Please greet me.",
-                    "model": "flash",
+                    "model": "mimo",
                     "temperature": 0.7,
                 },
             )
@@ -152,10 +152,10 @@ class TestClass:
             conversation_chains["B1"] = continuation_id_b1
 
             # Step B2: Continue the new conversation (creates thread_id_5 with parent=thread_id_4)
-            self.logger.info("    Step B2: Analyze tool - continue Chain B")
+            self.logger.info("    Step B2: Debug tool - continue Chain B")
 
             response_b2, continuation_id_b2 = self.call_mcp_tool(
-                "analyze",
+                "debug",
                 {
                     "step": "Analyze the previous greeting and suggest improvements.",
                     "step_number": 1,
@@ -164,7 +164,7 @@ class TestClass:
                     "findings": "Analyzing the greeting from previous conversation and suggesting improvements.",
                     "relevant_files": [test_file_path],
                     "continuation_id": continuation_id_b1,
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -186,7 +186,7 @@ class TestClass:
                 {
                     "prompt": "Going back to our original discussion, I have another question about the code structure.",
                     "continuation_id": continuation_id_a1,  # Go back to original!
-                    "model": "flash",
+                    "model": "mimo",
                     "temperature": 0.7,
                 },
             )

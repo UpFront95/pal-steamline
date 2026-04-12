@@ -1,6 +1,5 @@
 """Dataclass describing the feature set of a model exposed by a provider."""
 
-import math
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -35,7 +34,6 @@ class ModelCapabilities:
     provider: ProviderType
     model_name: str
     friendly_name: str
-    intelligence_score: int = 10  # Human-curated 1–20 score reflecting general capability
     description: str = ""
     aliases: list[str] = field(default_factory=list)
 
@@ -76,39 +74,6 @@ class ModelCapabilities:
             return None
 
         return self.temperature_constraint.get_corrected_value(requested_temperature)
-
-    def get_effective_capability_rank(self) -> int:
-        """Calculate the runtime capability rank from intelligence + capabilities."""
-
-        # Human signal drives the baseline (1–20 → 5–100 after scaling)
-        base_intelligence = self.intelligence_score if self.intelligence_score else 10
-        base_intelligence = max(1, min(20, base_intelligence))
-        score = base_intelligence * 5
-
-        # Context window bonus with gentle diminishing returns
-        ctx_bonus = 0
-        ctx = max(self.context_window, 0)
-        if ctx > 0:
-            ctx_bonus = int(min(5, max(0.0, math.log10(ctx) - 3)))
-        score += ctx_bonus
-
-        # Output token capacity adds a small bonus
-        if self.max_output_tokens >= 65_000:
-            score += 2
-        elif self.max_output_tokens >= 32_000:
-            score += 1
-
-        # Feature-level boosts
-        if self.supports_extended_thinking:
-            score += 3
-        if self.supports_function_calling:
-            score += 1
-        if self.supports_json_mode:
-            score += 1
-        if self.supports_images:
-            score += 1
-
-        return max(0, min(100, score))
 
     @staticmethod
     def collect_aliases(model_configs: dict[str, "ModelCapabilities"]) -> dict[str, list[str]]:
@@ -153,11 +118,8 @@ class ModelCapabilities:
 
             formatted_names.append(formatted)
 
-        # Sort models by capability rank (descending) then by name for deterministic ordering
-        sorted_items = sorted(
-            model_configs.items(),
-            key=lambda item: (-item[1].get_effective_capability_rank(), item[0]),
-        )
+        # Sort models by name for deterministic ordering
+        sorted_items = sorted(model_configs.items(), key=lambda item: item[0])
 
         for base_model, capabilities in sorted_items:
             append_name(base_model)

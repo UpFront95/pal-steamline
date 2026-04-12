@@ -7,7 +7,7 @@ body:
     attributes:
       label: What problem is this feature trying to solve?
       description: "A clear and concise description of the problem or user need. Why is this change needed?"
-      placeholder: "Currently, I can only use one Gemini tool at a time. I want to be able to chain multiple tools together (e.g., analyze -> codereview -> thinkdeep) in a single workflow."
+      placeholder: "Currently, I can only use one tool at a time. I want to be able to chain multiple tools together (e.g., debug -> codereview -> thinkdeep) in a single workflow."
     validations:
       required: true
 
@@ -16,7 +16,7 @@ body:
     attributes:
       label: Describe the solution you'd like
       description: A clear and concise description of what you want to happen. How would it work from a user's perspective?
-      placeholder: "I'd like to be able to specify a workflow like 'analyze src/ then codereview the findings then use thinkdeep to suggest improvements' in a single command or configuration."
+      placeholder: "I'd like to be able to specify a workflow like 'debug the issue then codereview the findings then use thinkdeep to suggest improvements' in a single command or configuration."
     validations:
       required: true
 

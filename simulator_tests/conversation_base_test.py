@@ -36,6 +36,7 @@ EXAMPLE:
 
 import asyncio
 import json
+import os
 from typing import Optional
 
 from tools.shared.exceptions import ToolExecutionError
@@ -133,7 +134,11 @@ class ConversationBaseTest(BaseSimulatorTest):
 
             # Set up minimal model context if not provided
             if "model" not in params:
-                params["model"] = "flash"  # Use fast model for testing
+                params["model"] = "mimo"  # Use default model for testing
+
+            # Inject required field for chat tool
+            if tool_name == "chat" and "working_directory_absolute_path" not in params:
+                params["working_directory_absolute_path"] = os.getcwd()
 
             # Execute tool directly using asyncio
             loop = self._get_event_loop()

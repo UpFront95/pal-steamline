@@ -3,7 +3,6 @@ Tests for the debug tool using new WorkflowTool architecture.
 """
 
 from tools.debug import DebugInvestigationRequest, DebugIssueTool
-from tools.models import ToolModelCategory
 
 
 class TestDebugTool:
@@ -16,7 +15,6 @@ class TestDebugTool:
         assert tool.get_name() == "debug"
         assert "debugging and root cause analysis" in tool.get_description()
         assert tool.get_default_temperature() == 1.0  # TEMPERATURE_ANALYTICAL
-        assert tool.get_model_category() == ToolModelCategory.EXTENDED_REASONING
         assert tool.requires_model() is True
 
     def test_request_validation(self):
@@ -58,10 +56,6 @@ class TestDebugTool:
         assert schema["properties"]["next_step_required"]["type"] == "boolean"
         assert schema["properties"]["relevant_context"]["type"] == "array"
 
-    def test_model_category_for_debugging(self):
-        """Test that debug tool correctly identifies as extended reasoning category."""
-        tool = DebugIssueTool()
-        assert tool.get_model_category() == ToolModelCategory.EXTENDED_REASONING
 
     def test_relevant_context_handling(self):
         """Test that relevant_context is handled correctly."""

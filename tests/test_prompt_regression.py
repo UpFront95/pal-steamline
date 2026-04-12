@@ -32,8 +32,8 @@ import pytest
 # Load environment variables from .env file
 from dotenv import load_dotenv
 
-from tools.analyze import AnalyzeTool
 from tools.chat import ChatTool
+from tools.debug import DebugIssueTool
 from tools.codereview import CodeReviewTool
 from tools.thinkdeep import ThinkDeepTool
 
@@ -233,35 +233,20 @@ def main():
 
     @pytest.mark.integration
     @pytest.mark.asyncio
-    async def test_analyze_normal_question(self):
-        """Test analyze tool with normal question using real API."""
+    async def test_debug_normal_question(self):
+        """Test debug tool with normal question using real API."""
         skip_if_no_custom_api()
 
-        tool = AnalyzeTool()
+        tool = DebugIssueTool()
 
-        # Create a temporary Python file demonstrating MVC pattern
+        # Create a temporary Python file with a bug
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write(
                 """
-# Model
-class User:
-    def __init__(self, name, email):
-        self.name = name
-        self.email = email
-
-# View
-class UserView:
-    def display_user(self, user):
-        return f"User: {user.name} ({user.email})"
-
-# Controller
-class UserController:
-    def __init__(self, model, view):
-        self.model = model
-        self.view = view
-
-    def get_user_display(self):
-        return self.view.display_user(self.model)
+class UserService:
+    def get_user(self, user_id):
+        users = {1: "Alice", 2: "Bob"}
+        return users[user_id]  # KeyError if not found
 """
             )
             temp_file = f.name
@@ -269,13 +254,12 @@ class UserController:
         try:
             result = await tool.execute(
                 {
-                    "step": "What design patterns are used in this codebase?",
+                    "step": "Investigate why get_user raises KeyError for unknown IDs",
                     "step_number": 1,
-                    "total_steps": 1,
-                    "next_step_required": False,
-                    "findings": "Initial architectural analysis",
+                    "total_steps": 2,
+                    "next_step_required": True,
+                    "findings": "Initial investigation",
                     "relevant_files": [temp_file],
-                    "analysis_type": "architecture",
                     "model": "local-llama",
                 }
             )
@@ -283,10 +267,8 @@ class UserController:
             assert len(result) == 1
             output = json.loads(result[0].text)
             assert "status" in output
-            # Workflow analyze tool should process the analysis
             assert output["status"] in ["calling_expert_analysis", "pause_for_investigation"]
         finally:
-            # Clean up temp file
             os.unlink(temp_file)
 
     @pytest.mark.integration
@@ -368,7 +350,7 @@ class UserController:
         """Test handling of various file path formats using real API."""
         skip_if_no_custom_api()
 
-        tool = AnalyzeTool()
+        tool = DebugIssueTool()
 
         # Create multiple temporary files to test different path formats
         temp_files = []

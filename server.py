@@ -48,23 +48,13 @@ from config import (  # noqa: E402
     __version__,
 )
 from tools import (  # noqa: E402
-    AnalyzeTool,
-    ChallengeTool,
     ChatTool,
-    CLinkTool,
     CodeReviewTool,
     ConsensusTool,
     DebugIssueTool,
-    DocgenTool,
     ListModelsTool,
     LookupTool,
-    PlannerTool,
-    PrecommitTool,
-    RefactorTool,
-    SecauditTool,
-    TestGenTool,
     ThinkDeepTool,
-    TracerTool,
     VersionTool,
 )
 from tools.models import ToolOutput  # noqa: E402
@@ -260,20 +250,10 @@ def filter_disabled_tools(all_tools: dict[str, Any]) -> dict[str, Any]:
 # Tools are instantiated once and reused across requests (stateless design)
 TOOLS = {
     "chat": ChatTool(),  # Interactive development chat and brainstorming
-    "clink": CLinkTool(),  # Bridge requests to configured AI CLIs
     "thinkdeep": ThinkDeepTool(),  # Step-by-step deep thinking workflow with expert analysis
-    "planner": PlannerTool(),  # Interactive sequential planner using workflow architecture
     "consensus": ConsensusTool(),  # Step-by-step consensus workflow with multi-model analysis
     "codereview": CodeReviewTool(),  # Comprehensive step-by-step code review workflow with expert analysis
-    "precommit": PrecommitTool(),  # Step-by-step pre-commit validation workflow
     "debug": DebugIssueTool(),  # Root cause analysis and debugging assistance
-    "secaudit": SecauditTool(),  # Comprehensive security audit with OWASP Top 10 and compliance coverage
-    "docgen": DocgenTool(),  # Step-by-step documentation generation with complexity analysis
-    "analyze": AnalyzeTool(),  # General-purpose file and code analysis
-    "refactor": RefactorTool(),  # Step-by-step refactoring analysis workflow with expert validation
-    "tracer": TracerTool(),  # Static call path prediction and control flow analysis
-    "testgen": TestGenTool(),  # Step-by-step test generation workflow with expert validation
-    "challenge": ChallengeTool(),  # Critical challenge prompt wrapper to avoid automatic agreement
     "apilookup": LookupTool(),  # Quick web/API lookup instructions
     "listmodels": ListModelsTool(),  # List all available AI models by provider
     "version": VersionTool(),  # Display server version and system information
@@ -287,20 +267,10 @@ PROMPT_TEMPLATES = {
         "description": "Chat and brainstorm ideas",
         "template": "Chat with {model} about this",
     },
-    "clink": {
-        "name": "clink",
-        "description": "Forward a request to a configured AI CLI (e.g., Gemini)",
-        "template": "Use clink with cli_name=<cli> to run this prompt",
-    },
     "thinkdeep": {
         "name": "thinkdeeper",
         "description": "Step-by-step deep thinking workflow with expert analysis",
         "template": "Start comprehensive deep thinking workflow with {model} using {thinking_mode} thinking mode",
-    },
-    "planner": {
-        "name": "planner",
-        "description": "Break down complex ideas, problems, or projects into multiple manageable steps",
-        "template": "Create a detailed plan with {model}",
     },
     "consensus": {
         "name": "consensus",
@@ -312,60 +282,22 @@ PROMPT_TEMPLATES = {
         "description": "Perform a comprehensive code review",
         "template": "Perform a comprehensive code review with {model}",
     },
-    "precommit": {
-        "name": "precommit",
-        "description": "Step-by-step pre-commit validation workflow",
-        "template": "Start comprehensive pre-commit validation workflow with {model}",
-    },
     "debug": {
         "name": "debug",
         "description": "Debug an issue or error",
         "template": "Help debug this issue with {model}",
     },
-    "secaudit": {
-        "name": "secaudit",
-        "description": "Comprehensive security audit with OWASP Top 10 coverage",
-        "template": "Perform comprehensive security audit with {model}",
-    },
-    "docgen": {
-        "name": "docgen",
-        "description": "Generate comprehensive code documentation with complexity analysis",
-        "template": "Generate comprehensive documentation with {model}",
-    },
-    "analyze": {
-        "name": "analyze",
-        "description": "Analyze files and code structure",
-        "template": "Analyze these files with {model}",
-    },
     "refactor": {
         "name": "refactor",
         "description": "Refactor and improve code structure",
-        "template": "Refactor this code with {model}",
-    },
-    "tracer": {
-        "name": "tracer",
-        "description": "Trace code execution paths",
-        "template": "Generate tracer analysis with {model}",
-    },
-    "testgen": {
-        "name": "testgen",
-        "description": "Generate comprehensive tests",
-        "template": "Generate comprehensive tests with {model}",
-    },
-    "challenge": {
-        "name": "challenge",
-        "description": "Challenge a statement critically without automatic agreement",
-        "template": "Challenge this statement critically",
-    },
-    "apilookup": {
-        "name": "apilookup",
-        "description": "Look up the latest API or SDK information",
-        "template": "Lookup latest API docs for {model}",
-    },
-    "listmodels": {
-        "name": "listmodels",
-        "description": "List available AI models",
-        "template": "List all available models",
+        "template": (
+            "Use the codereview tool with mode='refactor' and model='mimo'. "
+            "refactor_type options: 'codesmells' (default — find anti-patterns and bad practices), "
+            "'decompose' (break up large functions/classes), "
+            "'modernize' (update to current language idioms), "
+            "'organization' (restructure file/module layout). "
+            "Pick the most appropriate refactor_type based on the user's request, or default to 'codesmells' if unspecified."
+        ),
     },
     "version": {
         "name": "version",
@@ -611,20 +543,6 @@ def configure_providers():
     else:
         logger.info("No model restrictions configured - all models allowed")
 
-    # Check if auto mode has any models available after restrictions
-    from config import IS_AUTO_MODE
-
-    if IS_AUTO_MODE:
-        available_models = ModelProviderRegistry.get_available_models(respect_restrictions=True)
-        if not available_models:
-            logger.error(
-                "Auto mode is enabled but no models are available after applying restrictions. "
-                "Please check your OPENAI_ALLOWED_MODELS and GOOGLE_ALLOWED_MODELS settings."
-            )
-            raise ValueError(
-                "No models available for auto mode due to restrictions. "
-                "Please adjust your allowed model settings or disable auto mode."
-            )
 
 
 @server.list_tools()
@@ -704,8 +622,8 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
     1. THREAD RESUMPTION: When continuation_id is present, it reconstructs complete conversation
        context from in-memory storage including conversation history and file references
 
-    2. CROSS-TOOL CONTINUATION: Enables seamless handoffs between different tools (analyze →
-       codereview → debug) while preserving full conversation context and file references
+    2. CROSS-TOOL CONTINUATION: Enables seamless handoffs between different tools (codereview →
+       debug → thinkdeep) while preserving full conversation context and file references
 
     3. CONTEXT INJECTION: Reconstructed conversation history is embedded into tool prompts
        using the dual prioritization strategy:
@@ -723,7 +641,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
     - Supporting conversation chains across different tool types
 
     Args:
-        name: The name of the tool to execute (e.g., "analyze", "chat", "codereview")
+        name: The name of the tool to execute (e.g., "chat", "debug", "codereview")
         arguments: Dictionary of arguments to pass to the tool, potentially including:
                   - continuation_id: UUID for conversation thread resumption
                   - files: File paths for analysis (subject to deduplication)
@@ -741,7 +659,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
         Exception: For tool-specific errors or execution failures
 
     Example Conversation Flow:
-        1. The CLI calls analyze tool with files → creates new thread
+        1. The CLI calls debug tool with files → creates new thread
         2. Thread ID returned in continuation offer
         3. The CLI continues with codereview tool + continuation_id → full context preserved
         4. Multiple tools can collaborate using same thread ID
@@ -803,35 +721,20 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
         # Consensus tool handles its own model configuration validation
         # No special handling needed at server level
 
-        # Skip model resolution for tools that don't require models (e.g., planner)
+        # Skip model resolution for tools that don't require models (e.g., challenge, listmodels)
         if not tool.requires_model():
             logger.debug(f"Tool {name} doesn't require model resolution - skipping model validation")
             # Execute tool directly without model context
             return await tool.execute(arguments)
 
-        # Handle auto mode at MCP boundary - resolve to specific model
-        if model_name.lower() == "auto":
-            # Get tool category to determine appropriate model
-            tool_category = tool.get_model_category()
-            resolved_model = ModelProviderRegistry.get_preferred_fallback_model(tool_category)
-            logger.info(f"Auto mode resolved to {resolved_model} for {name} (category: {tool_category.value})")
-            model_name = resolved_model
-            # Update arguments with resolved model
-            arguments["model"] = model_name
-
         # Validate model availability at MCP boundary
         provider = ModelProviderRegistry.get_provider_for_model(model_name)
         if not provider:
-            # Get list of available models for error message
             available_models = list(ModelProviderRegistry.get_available_models(respect_restrictions=True).keys())
-            tool_category = tool.get_model_category()
-            suggested_model = ModelProviderRegistry.get_preferred_fallback_model(tool_category)
-
             error_message = (
                 f"Model '{model_name}' is not available with current API keys. "
                 f"Available models: {', '.join(available_models)}. "
-                f"Suggested model for {name}: '{suggested_model}' "
-                f"(category: {tool_category.value})"
+                "Use the `listmodels` tool to see all available options."
             )
             error_output = ToolOutput(
                 status="error",
@@ -1038,10 +941,10 @@ async def reconstruct_thread_context(arguments: dict[str, Any]) -> dict[str, Any
         - Optimized file deduplication minimizes redundant content
 
     Example Usage Flow:
-        1. CLI: "Continue analyzing the security issues" + continuation_id
-        2. reconstruct_thread_context() loads previous analyze conversation
+        1. CLI: "Continue reviewing the security issues" + continuation_id
+        2. reconstruct_thread_context() loads previous conversation
         3. Debug tool receives full context including previous file analysis
-        4. Debug tool can reference specific findings from analyze tool
+        4. Debug tool can reference specific findings from codereview
         5. Natural cross-tool collaboration without context loss
     """
     from utils.conversation_memory import add_turn, build_conversation_history, get_thread
@@ -1119,19 +1022,8 @@ async def reconstruct_thread_context(arguments: dict[str, Any]) -> dict[str, Any
             except ValueError as exc:
                 from providers.registry import ModelProviderRegistry
 
-                fallback_model = None
-                if tool is not None:
-                    try:
-                        fallback_model = ModelProviderRegistry.get_preferred_fallback_model(tool.get_model_category())
-                    except Exception as fallback_exc:  # pragma: no cover - defensive log
-                        logger.debug(
-                            f"[CONVERSATION_DEBUG] Unable to resolve fallback model for {context.tool_name}: {fallback_exc}"
-                        )
-
-                if fallback_model is None:
-                    available_models = ModelProviderRegistry.get_available_model_names()
-                    if available_models:
-                        fallback_model = available_models[0]
+                available_models = ModelProviderRegistry.get_available_model_names()
+                fallback_model = available_models[0] if available_models else None
 
                 if fallback_model is None:
                     raise
@@ -1147,21 +1039,12 @@ async def reconstruct_thread_context(arguments: dict[str, Any]) -> dict[str, Any
 
         provider = ModelProviderRegistry.get_provider_for_model(model_context.model_name)
         if provider is None:
-            fallback_model = None
-            if tool is not None:
-                try:
-                    fallback_model = ModelProviderRegistry.get_preferred_fallback_model(tool.get_model_category())
-                except Exception as fallback_exc:  # pragma: no cover - defensive log
-                    logger.debug(
-                        f"[CONVERSATION_DEBUG] Unable to resolve fallback model for {context.tool_name}: {fallback_exc}"
-                    )
+            from config import DEFAULT_MODEL
 
-            if fallback_model is None:
-                available_models = ModelProviderRegistry.get_available_model_names()
-                if available_models:
-                    fallback_model = available_models[0]
+            available_models = ModelProviderRegistry.get_available_model_names()
+            fallback_model = available_models[0] if available_models else DEFAULT_MODEL
 
-            if fallback_model is None:
+            if not available_models:
                 raise ValueError(
                     f"Conversation continuation failed: model '{model_context.model_name}' is not available with current API keys."
                 )
@@ -1174,23 +1057,13 @@ async def reconstruct_thread_context(arguments: dict[str, Any]) -> dict[str, Any
             arguments["_resolved_model_name"] = fallback_model
     else:
         if model_context is None:
+            from config import DEFAULT_MODEL
             from providers.registry import ModelProviderRegistry
 
-            fallback_model = None
-            if tool is not None:
-                try:
-                    fallback_model = ModelProviderRegistry.get_preferred_fallback_model(tool.get_model_category())
-                except Exception as fallback_exc:  # pragma: no cover - defensive log
-                    logger.debug(
-                        f"[CONVERSATION_DEBUG] Unable to resolve fallback model for {context.tool_name}: {fallback_exc}"
-                    )
+            available_models = ModelProviderRegistry.get_available_model_names()
+            fallback_model = available_models[0] if available_models else DEFAULT_MODEL
 
-            if fallback_model is None:
-                available_models = ModelProviderRegistry.get_available_model_names()
-                if available_models:
-                    fallback_model = available_models[0]
-
-            if fallback_model is None:
+            if not available_models:
                 raise ValueError(
                     "Conversation continuation failed: no available models detected for context reconstruction."
                 )
@@ -1325,15 +1198,6 @@ async def handle_list_prompts() -> list[Prompt]:
                 )
             )
 
-    # Add special "continue" prompt
-    prompts.append(
-        Prompt(
-            name="continue",
-            description="Continue the previous conversation using the chat tool",
-            arguments=[],
-        )
-    )
-
     logger.debug(f"Returning {len(prompts)} prompts to MCP client")
     return prompts
 
@@ -1363,40 +1227,28 @@ async def handle_get_prompt(name: str, arguments: dict[str, Any] = None) -> GetP
     """
     logger.debug(f"MCP client requested prompt: {name} with args: {arguments}")
 
-    # Handle special "continue" case
-    if name.lower() == "continue":
-        # This is "/pal:continue" - use chat tool as default for continuation
-        tool_name = "chat"
+    # Find the corresponding tool by checking prompt names
+    tool_name = None
+    template_info = None
+
+    for t_name, t_info in PROMPT_TEMPLATES.items():
+        if t_info["name"] == name:
+            tool_name = t_name
+            template_info = t_info
+            break
+
+    # If not found, check if it's a direct tool name
+    if not tool_name and name in TOOLS:
+        tool_name = name
         template_info = {
-            "name": "continue",
-            "description": "Continue the previous conversation",
-            "template": "Continue the conversation",
+            "name": name,
+            "description": f"Use {name} tool",
+            "template": f"Use {name}",
         }
-        logger.debug("Using /pal:continue - defaulting to chat tool")
-    else:
-        # Find the corresponding tool by checking prompt names
-        tool_name = None
-        template_info = None
 
-        # Check if it's a known prompt name
-        for t_name, t_info in PROMPT_TEMPLATES.items():
-            if t_info["name"] == name:
-                tool_name = t_name
-                template_info = t_info
-                break
-
-        # If not found, check if it's a direct tool name
-        if not tool_name and name in TOOLS:
-            tool_name = name
-            template_info = {
-                "name": name,
-                "description": f"Use {name} tool",
-                "template": f"Use {name}",
-            }
-
-        if not tool_name:
-            logger.error(f"Unknown prompt requested: {name}")
-            raise ValueError(f"Unknown prompt: {name}")
+    if not tool_name:
+        logger.error(f"Unknown prompt requested: {name}")
+        raise ValueError(f"Unknown prompt: {name}")
 
     # Get the template
     template = template_info.get("template", f"Use {tool_name}")
@@ -1413,23 +1265,10 @@ async def handle_get_prompt(name: str, arguments: dict[str, Any] = None) -> GetP
 
     # Safely format the template
     try:
-        prompt_text = template.format(**prompt_args)
+        tool_instruction = template.format(**prompt_args)
     except KeyError as e:
         logger.warning(f"Missing template argument {e} for prompt {name}, using raw template")
-        prompt_text = template  # Fallback to raw template
-
-    # Generate tool call instruction
-    if name.lower() == "continue":
-        # "/pal:continue" case
-        tool_instruction = (
-            f"Continue the previous conversation using the {tool_name} tool. "
-            "CRITICAL: You MUST provide the continuation_id from the previous response to maintain conversation context. "
-            "Additionally, you should reuse the same model that was used in the previous exchange for consistency, unless "
-            "the user specifically asks for a different model name to be used."
-        )
-    else:
-        # Simple prompt case
-        tool_instruction = prompt_text
+        tool_instruction = template
 
     return GetPromptResult(
         prompt=Prompt(
@@ -1467,13 +1306,7 @@ async def main():
     # Note: MCP client info will be logged during the protocol handshake
     # (when handle_list_tools is called)
 
-    # Log current model mode
-    from config import IS_AUTO_MODE
-
-    if IS_AUTO_MODE:
-        logger.info("Model mode: AUTO (CLI will select the best model for each task)")
-    else:
-        logger.info(f"Model mode: Fixed model '{DEFAULT_MODEL}'")
+    logger.info(f"Model mode: Fixed model '{DEFAULT_MODEL}'")
 
     # Import here to avoid circular imports
     from config import DEFAULT_THINKING_MODE_THINKDEEP
@@ -1483,17 +1316,10 @@ async def main():
     logger.info(f"Available tools: {list(TOOLS.keys())}")
     logger.info("Server ready - waiting for tool requests...")
 
-    # Prepare dynamic instructions for the MCP client based on model mode
-    if IS_AUTO_MODE:
-        handshake_instructions = (
-            "When the user names a specific model (e.g. 'use chat with gpt5'), send that exact model in the tool call. "
-            "When no model is mentioned, first use the `listmodels` tool from PAL to obtain available models to choose the best one from."
-        )
-    else:
-        handshake_instructions = (
-            "When the user names a specific model (e.g. 'use chat with gpt5'), send that exact model in the tool call. "
-            f"When no model is mentioned, default to '{DEFAULT_MODEL}'."
-        )
+    handshake_instructions = (
+        "When the user names a specific model (e.g. 'use chat with gpt5'), send that exact model in the tool call. "
+        f"When no model is mentioned, default to '{DEFAULT_MODEL}'."
+    )
 
     # Run the server using stdio transport (standard input/output)
     # This allows the server to be launched by MCP clients as a subprocess

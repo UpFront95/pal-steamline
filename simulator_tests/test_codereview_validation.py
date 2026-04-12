@@ -293,7 +293,6 @@ class ConfigurationManager:
                         {"severity": "high", "description": "Using GET method for sensitive payment data"},
                         {"severity": "medium", "description": "Weak MD5 hashing algorithm used"},
                     ],
-                    "confidence": "high",
                     "continuation_id": continuation_id,
                 },
             )
@@ -377,7 +376,6 @@ class ConfigurationManager:
                     "issues_found": [
                         {"severity": "medium", "description": "Complex configuration hierarchy"},
                     ],
-                    "confidence": "low",
                     "continuation_id": continuation_id,
                 },
             )
@@ -404,7 +402,6 @@ class ConfigurationManager:
                         {"severity": "critical", "description": "Hardcoded secret key in source code"},
                         {"severity": "high", "description": "Over-engineered configuration system"},
                     ],
-                    "confidence": "high",
                     "continuation_id": continuation_id,
                 },
             )
@@ -476,9 +473,8 @@ class ConfigurationManager:
                         {"severity": "medium", "description": "Over-engineered hash generation"},
                         {"severity": "low", "description": "Poor error handling patterns"},
                     ],
-                    "confidence": "high",
                     "continuation_id": continuation_id,
-                    "model": "flash",  # Use flash for expert analysis
+                    "model": "mimo",  # Use flash for expert analysis
                 },
             )
 
@@ -567,7 +563,7 @@ class ConfigurationManager:
                         {"severity": "high", "description": "Performance bottleneck in payment history"},
                     ],
                     "review_validation_type": "internal",  # This should skip expert analysis
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -663,8 +659,7 @@ def validate_credit_card(card_number):
                     "relevant_files": [utils_file],  # This should be referenced, not embedded
                     "absolute_file_paths": [utils_file, validator_file],  # Required for step 1
                     "relevant_context": ["calculate_discount"],
-                    "confidence": "low",
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -706,8 +701,7 @@ def validate_credit_card(card_number):
                         {"severity": "low", "description": "Could add more comprehensive email validation"},
                         {"severity": "medium", "description": "Credit card validation logic could be more robust"},
                     ],
-                    "confidence": "medium",
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -771,9 +765,8 @@ def validate_credit_card(card_number):
                     "relevant_files": [self.payment_file],
                     "absolute_file_paths": files_to_review,
                     "relevant_context": [],
-                    "confidence": "low",
                     "review_type": "security",
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -809,8 +802,7 @@ def validate_credit_card(card_number):
                         {"severity": "critical", "description": "Hardcoded database password"},
                         {"severity": "critical", "description": "API key stored in plain text"},
                     ],
-                    "confidence": "medium",
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -850,8 +842,7 @@ def validate_credit_card(card_number):
                         {"severity": "medium", "description": "Over-engineered hash generation"},
                         {"severity": "medium", "description": "Unbounded failed_payments list"},
                     ],
-                    "confidence": "high",
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -888,8 +879,7 @@ def validate_credit_card(card_number):
                         {"severity": "high", "description": "Performance and security issues in payment processing"},
                         {"severity": "medium", "description": "Over-engineered architecture patterns"},
                     ],
-                    "confidence": "high",
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 

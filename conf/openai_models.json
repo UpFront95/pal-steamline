@@ -32,7 +32,6 @@
         "gpt5",
         "gpt-5"
       ],
-      "intelligence_score": 16,
       "description": "GPT-5 (400K context, 128K output) - Advanced model with reasoning support",
       "context_window": 400000,
       "max_output_tokens": 128000,
@@ -55,7 +54,6 @@
         "gpt5pro",
         "gpt5-pro"
       ],
-      "intelligence_score": 18,
       "description": "GPT-5.2 Pro (400K context, 272K output) - Very advanced, reasoning model",
       "context_window": 400000,
       "max_output_tokens": 272000,
@@ -80,7 +78,6 @@
         "gpt5mini",
         "mini"
       ],
-      "intelligence_score": 15,
       "description": "GPT-5-mini (400K context, 128K output) - Efficient variant with reasoning support",
       "context_window": 400000,
       "max_output_tokens": 128000,
@@ -102,7 +99,6 @@
         "gpt5-nano",
         "nano"
       ],
-      "intelligence_score": 13,
       "description": "GPT-5 nano (400K context) - Fastest, cheapest version of GPT-5 for summarization and classification tasks",
       "context_window": 400000,
       "max_output_tokens": 128000,
@@ -119,7 +115,6 @@
     {
       "model_name": "o3",
       "friendly_name": "OpenAI (O3)",
-      "intelligence_score": 14,
       "description": "Strong reasoning (200K context) - Logical problems, code generation, systematic analysis",
       "context_window": 200000,
       "max_output_tokens": 65536,
@@ -139,7 +134,6 @@
       "aliases": [
         "o3mini"
       ],
-      "intelligence_score": 12,
       "description": "Fast O3 variant (200K context) - Balanced performance/speed, moderate complexity",
       "context_window": 200000,
       "max_output_tokens": 65536,
@@ -159,7 +153,6 @@
       "aliases": [
         "o3pro"
       ],
-      "intelligence_score": 15,
       "description": "Professional-grade reasoning with advanced capabilities (200K context)",
       "context_window": 200000,
       "max_output_tokens": 65536,
@@ -180,7 +173,6 @@
       "aliases": [
         "o4mini"
       ],
-      "intelligence_score": 11,
       "description": "Latest reasoning model (200K context) - Optimized for shorter contexts, rapid reasoning",
       "context_window": 200000,
       "supports_extended_thinking": false,
@@ -199,7 +191,6 @@
       "aliases": [
         "gpt4.1"
       ],
-      "intelligence_score": 13,
       "description": "GPT-4.1 (1M context) - Advanced reasoning model with large context window",
       "context_window": 1000000,
       "max_output_tokens": 32768,
@@ -221,7 +212,6 @@
         "gpt-5-code",
         "gpt5-code"
       ],
-      "intelligence_score": 17,
       "description": "GPT-5 Codex (400K context) Specialized for coding, refactoring, and software architecture.",
       "context_window": 400000,
       "max_output_tokens": 128000,
@@ -246,7 +236,6 @@
         "gpt-5.1",
         "5.1"
       ],
-      "intelligence_score": 18,
       "description": "GPT-5.2 (400K context, 128K output) - Flagship reasoning model with configurable thinking effort and vision support.",
       "context_window": 400000,
       "max_output_tokens": 128000,
@@ -272,7 +261,6 @@
         "gpt-5.1-code",
         "codex-5.1"
       ],
-      "intelligence_score": 19,
       "description": "GPT-5.1 Codex (400K context, 128K output) - Agentic coding specialization available through the Responses API.",
       "context_window": 400000,
       "max_output_tokens": 128000,
@@ -298,7 +286,6 @@
         "codex-mini",
         "5.1-codex-mini"
       ],
-      "intelligence_score": 16,
       "description": "GPT-5.1 Codex mini (400K context, 128K output) - Cost-efficient Codex variant with streaming support.",
       "context_window": 400000,
       "max_output_tokens": 128000,

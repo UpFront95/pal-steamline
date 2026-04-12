@@ -284,8 +284,9 @@ class UserData:
             # Step 1: Start refactoring analysis
             self.logger.info("    1.1.1: Step 1 - Initial refactoring investigation")
             response1, continuation_id = self.call_mcp_tool(
-                "refactor",
+                "codereview",
                 {
+                    "mode": "refactor",
                     "step": "Starting refactoring analysis of the data processor code. Let me examine the code structure and identify opportunities for decomposition, code smell fixes, and modernization.",
                     "step_number": 1,
                     "total_steps": 4,
@@ -319,8 +320,9 @@ class UserData:
             # Step 2: Deeper analysis
             self.logger.info("    1.1.2: Step 2 - Detailed code analysis")
             response2, _ = self.call_mcp_tool(
-                "refactor",
+                "codereview",
                 {
+                    "mode": "refactor",
                     "step": "Now examining the specific methods and identifying concrete refactoring opportunities. Found multiple code smells and decomposition needs.",
                     "step_number": 2,
                     "total_steps": 4,
@@ -397,8 +399,9 @@ class UserData:
             # Start a new refactoring analysis for testing refocus behaviour
             self.logger.info("    1.2.1: Start refactoring analysis for refocus test")
             response1, continuation_id = self.call_mcp_tool(
-                "refactor",
+                "codereview",
                 {
+                    "mode": "refactor",
                     "step": "Analyzing code for decomposition opportunities",
                     "step_number": 1,
                     "total_steps": 4,
@@ -418,8 +421,9 @@ class UserData:
             # Step 2: Wrong direction
             self.logger.info("    1.2.2: Step 2 - Wrong refactoring focus")
             response2, _ = self.call_mcp_tool(
-                "refactor",
+                "codereview",
                 {
+                    "mode": "refactor",
                     "step": "Focusing on class decomposition strategies",
                     "step_number": 2,
                     "total_steps": 4,
@@ -439,8 +443,9 @@ class UserData:
             # Step 3: Backtrack from step 2
             self.logger.info("    1.2.3: Step 3 - Refocus on function decomposition")
             response3, _ = self.call_mcp_tool(
-                "refactor",
+                "codereview",
                 {
+                    "mode": "refactor",
                     "step": "Refocusing - the real decomposition opportunity is the god function process_everything. Let me analyze function-level refactoring instead.",
                     "step_number": 3,
                     "total_steps": 4,
@@ -494,8 +499,9 @@ class UserData:
                 # Start fresh if no continuation available
                 self.logger.info("    1.3.0: Starting fresh refactoring analysis")
                 response0, continuation_id = self.call_mcp_tool(
-                    "refactor",
+                    "codereview",
                     {
+                    "mode": "refactor",
                         "step": "Analyzing the data processor for comprehensive refactoring opportunities",
                         "step_number": 1,
                         "total_steps": 2,
@@ -515,8 +521,9 @@ class UserData:
             # Final step - trigger expert analysis
             self.logger.info("    1.3.1: Final step - complete refactoring analysis")
             response_final, _ = self.call_mcp_tool(
-                "refactor",
+                "codereview",
                 {
+                    "mode": "refactor",
                     "step": "Refactoring analysis complete. Identified comprehensive opportunities for code smell fixes, decomposition, and modernization across the DataProcessorManager class.",
                     "step_number": 2,
                     "total_steps": 2,
@@ -550,7 +557,7 @@ class UserData:
                     ],
                     "confidence": "partial",  # Use partial to trigger expert analysis
                     "continuation_id": continuation_id,
-                    "model": "flash",  # Use flash for expert analysis
+                    "model": "mimo",  # Use flash for expert analysis
                 },
             )
 
@@ -634,8 +641,9 @@ class UserData:
             # Test complete confidence - should skip expert analysis
             self.logger.info("    1.4.1: Complete confidence refactoring")
             response_certain, _ = self.call_mcp_tool(
-                "refactor",
+                "codereview",
                 {
+                    "mode": "refactor",
                     "step": "I have completed comprehensive refactoring analysis with 100% certainty: identified all major opportunities including decomposition, code smells, and modernization.",
                     "step_number": 1,
                     "total_steps": 1,
@@ -651,7 +659,7 @@ class UserData:
                     ],
                     "confidence": "complete",  # Complete confidence should skip expert analysis
                     "refactor_type": "codesmells",
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -739,8 +747,9 @@ class DataContainer:
             # Test 1: New conversation, intermediate step - should only reference files
             self.logger.info("    1.5.1: New conversation intermediate step (should reference only)")
             response1, continuation_id = self.call_mcp_tool(
-                "refactor",
+                "codereview",
                 {
+                    "mode": "refactor",
                     "step": "Starting refactoring analysis of utility modules",
                     "step_number": 1,
                     "total_steps": 3,
@@ -751,7 +760,7 @@ class DataContainer:
                     "relevant_context": ["calculate_total"],
                     "confidence": "incomplete",
                     "refactor_type": "codesmells",
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -778,8 +787,9 @@ class DataContainer:
             # Test 2: Final step - should embed files for expert analysis
             self.logger.info("    1.5.2: Final step (should embed files)")
             response2, _ = self.call_mcp_tool(
-                "refactor",
+                "codereview",
                 {
+                    "mode": "refactor",
                     "step": "Refactoring analysis complete - identified all opportunities",
                     "step_number": 3,
                     "total_steps": 3,
@@ -795,7 +805,7 @@ class DataContainer:
                         {"type": "codesmells", "severity": "low", "description": "Duplicate formatting logic"},
                     ],
                     "confidence": "partial",  # Use partial to trigger expert analysis
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -848,8 +858,9 @@ class DataContainer:
             # Test decompose type
             self.logger.info("    1.6.1: Testing decompose refactor type")
             response_decompose, _ = self.call_mcp_tool(
-                "refactor",
+                "codereview",
                 {
+                    "mode": "refactor",
                     "step": "Analyzing code for decomposition opportunities in large functions and classes",
                     "step_number": 1,
                     "total_steps": 1,
@@ -872,7 +883,7 @@ class DataContainer:
                     ],
                     "confidence": "complete",
                     "refactor_type": "decompose",
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 
@@ -894,8 +905,9 @@ class DataContainer:
             # Test modernize type
             self.logger.info("    1.6.2: Testing modernize refactor type")
             response_modernize, _ = self.call_mcp_tool(
-                "refactor",
+                "codereview",
                 {
+                    "mode": "refactor",
                     "step": "Analyzing code for modernization opportunities using newer Python features",
                     "step_number": 1,
                     "total_steps": 1,
@@ -919,7 +931,7 @@ class DataContainer:
                     ],
                     "confidence": "complete",
                     "refactor_type": "modernize",
-                    "model": "flash",
+                    "model": "mimo",
                 },
             )
 

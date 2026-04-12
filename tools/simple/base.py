@@ -154,7 +154,7 @@ class SimpleTool(BaseTool):
             tool_specific_fields=self.get_tool_fields(),
             required_fields=required_fields,
             model_field_schema=self.get_model_field_schema(),
-            auto_mode=self.is_effective_auto_mode(),
+            auto_mode=False,
         )
 
     def get_request_model(self):

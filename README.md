@@ -38,15 +38,48 @@ Your CLI always stays in control but gets perspectives from the best AI for each
 <details>
 <summary><b>Reasons to Use PAL MCP</b></summary>
 
-1. **Multi-Model Orchestration** - Coordinate Gemini Pro, O3, GPT-5, Grok, and local models to get the best analysis for each task
-2. **Context Revival Magic** - Even after your CLI's context resets, continue conversations seamlessly
-3. **Guided Workflows** - Systematic investigation phases prevent rushed analysis
-4. **Extended Context Windows** - Delegate to Gemini (1M tokens) or O3 (200K tokens) for massive codebases
-5. **True Conversation Continuity** - Full context flows across tools and models
-6. **Professional Code Reviews** - Multi-pass analysis with severity levels and consensus from multiple AI experts
-7. **Automatic Model Selection** - `auto` mode picks the right model for each subtask
-8. **Local Model Support** - Run Llama or other models locally for complete privacy and zero API costs
-9. **Bypass MCP Token Limits** - Automatically works around MCP's output limits for large prompts
+A typical workflow with Claude Code as an example:
+
+1. **Multi-Model Orchestration** - Claude coordinates with Gemini Pro, O3, GPT-5, and 50+ other models to get the best analysis for each task
+
+2. **Context Revival Magic** - Even after Claude's context resets, continue conversations seamlessly by having other models "remind" Claude of the discussion
+
+3. **Guided Workflows** - Enforces systematic investigation phases that prevent rushed analysis and ensure thorough code examination
+
+4. **Extended Context Windows** - Break Claude's limits by delegating to Gemini (1M tokens) or O3 (200K tokens) for massive codebases
+
+5. **True Conversation Continuity** - Full context flows across tools and models - Gemini remembers what O3 said 10 steps ago
+
+6. **Model-Specific Strengths** - Extended thinking with Gemini Pro, blazing speed with Flash, strong reasoning with O3, privacy with local Ollama
+
+7. **Professional Code Reviews** - Multi-pass analysis with severity levels, actionable feedback, and consensus from multiple AI experts
+
+8. **Smart Debugging Assistant** - Systematic root cause analysis with hypothesis tracking and confidence levels
+
+9. **Automatic Model Selection** - Claude intelligently picks the right model for each subtask (or you can specify)
+
+10. **Vision Capabilities** - Analyze screenshots, diagrams, and visual content with vision-enabled models
+
+11. **Local Model Support** - Run Llama, Mistral, or other models locally for complete privacy and zero API costs
+
+12. **Bypass MCP Token Limits** - Automatically works around MCP's 25K limit for large prompts and responses
+
+**The Killer Feature:** When Claude's context resets, just ask to "continue with O3" - the other model's response magically revives Claude's understanding without re-ingesting documents!
+
+#### Example: Multi-Model Code Review Workflow
+
+1. `Perform a codereview using gemini pro and o3, then implement the fixes`
+2. This triggers a [`codereview`](docs/tools/codereview.md) workflow where Claude walks the code, looking for all kinds of issues
+3. After multiple passes, collects relevant code and makes note of issues along the way
+4. Maintains a `confidence` level between `exploring`, `low`, `medium`, `high` and `certain` to track how confidently it's been able to find and identify issues
+5. Generates a detailed list of critical -> low issues
+6. Shares the relevant files, findings, etc with **Gemini Pro** to perform a deep dive for a second [`codereview`](docs/tools/codereview.md)
+7. Comes back with a response and next does the same with o3, adding to the prompt if a new discovery comes to light
+8. When done, Claude takes in all the feedback and combines a single list of all critical -> low issues, including good patterns in your code. The final list includes new findings or revisions in case Claude misunderstood or missed something crucial and one of the other models pointed this out
+9. Claude then performs the actual work of fixing highlighted issues
+
+All within a single conversation thread! Gemini Pro in step 11 _knows_ what was recommended by O3 in step 7! Taking that context
+and review into consideration to aid with its final pre-commit review.
 
 **Think of it as Claude Code _for_ Claude Code.** This MCP isn't magic. It's just **super-glue**.
 
@@ -91,8 +124,7 @@ cd pal-steamline
       "env": {
         "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:~/.local/bin",
         "GEMINI_API_KEY": "your-key-here",
-        "DISABLED_TOOLS": "analyze,refactor,testgen,secaudit,docgen,tracer",
-        "DEFAULT_MODEL": "auto"
+        "DEFAULT_MODEL": "gemini-2.5-flash"
       }
     }
   }
@@ -114,10 +146,8 @@ cd pal-steamline
 
 **3. Start Using!**
 ```
-"Use pal to analyze this code for security issues with gemini pro"
-"Debug this error with o3 and then get flash to suggest optimizations"
+"Use pal to debug this error with o3 and then get flash to suggest optimizations"
 "Plan the migration strategy with pal, get consensus from multiple models"
-"Do a codereview using pro and o3, then use planner to create a fix strategy"
 ```
 
 👉 **[Complete Setup Guide](docs/getting-started.md)** with detailed installation, configuration for Gemini / Codex / Qwen, and troubleshooting
@@ -163,84 +193,52 @@ Set `DEFAULT_MODEL=auto` (the default) to let your CLI automatically pick the be
 
 ## Core Tools
 
-> **Note:** Each tool's workflow description consumes context window space even when not in use. To optimize performance, some tools are disabled by default. See [Tool Configuration](#tool-configuration) below to enable them.
-
-**Collaboration & Planning** *(Enabled by default)*
-- **[`chat`](docs/tools/chat.md)** - General AI conversation, brainstorming, second opinions, and collaborative problem-solving
-- **[`thinkdeep`](docs/tools/thinkdeep.md)** - Extended reasoning with configurable thinking modes (minimal/low/medium/high/max)
-- **[`planner`](docs/tools/planner.md)** - Break down complex projects into structured, actionable plans
+**Collaboration**
+- **[`chat`](docs/tools/chat.md)** - Brainstorm ideas, get second opinions, validate approaches. With capable models, generates complete code / implementation
+- **[`thinkdeep`](docs/tools/thinkdeep.md)** - Extended reasoning, edge case analysis, alternative perspectives
 - **[`consensus`](docs/tools/consensus.md)** - Get expert opinions from multiple AI models with stance steering
 - **[`clink`](docs/tools/clink.md)** - CLI-to-CLI bridge: connect external AI CLIs (Gemini CLI, Codex, Claude Code) into your workflow
 
-**Code Analysis & Quality** *(Enabled by default)*
+**Code Analysis & Quality**
+- **[`debug`](docs/tools/debug.md)** - Systematic investigation and root cause analysis
 - **[`codereview`](docs/tools/codereview.md)** - Professional reviews with severity levels and actionable feedback
-- **[`precommit`](docs/tools/precommit.md)** - Validate changes before committing, prevent regressions
-- **[`debug`](docs/tools/debug.md)** - Systematic root cause analysis with hypothesis tracking
-
-**Utilities** *(Enabled by default)*
-- **[`apilookup`](docs/tools/apilookup.md)** - Current-year API/SDK documentation lookups; prevents outdated training-data responses
-- **[`challenge`](docs/tools/challenge.md)** - Prevent reflexive agreement with critical analysis
-- **[`listmodels`](docs/tools/listmodels.md)** - List available AI models across all configured providers
-- **[`version`](docs/tools/version.md)** - Server version and configuration info
-
-**Advanced Tools** *(Disabled by default — [enable below](#tool-configuration))*
-- **[`analyze`](docs/tools/analyze.md)** - Architecture, patterns, and dependency analysis across entire codebases
 - **[`refactor`](docs/tools/refactor.md)** - Intelligent code refactoring with decomposition focus
-- **[`testgen`](docs/tools/testgen.md)** - Comprehensive test generation with edge cases
-- **[`secaudit`](docs/tools/secaudit.md)** - Security audits with OWASP Top 10 analysis
-- **[`docgen`](docs/tools/docgen.md)** - Generate documentation with complexity analysis
-- **[`tracer`](docs/tools/tracer.md)** - Static analysis for call-flow mapping
+
+**Utilities**
+- **[`apilookup`](docs/tools/apilookup.md)** - Forces current-year API/SDK documentation lookups in a sub-process (saves tokens within the current context window), prevents outdated training data responses
+- **[`challenge`](docs/tools/challenge.md)** - Prevent "You're absolutely right!" responses with critical analysis
+- **[`listmodels`](docs/tools/listmodels.md)** - Show configured providers and available model names
+- **[`version`](docs/tools/version.md)** - Display server version and configuration
 
 <details>
 <summary><b id="tool-configuration">👉 Tool Configuration</b></summary>
 
-### Default Configuration
+### Default Model
 
-To optimize context window usage, only essential tools are enabled by default:
+Set `DEFAULT_MODEL` in your environment or MCP config to control which model is used when none is specified:
 
-**Enabled by default:**
-- `chat`, `thinkdeep`, `planner`, `consensus`, `clink` — Collaboration tools
-- `codereview`, `precommit`, `debug` — Code quality tools
-- `apilookup`, `challenge`, `listmodels`, `version` — Utilities
-
-**Disabled by default** (`DISABLED_TOOLS=analyze,refactor,testgen,secaudit,docgen,tracer`):
-- `analyze`, `refactor`, `testgen`, `secaudit`, `docgen`, `tracer`
-
-### Enabling Additional Tools
-
-**Option 1: Edit your .env file**
-```bash
-# Default (from .env.example)
-DISABLED_TOOLS=analyze,refactor,testgen,secaudit,docgen,tracer
-
-# Enable analyze tool by removing it from the list
-DISABLED_TOOLS=refactor,testgen,secaudit,docgen,tracer
-
-# Enable all tools
-DISABLED_TOOLS=
-```
-
-**Option 2: Configure in MCP settings**
 ```json
 {
   "mcpServers": {
     "pal": {
       "env": {
-        "DISABLED_TOOLS": "refactor,testgen,secaudit,docgen,tracer",
-        "DEFAULT_MODEL": "auto",
+        "DEFAULT_MODEL": "gemini-2.5-flash",
         "DEFAULT_THINKING_MODE_THINKDEEP": "high",
         "GEMINI_API_KEY": "your-gemini-key",
         "OPENAI_API_KEY": "your-openai-key",
-        "LOG_LEVEL": "INFO"
+        "OPENROUTER_API_KEY": "your-openrouter-key",
+        
+        // Logging and performance
+        "LOG_LEVEL": "INFO",
+        "CONVERSATION_TIMEOUT_HOURS": "6",
+        "MAX_CONVERSATION_TURNS": "50"
       }
     }
   }
 }
 ```
 
-**Note:**
-- `version` and `listmodels` cannot be disabled
-- After changing tool configuration, restart your Claude session for changes to take effect
+**Note:** After changing configuration, restart your Claude session for changes to take effect.
 
 </details>
 
@@ -342,21 +340,21 @@ Key environment variables (see `.env.example` for the full reference):
 
 **Multi-model Code Review:**
 ```
-"Perform a codereview using pro and o3, then use planner to create a fix strategy"
+"Perform a codereview using gemini pro and o3, then implement the fixes"
 ```
 → Claude reviews code systematically → Consults Gemini Pro → Gets O3's perspective → Creates unified action plan
 
 **Collaborative Debugging:**
 ```
-"Debug this race condition with max thinking mode, then validate the fix with precommit"
+"Debug this race condition with max thinking mode"
 ```
-→ Deep investigation → Expert analysis → Solution implementation → Pre-commit validation
+→ Deep investigation → Expert analysis → Solution implementation
 
-**Architecture Planning:**
+**Architecture Consensus:**
 ```
-"Plan our microservices migration, get consensus from pro and o3 on the approach"
+"Get consensus from pro and o3 on our microservices migration approach"
 ```
-→ Structured planning → Multiple expert opinions → Consensus building → Implementation roadmap
+→ Multiple expert opinions → Consensus building → Implementation roadmap
 
 👉 **[Advanced Usage Guide](docs/advanced-usage.md)** for complex workflows, model configuration, and power-user features
 
@@ -389,8 +387,8 @@ python communication_simulator_test.py --individual chat  # single test
 - [Tools Reference](docs/tools/) - All tools with examples
 - [Advanced Usage](docs/advanced-usage.md) - Power user features
 - [Configuration](docs/configuration.md) - Environment variables, restrictions
-- [Adding Providers](docs/adding_providers.md) - Provider-specific setup
-- [Model Ranking Guide](docs/model_ranking.md) - How auto-mode selects models
+- [Adding Providers](docs/adding_providers.md) - Provider-specific setup (OpenAI, Azure, custom gateways)
+- [Model Ranking Guide](docs/model_ranking.md) - Provider setup and model selection
 
 **🔧 Setup & Support**
 - [WSL Setup](docs/wsl-setup.md) - Windows users

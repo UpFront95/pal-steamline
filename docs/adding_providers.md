@@ -229,7 +229,7 @@ Add to your `.env` file:
 EXAMPLE_API_KEY=your_api_key_here
 
 # Optional: Disable specific tools
-DISABLED_TOOLS=debug,tracer
+DISABLED_TOOLS=debug
 
 # Optional (OpenAI-compatible providers): Restrict accessible models
 EXAMPLE_ALLOWED_MODELS=example-model-large,example-model-small

@@ -16,7 +16,6 @@ from pydantic import Field
 
 if TYPE_CHECKING:
     from providers.shared import ModelCapabilities
-    from tools.models import ToolModelCategory
 
 from config import TEMPERATURE_BALANCED
 from systemprompts import CHAT_PROMPT, GENERATE_CODE_PROMPT
@@ -95,11 +94,6 @@ class ChatTool(SimpleTool):
     def get_default_temperature(self) -> float:
         return TEMPERATURE_BALANCED
 
-    def get_model_category(self) -> "ToolModelCategory":
-        """Chat prioritizes fast responses and cost efficiency"""
-        from tools.models import ToolModelCategory
-
-        return ToolModelCategory.FAST_RESPONSE
 
     def get_request_model(self):
         """Return the Chat-specific request model"""
@@ -111,8 +105,6 @@ class ChatTool(SimpleTool):
         """Generate input schema matching the original Chat tool expectations."""
 
         required_fields = ["prompt", "working_directory_absolute_path"]
-        if self.is_effective_auto_mode():
-            required_fields.append("model")
 
         schema = {
             "type": "object",

@@ -100,7 +100,7 @@ class WorkflowRequest(BaseWorkflowRequest):
     This model extends ToolRequest with fields specific to the workflow
     pattern, where tools perform multi-step work with forced pauses between steps.
 
-    Used by: debug, precommit, codereview, refactor, thinkdeep, analyze
+    Used by: debug, codereview, refactor, thinkdeep
     """
 
     # Required workflow fields

@@ -24,7 +24,7 @@ except ImportError:
 from mcp.types import TextContent
 
 from config import __author__, __updated__, __version__
-from tools.models import ToolModelCategory, ToolOutput
+from tools.models import ToolOutput
 from tools.shared.base_models import ToolRequest
 from tools.shared.base_tool import BaseTool
 
@@ -200,19 +200,10 @@ class VersionTool(BaseTool):
         # Model selection configuration
         try:
             from config import DEFAULT_MODEL
-            from tools.shared.base_tool import BaseTool
 
-            auto_mode = BaseTool.is_effective_auto_mode(self)
-            if auto_mode:
-                output_lines.append(
-                    "**Model Selection**: Auto model selection mode (call `listmodels` to inspect options)"
-                )
-                model_selection_metadata = {"mode": "auto", "default_model": DEFAULT_MODEL}
-                model_selection_display = "Auto model selection (use `listmodels` for options)"
-            else:
-                output_lines.append(f"**Model Selection**: Default model set to `{DEFAULT_MODEL}`")
-                model_selection_metadata = {"mode": "default", "default_model": DEFAULT_MODEL}
-                model_selection_display = f"Default model: `{DEFAULT_MODEL}`"
+            output_lines.append(f"**Model Selection**: Default model set to `{DEFAULT_MODEL}`")
+            model_selection_metadata = {"mode": "default", "default_model": DEFAULT_MODEL}
+            model_selection_display = f"Default model: `{DEFAULT_MODEL}`"
         except Exception as exc:
             logger.debug(f"Could not determine model selection mode: {exc}")
 
@@ -364,6 +355,3 @@ class VersionTool(BaseTool):
 
         return [TextContent(type="text", text=tool_output.model_dump_json())]
 
-    def get_model_category(self) -> ToolModelCategory:
-        """Return the model category for this tool."""
-        return ToolModelCategory.FAST_RESPONSE  # Simple version info, no AI needed

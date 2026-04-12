@@ -8,7 +8,6 @@ import os
 import unittest
 from unittest.mock import AsyncMock, Mock, patch
 
-from tools.analyze import AnalyzeTool
 from tools.codereview import CodeReviewTool
 from tools.debug import DebugIssueTool
 
@@ -60,8 +59,8 @@ class TestWorkflowToolsUTF8(unittest.IsolatedAsyncioTestCase):
 
     @patch("tools.shared.base_tool.BaseTool.get_model_provider")
     @patch("utils.model_context.ModelContext")
-    async def test_analyze_tool_utf8_response(self, mock_model_context, mock_get_provider):
-        """Test that the analyze tool returns correct UTF-8 responses."""
+    async def test_debug_tool_utf8_response(self, mock_model_context, mock_get_provider):
+        """Test that the debug tool returns correct UTF-8 responses."""
 
         # Mock ModelContext to bypass model validation
         mock_context_instance = Mock()
@@ -97,7 +96,8 @@ class TestWorkflowToolsUTF8(unittest.IsolatedAsyncioTestCase):
         mock_model_context.return_value = mock_context_instance
 
         # Test the tool
-        analyze_tool = AnalyzeTool()
+        from tools.debug import DebugIssueTool
+        analyze_tool = DebugIssueTool()
         result = await analyze_tool.execute(
             {
                 "step": "Analyze system architecture to identify issues",
