@@ -1,4 +1,4 @@
-# pal-steamline
+# pal-STEAMline
 
 A stripped-down, opinionated fork of [PAL MCP Server](https://github.com/ppl-ai/pal-mcp-server), built specifically for use with Claude Code.
 
