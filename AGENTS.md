@@ -26,7 +26,7 @@ Run code quality checks:
 For example, this is how we run an individual / all tests:
 
 ```bash
-.pal_venv/bin/activate && pytest tests/test_auto_mode_model_listing.py -q
+.pal_venv/bin/activate && pytest tests/test_chat_simple.py -q
 .pal_venv/bin/activate && pytest -q
 ```
 

@@ -17,7 +17,7 @@ services:
     # Environment variables
     environment:
       # Default model configuration
-      - DEFAULT_MODEL=${DEFAULT_MODEL:-auto}
+      - DEFAULT_MODEL=${DEFAULT_MODEL:-mimo}
       
       # API Keys (use Docker secrets in production)
       - GEMINI_API_KEY=${GEMINI_API_KEY}

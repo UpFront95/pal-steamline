@@ -1,363 +1,155 @@
-# PAL MCP: Many Workflows. One Context.
+# pal-steamline
 
-<div align="center">
-
-  <em>Your AI's PAL – a Provider Abstraction Layer</em><br />
-  <sub><a href="docs/name-change.md">Formerly known as Zen MCP</a></sub>
-
-  [PAL in action](https://github.com/user-attachments/assets/0d26061e-5f21-4ab1-b7d0-f883ddc2c3da)
-
-👉 **[Watch more examples](#-watch-tools-in-action)**
-
-### Your CLI + Multiple Models = Your AI Dev Team
-
-**Use the 🤖 CLI you love:**  
-[Claude Code](https://www.anthropic.com/claude-code) · [Gemini CLI](https://github.com/google-gemini/gemini-cli) · [Codex CLI](https://github.com/openai/codex) · [Qwen Code CLI](https://qwenlm.github.io/qwen-code-docs/) · [Cursor](https://cursor.com) · _and more_
-
-**With multiple models within a single prompt:**  
-Gemini · OpenAI · Anthropic · Grok · Azure · Ollama · OpenRouter · DIAL · On-Device Model
-
-</div>
+A stripped-down, opinionated fork of [PAL MCP Server](https://github.com/ppl-ai/pal-mcp-server), built specifically for use with Claude Code.
 
 ---
 
-## Why PAL MCP?
+## Why this fork exists
 
-**Why rely on one AI model when you can orchestrate them all?**
+The upstream PAL MCP server is powerful but ships with 15+ tools, a dynamic auto-mode engine, and a large configuration surface. When used inside Claude Code, a high tool count clutters the tool picker, inflates context overhead, and can lead to unpredictable tool selection.
 
-A Model Context Protocol server that supercharges tools like [Claude Code](https://www.anthropic.com/claude-code), [Codex CLI](https://developers.openai.com/codex/cli), and IDE clients such
-as [Cursor](https://cursor.com) or the [Claude Dev VS Code extension](https://marketplace.visualstudio.com/items?itemName=Anthropic.claude-vscode). **PAL MCP connects your favorite AI tool
-to multiple AI models** for enhanced code analysis, problem-solving, and collaborative development.
+**pal-steamline** cuts the noise. Nine tools and the auto-mode intelligence are removed, leaving a focused set of high-value developer workflows with deterministic model routing via a dual-provider (fast primary + expert validator) setup.
 
-### True AI Collaboration with Conversation Continuity
+---
 
-PAL supports **conversation threading** so your CLI can **discuss ideas with multiple AI models, exchange reasoning, get second opinions, and even run collaborative debates between models** to help you reach deeper insights and better solutions.
+## What was removed
 
-Your CLI always stays in control but gets perspectives from the best AI for each subtask. Context carries forward seamlessly across tools and models, enabling complex workflows like: code reviews with multiple models → automated planning → implementation → pre-commit validation.
+| Removed | Reason |
+|---|---|
+| `planner`, `analyze`, `secaudit`, `tracer`, `docgen`, `precommit`, `testgen` | Workflow tools rarely used; added friction to tool picker |
+| `clink` | CLI-to-CLI bridge — not needed in Claude Code context |
+| `challenge` | Adversarial debate tool — replaced by `consensus` for most use cases |
+| `refactor` (standalone) | Merged into `codereview` as `mode="refactor"` — one tool, two modes |
+| Auto-mode intelligence | Dynamic model selection removed; routing is now explicit and deterministic |
+| HTTP cassette test suite | Was testing native OpenAI/Gemini paths this fork doesn't use |
 
-> **You're in control.** Your CLI of choice orchestrates the AI team, but you decide the workflow. Craft powerful prompts that bring in Gemini Pro, GPT 5, Flash, or local offline models exactly when needed.
+---
 
-<details>
-<summary><b>Reasons to Use PAL MCP</b></summary>
+## Tools
 
-A typical workflow with Claude Code as an example:
+Eight tools remain. `version` and `listmodels` are always enabled; the rest can be individually disabled via `DISABLED_TOOLS`.
 
-1. **Multi-Model Orchestration** - Claude coordinates with Gemini Pro, O3, GPT-5, and 50+ other models to get the best analysis for each task
+Multi-turn conversations persist within a server session using `continuation_id`. You can start a thread with `debug` and continue it with `codereview` — the full context carries over.
 
-2. **Context Revival Magic** - Even after Claude's context resets, continue conversations seamlessly by having other models "remind" Claude of the discussion
+| Tool | What it does |
+|---|---|
+| `chat` | General Q&A, brainstorming, second opinions |
+| `thinkdeep` | Extended step-by-step reasoning on hard problems |
+| `debug` | Root-cause analysis workflow |
+| `codereview` | Code quality, security, and perf audit — also handles `mode="refactor"` |
+| `consensus` | Multi-model answer synthesis on a question |
+| `apilookup` | Web/API reference lookup |
+| `listmodels` | Lists available model aliases and their resolved names |
+| `version` | Server version and build info |
 
-3. **Guided Workflows** - Enforces systematic investigation phases that prevent rushed analysis and ensure thorough code examination
+---
 
-4. **Extended Context Windows** - Break Claude's limits by delegating to Gemini (1M tokens) or O3 (200K tokens) for massive codebases
+## Model routing
 
-5. **True Conversation Continuity** - Full context flows across tools and models - Gemini remembers what O3 said 10 steps ago
+Two providers, four aliases.
 
-6. **Model-Specific Strengths** - Extended thinking with Gemini Pro, blazing speed with Flash, strong reasoning with O3, privacy with local Ollama
+### Providers
 
-7. **Professional Code Reviews** - Multi-pass analysis with severity levels, actionable feedback, and consensus from multiple AI experts
+| Provider | Role | Config |
+|---|---|---|
+| **Custom API** | Primary — fast and cheap for most tasks | `CUSTOM_API_URL` + `CUSTOM_API_KEY` |
+| **OpenRouter** | Secondary — expert escalation and alternatives | `OPENROUTER_API_KEY` |
 
-8. **Smart Debugging Assistant** - Systematic root cause analysis with hypothesis tracking and confidence levels
+### Aliases
 
-9. **Automatic Model Selection** - Claude intelligently picks the right model for each subtask (or you can specify)
+| Alias | Resolves to | Provider | Role |
+|---|---|---|---|
+| `mimo` | `xiaomi/mimo-v2-pro` | Custom API | **Default** |
+| `gemini` | `google/gemini-3.1-pro-preview` | OpenRouter | **Expert escalation** |
+| `gpt` | `openai/gpt-5.4` | OpenRouter | Alternative |
+| `qwen` | `qwen/qwen3.6-plus` | OpenRouter | Alternative |
 
-10. **Vision Capabilities** - Analyze screenshots, diagrams, and visual content with vision-enabled models
+### Expert escalation
 
-11. **Local Model Support** - Run Llama, Mistral, or other models locally for complete privacy and zero API costs
+Workflow tools (`thinkdeep`, `debug`, `codereview`, `consensus`) run a two-pass analysis: the primary model (`mimo` by default) does the main work, then `EXPERT_MODEL` (`gemini`) runs the validation pass. Set `EXPERT_MODEL=""` to disable this and use a single model throughout.
 
-12. **Bypass MCP Token Limits** - Automatically works around MCP's 25K limit for large prompts and responses
+---
 
-**The Killer Feature:** When Claude's context resets, just ask to "continue with O3" - the other model's response magically revives Claude's understanding without re-ingesting documents!
+## Installation
 
-#### Example: Multi-Model Code Review Workflow
+Requires Python 3.9+.
 
-1. `Perform a codereview using gemini pro and o3, then implement the fixes`
-2. This triggers a [`codereview`](docs/tools/codereview.md) workflow where Claude walks the code, looking for all kinds of issues
-3. After multiple passes, collects relevant code and makes note of issues along the way
-4. Maintains a `confidence` level between `exploring`, `low`, `medium`, `high` and `certain` to track how confidently it's been able to find and identify issues
-5. Generates a detailed list of critical -> low issues
-6. Shares the relevant files, findings, etc with **Gemini Pro** to perform a deep dive for a second [`codereview`](docs/tools/codereview.md)
-7. Comes back with a response and next does the same with o3, adding to the prompt if a new discovery comes to light
-8. When done, Claude takes in all the feedback and combines a single list of all critical -> low issues, including good patterns in your code. The final list includes new findings or revisions in case Claude misunderstood or missed something crucial and one of the other models pointed this out
-9. Claude then performs the actual work of fixing highlighted issues
-
-All within a single conversation thread! Gemini Pro in step 11 _knows_ what was recommended by O3 in step 7! Taking that context
-and review into consideration to aid with its final pre-commit review.
-
-**Think of it as Claude Code _for_ Claude Code.** This MCP isn't magic. It's just **super-glue**.
-
-> **Remember:** Claude stays in full control — but **YOU** call the shots.
-> PAL is designed to have Claude engage other models only when needed — and to follow through with meaningful back-and-forth.
-> **You're** the one who crafts the powerful prompt that makes Claude bring in Gemini, Flash, O3 — or fly solo.
-> You're the guide. The prompter. The puppeteer.
-> #### You are the AI - **Actually Intelligent**.
-</details>
-
-#### Recommended AI Stack
-
-<details>
-<summary>For Claude Code Users</summary>
-
-For best results when using [Claude Code](https://claude.ai/code):  
-
-- **Sonnet 4.5** - All agentic work and orchestration
-- **Gemini 3.0 Pro** OR **GPT-5.2 / Pro** - Deep thinking, additional code reviews, debugging and validations, pre-commit analysis
-</details>
-
-<details>
-<summary>For Codex Users</summary>
-
-For best results when using [Codex CLI](https://developers.openai.com/codex/cli):  
-
-- **GPT-5.2 Codex Medium** - All agentic work and orchestration
-- **Gemini 3.0 Pro** OR **GPT-5.2-Pro** - Deep thinking, additional code reviews, debugging and validations, pre-commit analysis
-</details>
-
-## Quick Start (5 minutes)
-
-**Prerequisites:** Python 3.10+, Git, [uv installed](https://docs.astral.sh/uv/getting-started/installation/)
-
-**1. Get API Keys** (choose one or more):
-- **[OpenRouter](https://openrouter.ai/)** - Access multiple models with one API
-- **[Gemini](https://makersuite.google.com/app/apikey)** - Google's latest models
-- **[OpenAI](https://platform.openai.com/api-keys)** - O3, GPT-5 series
-- **[Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/)** - Enterprise deployments of GPT-4o, GPT-4.1, GPT-5 family
-- **[X.AI](https://console.x.ai/)** - Grok models
-- **[DIAL](https://dialx.ai/)** - Vendor-agnostic model access
-- **[Ollama](https://ollama.ai/)** - Local models (free)
-
-**2. Install** (choose one):
-
-**Option A: Clone and Automatic Setup** (recommended)
 ```bash
-git clone https://github.com/BeehiveInnovations/pal-mcp-server.git
-cd pal-mcp-server
-
-# Handles everything: setup, config, API keys from system environment. 
-# Auto-configures Claude Desktop, Claude Code, Gemini CLI, Codex CLI, Qwen CLI
-# Enable / disable additional settings in .env
-./run-server.sh  
+git clone <repo-url> pal-steamline
+cd pal-steamline
+python -m venv .pal_venv
+source .pal_venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+# edit .env with your keys
 ```
 
-**Option B: Instant Setup with [uvx](https://docs.astral.sh/uv/getting-started/installation/)**
+### Claude Code configuration
+
+Add to your Claude Code MCP config (usually `~/.claude.json` or project-level `.mcp.json`):
+
 ```json
-// Add to ~/.claude/settings.json or .mcp.json
-// Don't forget to add your API keys under env
 {
   "mcpServers": {
     "pal": {
-      "command": "bash",
-      "args": ["-c", "for p in $(which uvx 2>/dev/null) $HOME/.local/bin/uvx /opt/homebrew/bin/uvx /usr/local/bin/uvx uvx; do [ -x \"$p\" ] && exec \"$p\" --from git+https://github.com/BeehiveInnovations/pal-mcp-server.git pal-mcp-server; done; echo 'uvx not found' >&2; exit 1"],
-      "env": {
-        "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:~/.local/bin",
-        "GEMINI_API_KEY": "your-key-here",
-        "DEFAULT_MODEL": "gemini-2.5-flash"
-      }
+      "command": "/absolute/path/to/pal-steamline/.pal_venv/bin/python",
+      "args": ["/absolute/path/to/pal-steamline/server.py"]
     }
   }
 }
 ```
 
-**3. Start Using!**
-```
-"Use pal to debug this error with o3 and then get flash to suggest optimizations"
-"Plan the migration strategy with pal, get consensus from multiple models"
-```
+Run `./run-server.sh -c` to generate the exact paths for your system.
 
-👉 **[Complete Setup Guide](docs/getting-started.md)** with detailed installation, configuration for Gemini / Codex / Qwen, and troubleshooting
-👉 **[Cursor & VS Code Setup](docs/getting-started.md#ide-clients)** for IDE integration instructions
-📺 **[Watch tools in action](#-watch-tools-in-action)** to see real-world examples
+---
 
-## Provider Configuration
+## Configuration
 
-PAL activates any provider that has credentials in your `.env`. See `.env.example` for deeper customization.
+All configuration is via `.env`. Copy `.env.example` for the full reference. The key variables:
 
-## Core Tools
+```env
+# Model routing
+DEFAULT_MODEL=mimo
+EXPERT_MODEL=gemini
 
-**Collaboration**
-- **[`chat`](docs/tools/chat.md)** - Brainstorm ideas, get second opinions, validate approaches. With capable models, generates complete code / implementation
-- **[`thinkdeep`](docs/tools/thinkdeep.md)** - Extended reasoning, edge case analysis, alternative perspectives
-- **[`consensus`](docs/tools/consensus.md)** - Get expert opinions from multiple AI models with stance steering
+# Custom API (primary provider — mimo)
+CUSTOM_API_URL=https://your-custom-endpoint.com/v1
+CUSTOM_API_KEY=your-key
 
-**Code Analysis & Quality**
-- **[`debug`](docs/tools/debug.md)** - Systematic investigation and root cause analysis
-- **[`codereview`](docs/tools/codereview.md)** - Professional reviews with severity levels and actionable feedback
-- **[`refactor`](docs/tools/refactor.md)** - Intelligent code refactoring with decomposition focus
+# OpenRouter (secondary provider — gemini, gpt, qwen)
+OPENROUTER_API_KEY=your-openrouter-key
 
-**Utilities**
-- **[`apilookup`](docs/tools/apilookup.md)** - Forces current-year API/SDK documentation lookups in a sub-process (saves tokens within the current context window), prevents outdated training data responses
-- **[`challenge`](docs/tools/challenge.md)** - Prevent "You're absolutely right!" responses with critical analysis
-- **[`listmodels`](docs/tools/listmodels.md)** - Show configured providers and available model names
-- **[`version`](docs/tools/version.md)** - Display server version and configuration
+# Optional: restrict which OpenRouter models are visible
+# Leave unset to allow all models in conf/openrouter_models.json
+OPENROUTER_ALLOWED_MODELS=google/gemini-3.1-pro-preview,openai/gpt-5.4,qwen/qwen3.6-plus
 
-<details>
-<summary><b id="tool-configuration">👉 Tool Configuration</b></summary>
+# Optional: disable individual tools (version and listmodels cannot be disabled)
+DISABLED_TOOLS=apilookup,consensus
 
-### Default Model
-
-Set `DEFAULT_MODEL` in your environment or MCP config to control which model is used when none is specified:
-
-```json
-// In ~/.claude/settings.json or .mcp.json
-{
-  "mcpServers": {
-    "pal": {
-      "env": {
-        "DEFAULT_MODEL": "gemini-2.5-flash",
-        "DEFAULT_THINKING_MODE_THINKDEEP": "high",
-        
-        // API configuration
-        "GEMINI_API_KEY": "your-gemini-key",
-        "OPENAI_API_KEY": "your-openai-key",
-        "OPENROUTER_API_KEY": "your-openrouter-key",
-        
-        // Logging and performance
-        "LOG_LEVEL": "INFO",
-        "CONVERSATION_TIMEOUT_HOURS": "6",
-        "MAX_CONVERSATION_TURNS": "50"
-      }
-    }
-  }
-}
+# Optional: language for AI responses (e.g. fr-FR, zh-CN)
+LOCALE=
 ```
 
-**Note:** After changing configuration, restart your Claude session for changes to take effect.
+### Adding OpenRouter models
 
-</details>
+The full OpenRouter model catalogue is defined in `conf/openrouter_models.json`. Each entry can have `aliases` — adding a short alias there makes it available by that name in any tool call. The `OPENROUTER_ALLOWED_MODELS` env var then acts as a runtime allowlist on top of that catalogue.
 
-## 📺 Watch Tools In Action
+### Using a different primary model
 
-<details>
-<summary><b>Chat Tool</b> - Collaborative decision making and multi-turn conversations</summary>
+Set `DEFAULT_MODEL` to any alias or full model name visible in `listmodels`. To use a different Custom API endpoint (e.g. local Ollama), set `CUSTOM_API_URL=http://localhost:11434/v1` and leave `CUSTOM_API_KEY` empty.
 
-**Picking Redis vs Memcached:**
+---
 
-[Chat Redis or Memcached_web.webm](https://github.com/user-attachments/assets/41076cfe-dd49-4dfc-82f5-d7461b34705d)
+## Running quality checks
 
-**Multi-turn conversation with continuation:**
-
-[Chat With Gemini_web.webm](https://github.com/user-attachments/assets/37bd57ca-e8a6-42f7-b5fb-11de271e95db)
-
-</details>
-
-<details>
-<summary><b>Consensus Tool</b> - Multi-model debate and decision making</summary>
-
-**Multi-model consensus debate:**
-
-[PAL Consensus Debate](https://github.com/user-attachments/assets/76a23dd5-887a-4382-9cf0-642f5cf6219e)
-
-</details>
-
-<details>
-<summary><b>PreCommit Tool</b> - Comprehensive change validation</summary>
-
-**Pre-commit validation workflow:**
-
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/584adfa6-d252-49b4-b5b0-0cd6e97fb2c6" width="950">
-</div>
-
-</details>
-
-<details>
-<summary><b>API Lookup Tool</b> - Current vs outdated API documentation</summary>
-
-**Without PAL - outdated APIs:**
-
-[API without PAL](https://github.com/user-attachments/assets/01a79dc9-ad16-4264-9ce1-76a56c3580ee)
-
-**With PAL - current APIs:**
-
-[API with PAL](https://github.com/user-attachments/assets/5c847326-4b66-41f7-8f30-f380453dce22)
-
-</details>
-
-<details>
-<summary><b>Challenge Tool</b> - Critical thinking vs reflexive agreement</summary>
-
-**Without PAL:**
-
-![without_pal@2x](https://github.com/user-attachments/assets/64f3c9fb-7ca9-4876-b687-25e847edfd87)
-
-**With PAL:**
-
-![with_pal@2x](https://github.com/user-attachments/assets/9d72f444-ba53-4ab1-83e5-250062c6ee70)
-
-</details>
-
-## Key Features
-
-**AI Orchestration**
-- **Auto model selection** - Claude picks the right AI for each task
-- **Multi-model workflows** - Chain different models in single conversations
-- **Conversation continuity** - Context preserved across tools and models
-- **[Context revival](docs/context-revival.md)** - Continue conversations even after context resets
-
-**Model Support**
-- **Multiple providers** - Gemini, OpenAI, Azure, X.AI, OpenRouter, DIAL, Ollama
-- **Latest models** - GPT-5, Gemini 3.0 Pro, O3, Grok-4, local Llama
-- **[Thinking modes](docs/advanced-usage.md#thinking-modes)** - Control reasoning depth vs cost
-- **Vision support** - Analyze images, diagrams, screenshots
-
-**Developer Experience**
-- **Guided workflows** - Systematic investigation prevents rushed analysis
-- **Smart file handling** - Auto-expand directories, manage token limits
-- **Web search integration** - Access current documentation and best practices
-- **[Large prompt support](docs/advanced-usage.md#working-with-large-prompts)** - Bypass MCP's 25K token limit
-
-## Example Workflows
-
-**Multi-model Code Review:**
+```bash
+source .pal_venv/bin/activate
+./code_quality_checks.sh        # lint + format + unit tests
+python -m pytest tests/ -v -m "not integration"   # unit tests only
 ```
-"Perform a codereview using gemini pro and o3, then implement the fixes"
-```
-→ Claude reviews code systematically → Consults Gemini Pro → Gets O3's perspective → Creates unified action plan
 
-**Collaborative Debugging:**
-```
-"Debug this race condition with max thinking mode"
-```
-→ Deep investigation → Expert analysis → Solution implementation
+---
 
-**Architecture Consensus:**
-```
-"Get consensus from pro and o3 on our microservices migration approach"
-```
-→ Multiple expert opinions → Consensus building → Implementation roadmap
+## Attribution
 
-👉 **[Advanced Usage Guide](docs/advanced-usage.md)** for complex workflows, model configuration, and power-user features
-
-## Quick Links
-
-**📖 Documentation**
-- [Docs Overview](docs/index.md) - High-level map of major guides
-- [Getting Started](docs/getting-started.md) - Complete setup guide
-- [Tools Reference](docs/tools/) - All tools with examples
-- [Advanced Usage](docs/advanced-usage.md) - Power user features
-- [Configuration](docs/configuration.md) - Environment variables, restrictions
-- [Adding Providers](docs/adding_providers.md) - Provider-specific setup (OpenAI, Azure, custom gateways)
-- [Model Ranking Guide](docs/model_ranking.md) - Provider setup and model selection
-
-**🔧 Setup & Support**
-- [WSL Setup](docs/wsl-setup.md) - Windows users
-- [Troubleshooting](docs/troubleshooting.md) - Common issues
-- [Contributing](docs/contributions.md) - Code standards, PR process
-
-## License
-
-Apache 2.0 License - see [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-Built with the power of **Multi-Model AI** collaboration 🤝
-- **A**ctual **I**ntelligence by real Humans
-- [MCP (Model Context Protocol)](https://modelcontextprotocol.com)
-- [Codex CLI](https://developers.openai.com/codex/cli)
-- [Claude Code](https://claude.ai/code)
-- [Gemini](https://ai.google.dev/)
-- [OpenAI](https://openai.com/)
-- [Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/)
-
-### Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=BeehiveInnovations/pal-mcp-server&type=Date)](https://www.star-history.com/#BeehiveInnovations/pal-mcp-server&Date)
+This project is an opinionated fork of [PAL MCP Server](https://github.com/ppl-ai/pal-mcp-server) by Fahad Gilani, which was itself derived from Zen MCP. The core tool engine, provider abstractions, conversation memory system, and MCP transport layer originate from that upstream work.

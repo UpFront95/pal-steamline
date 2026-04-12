@@ -24,7 +24,7 @@ __author__ = "Fahad Gilani"
 # DEFAULT_MODEL: The default model used for all AI operations
 # This should be a stable, high-performance model suitable for code analysis
 # Override via DEFAULT_MODEL env var in your .env file (see .env.example)
-DEFAULT_MODEL = get_env("DEFAULT_MODEL", "gemini-2.5-flash") or "gemini-2.5-flash"
+DEFAULT_MODEL = get_env("DEFAULT_MODEL", "mimo") or "mimo"
 
 # Each provider (gemini.py, openai.py, xai.py, dial.py, openrouter.py, custom.py, azure_openai.py)
 # defines its own MODEL_CAPABILITIES
