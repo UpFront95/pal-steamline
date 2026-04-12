@@ -114,7 +114,7 @@ class TestThinkDeepTool:
 
 
 class TestCodeReviewTool:
-    """Test the codereview tool"""
+    """Test the review tool"""
 
     @pytest.fixture
     def tool(self):
@@ -122,8 +122,8 @@ class TestCodeReviewTool:
 
     def test_tool_metadata(self, tool):
         """Test tool metadata"""
-        assert tool.get_name() == "codereview"
-        assert "code review" in tool.get_description()
+        assert tool.get_name() == "review"
+        assert "review" in tool.get_description()
         assert tool.get_default_temperature() == 1.0
 
         schema = tool.get_input_schema()

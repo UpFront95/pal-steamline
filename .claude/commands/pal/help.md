@@ -6,14 +6,14 @@ Output the following block exactly as written, with no additions, omissions, or 
 
 | I want to... | Tool | Notes |
 |---|---|---|
-| Ask another model a question | `chat` | General Q&A, code, explanations, analysis |
-| Reason through something hard | `thinkdeep` | Multi-step investigation; accepts `continuation_id` from a chat thread |
-| Debug a specific issue | `debug` | Systematic hypothesis-driven debugging |
-| Audit code for quality/security/perf | `codereview` | Quality, security, and performance audit |
-| Restructure or clean up code | `refactor` | Types: `codesmells` (default), `decompose`, `modernize`, `organization` |
+| Ask a model a question | `chat` | General Q&A, code, explanations, analysis |
+| Reason through something hard | `thinkdeep` | Multi-step investigation; accepts `continuation_id` from chat |
+| Figure out why something's broken | `debug` | Steps through the problem, tests theories, finds the root cause |
+| Check if my code is solid | `review` | Spots bugs, security holes, and performance issues — for code that works |
+| Clean up messy code | `cleanup` | Reorganizes, simplifies, and modernizes without changing behavior |
 | Get multiple models to weigh in | `consensus` | Collects perspectives from 2–3 models |
 
-Workflow tools (`thinkdeep`, `debug`, `codereview`, `consensus`) are multi-step — they return a `continuation_id`. Pass it back to continue the thread.
+Workflow tools (`thinkdeep`, `debug`, `review`, `consensus`) are multi-step — they return a `continuation_id`. Pass it back to continue the thread.
 
 **Model aliases:** `mimo` (default) · `gemini` · `gpt` · `qwen` · `mistral`
 

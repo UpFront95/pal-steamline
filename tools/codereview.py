@@ -1,9 +1,9 @@
 """
-CodeReview / Refactor Workflow tool - Systematic code review or refactoring analysis
+Review / Cleanup Workflow tool - Systematic code review or cleanup analysis
 
 This tool provides a structured workflow for two related activities:
 - **review** mode: Comprehensive code review covering quality, security, performance, and architecture.
-- **refactor** mode: Systematic refactoring analysis identifying code smells, decomposition
+- **cleanup** mode: Systematic cleanup analysis identifying code smells, decomposition
   opportunities, modernization paths, and organisation improvements.
 
 Both modes guide the CLI agent through systematic investigation steps with forced pauses between
@@ -82,16 +82,16 @@ REFACTOR_FIELD_DESCRIPTIONS = {
         "Include all improvement opportunities found."
     ),
     "confidence": (
-        "Refactor mode only. Your confidence in refactoring analysis: exploring (starting), incomplete (significant work remaining), "
+        "Cleanup mode only. Your confidence in refactoring analysis: exploring (starting), incomplete (significant work remaining), "
         "partial (some opportunities found, more analysis needed), complete (comprehensive analysis finished, "
         "all major opportunities identified). "
         "WARNING: Use 'complete' ONLY when fully analysed and can provide recommendations without expert help. "
         "'complete' PREVENTS expert validation. Use 'partial' for large files or uncertain analysis."
     ),
-    "refactor_type": "Refactor mode: type of refactoring analysis (codesmells/decompose/modernize/organization). Defaults to 'codesmells'.",
-    "focus_areas": "Refactor mode: specific areas to focus on (e.g. 'performance', 'readability', 'maintainability', 'security').",
+    "refactor_type": "Cleanup mode: type of refactoring analysis (codesmells/decompose/modernize/organization). Defaults to 'codesmells'.",
+    "focus_areas": "Cleanup mode: specific areas to focus on (e.g. 'performance', 'readability', 'maintainability', 'security').",
     "style_guide_examples": (
-        "Refactor mode: existing code files to use as style/pattern reference (must be FULL absolute paths to real files/folders – "
+        "Cleanup mode: existing code files to use as style/pattern reference (must be FULL absolute paths to real files/folders – "
         "DO NOT SHORTEN). These files represent the target coding style and patterns for the project."
     ),
 }
@@ -103,11 +103,11 @@ class CodeReviewRequest(WorkflowRequest):
     # ------------------------------------------------------------------
     # Mode selector
     # ------------------------------------------------------------------
-    mode: Literal["review", "refactor"] = Field(
+    mode: Literal["review", "cleanup"] = Field(
         "review",
         description=(
             "'review' for quality/security/performance/architecture audit; "
-            "'refactor' for code smell detection, decomposition, modernisation, and organisation improvements."
+            "'cleanup' for code smell detection, decomposition, modernisation, and organisation improvements."
         ),
     )
 
@@ -158,7 +158,7 @@ class CodeReviewRequest(WorkflowRequest):
     )
 
     # ------------------------------------------------------------------
-    # Refactor-mode fields (only valid when mode="refactor")
+    # Cleanup-mode fields (only valid when mode="cleanup")
     # ------------------------------------------------------------------
     confidence: Optional[Literal["exploring", "incomplete", "partial", "complete"]] = Field(
         None,
@@ -190,10 +190,10 @@ class CodeReviewRequest(WorkflowRequest):
             bad = [name for name, val in cross_mode_fields.items() if val is not None]
             if bad:
                 raise ValueError(
-                    f"Fields {bad} are only valid when mode='refactor'. "
-                    "Remove them or switch to mode='refactor'."
+                    f"Fields {bad} are only valid when mode='cleanup'. "
+                    "Remove them or switch to mode='cleanup'."
                 )
-        elif self.mode == "refactor":
+        elif self.mode == "cleanup":
             cross_mode_fields = {
                 "review_type": self.review_type,
                 "focus_on": self.focus_on,
@@ -207,7 +207,7 @@ class CodeReviewRequest(WorkflowRequest):
                     f"Fields {bad} are only valid when mode='review'. "
                     "Remove them or switch to mode='review'."
                 )
-            # Supply default confidence for refactor mode
+            # Supply default confidence for cleanup mode
             if self.confidence is None:
                 self.confidence = "incomplete"
         return self
@@ -243,18 +243,18 @@ class CodeReviewTool(WorkflowTool):
         self._current_mode = "review"
 
     def get_name(self) -> str:
-        return "codereview"
+        return "review"
 
     def get_description(self) -> str:
         return (
-            "Performs systematic, step-by-step code review and refactoring analysis with expert validation. "
-            "Use mode='review' (default) for quality/security/performance/architecture audit. "
-            "Use mode='refactor' for code smell detection, decomposition, and modernisation analysis. "
-            "Both modes guide through structured investigation to ensure thoroughness."
+            "Checks code that works but might have issues — quality, security, performance, and architecture. "
+            "Use mode='review' (default) to audit for bugs, security holes, and performance problems. "
+            "Use mode='cleanup' to find code smells, decompose large functions, modernize patterns, and reorganize structure. "
+            "Both modes run a structured investigation with expert validation."
         )
 
     def get_system_prompt(self) -> str:
-        return REFACTOR_PROMPT if self._current_mode == "refactor" else CODEREVIEW_PROMPT
+        return REFACTOR_PROMPT if self._current_mode == "cleanup" else CODEREVIEW_PROMPT
 
     def get_default_temperature(self) -> float:
         return TEMPERATURE_ANALYTICAL
@@ -388,7 +388,7 @@ class CodeReviewTool(WorkflowTool):
         self, step_number: int, confidence: str, findings: str, total_steps: int, request=None
     ) -> list[str]:
         """Define required actions for each investigation phase."""
-        if self._current_mode == "refactor":
+        if self._current_mode == "cleanup":
             return self._get_refactor_required_actions(step_number, confidence)
         return self._get_review_required_actions(step_number, request)
 
@@ -445,7 +445,7 @@ class CodeReviewTool(WorkflowTool):
             ]
 
     def _get_refactor_required_actions(self, step_number: int, confidence: str) -> list[str]:
-        """Required actions for refactor mode."""
+        """Required actions for cleanup mode."""
         if step_number == 1:
             return [
                 "Read and understand the code files specified for refactoring analysis",
@@ -493,7 +493,7 @@ class CodeReviewTool(WorkflowTool):
         if request and not self.get_request_use_assistant_model(request):
             return False
 
-        if self._current_mode == "refactor":
+        if self._current_mode == "cleanup":
             if request and request.confidence == "complete":
                 return False
         else:
@@ -511,7 +511,7 @@ class CodeReviewTool(WorkflowTool):
 
     def prepare_expert_analysis_context(self, consolidated_findings) -> str:
         """Prepare context for external model call."""
-        if self._current_mode == "refactor":
+        if self._current_mode == "cleanup":
             return self._prepare_refactor_expert_context(consolidated_findings)
         return self._prepare_review_expert_context(consolidated_findings)
 
@@ -623,7 +623,7 @@ class CodeReviewTool(WorkflowTool):
         return "high"
 
     def get_expert_analysis_instruction(self) -> str:
-        if self._current_mode == "refactor":
+        if self._current_mode == "cleanup":
             return (
                 "Please provide comprehensive refactoring analysis based on the investigation findings. "
                 "Focus on validating the identified opportunities, ensuring completeness of the analysis, "
@@ -668,7 +668,7 @@ class CodeReviewTool(WorkflowTool):
 
     def should_skip_expert_analysis(self, request, consolidated_findings) -> bool:
         """Skip expert analysis based on mode-specific logic."""
-        if request.mode == "refactor":
+        if request.mode == "cleanup":
             return (request.confidence or "incomplete") == "complete" and not request.next_step_required
 
         # Review mode
@@ -690,12 +690,12 @@ class CodeReviewTool(WorkflowTool):
             return "external"
 
     def get_completion_status(self) -> str:
-        if self._current_mode == "refactor":
+        if self._current_mode == "cleanup":
             return "refactoring_analysis_complete_ready_for_implementation"
         return "code_review_complete_ready_for_implementation"
 
     def get_completion_data_key(self) -> str:
-        if self._current_mode == "refactor":
+        if self._current_mode == "cleanup":
             return "complete_refactoring"
         return "complete_code_review"
 
@@ -703,12 +703,12 @@ class CodeReviewTool(WorkflowTool):
         return request.findings
 
     def get_confidence_level(self, request) -> str:
-        if self._current_mode == "refactor":
+        if self._current_mode == "cleanup":
             return "complete"
         return "certain"
 
     def get_completion_message(self) -> str:
-        if self._current_mode == "refactor":
+        if self._current_mode == "cleanup":
             return (
                 "Refactoring analysis complete with COMPLETE confidence. You have identified all significant "
                 "refactoring opportunities and provided comprehensive analysis. MANDATORY: Present the user with "
@@ -724,22 +724,22 @@ class CodeReviewTool(WorkflowTool):
         )
 
     def get_skip_reason(self) -> str:
-        if self._current_mode == "refactor":
+        if self._current_mode == "cleanup":
             return "Completed comprehensive refactoring analysis with full confidence locally"
         return "Completed comprehensive code review with internal analysis only (no external model validation)"
 
     def get_skip_expert_analysis_status(self) -> str:
-        if self._current_mode == "refactor":
+        if self._current_mode == "cleanup":
             return "skipped_due_to_complete_refactoring_confidence"
         return "skipped_due_to_internal_analysis_type"
 
     def prepare_work_summary(self) -> str:
-        if self._current_mode == "refactor":
+        if self._current_mode == "cleanup":
             return self._build_refactoring_summary(self.consolidated_findings)
         return self._build_code_review_summary(self.consolidated_findings)
 
     def get_completion_next_steps_message(self, expert_analysis_used: bool = False) -> str:
-        if self._current_mode == "refactor":
+        if self._current_mode == "cleanup":
             base_message = (
                 "REFACTORING ANALYSIS IS COMPLETE. You MUST now summarise and present ALL refactoring opportunities "
                 "organised by type (codesmells → decompose → modernize → organization) and severity (Critical → High → "
@@ -765,7 +765,7 @@ class CodeReviewTool(WorkflowTool):
         return base_message
 
     def get_expert_analysis_guidance(self) -> str:
-        if self._current_mode == "refactor":
+        if self._current_mode == "cleanup":
             return (
                 "IMPORTANT: Expert refactoring analysis has been provided above. You MUST review "
                 "the expert's architectural insights and refactoring recommendations. Consider whether "
@@ -789,7 +789,7 @@ class CodeReviewTool(WorkflowTool):
 
     def get_step_guidance_message(self, request) -> str:
         self._current_mode = request.mode
-        if request.mode == "refactor":
+        if request.mode == "cleanup":
             guidance = self.get_refactor_step_guidance(
                 request.step_number, request.confidence or "incomplete", request
             )
@@ -908,7 +908,7 @@ class CodeReviewTool(WorkflowTool):
         return {"next_steps": next_steps}
 
     def get_refactor_step_guidance(self, step_number: int, confidence: str, request) -> dict[str, Any]:
-        """Step-specific guidance for refactor mode."""
+        """Step-specific guidance for cleanup mode."""
         required_actions = self._get_refactor_required_actions(step_number, confidence)
         tool_name = self.get_name()
 
@@ -973,7 +973,7 @@ class CodeReviewTool(WorkflowTool):
                     "standards": request.standards,
                     "severity_filter": request.severity_filter,
                 }
-            elif request.mode == "refactor" and request.relevant_files:
+            elif request.mode == "cleanup" and request.relevant_files:
                 self.refactor_config = {
                     "relevant_files": request.relevant_files,
                     "refactor_type": request.refactor_type,
@@ -982,7 +982,7 @@ class CodeReviewTool(WorkflowTool):
                 }
 
         # Map generic status keys to mode-specific ones
-        if request.mode == "refactor":
+        if request.mode == "cleanup":
             status_mapping = {
                 f"{tool_name}_in_progress": "refactoring_analysis_in_progress",
                 f"pause_for_{tool_name}": "pause_for_refactoring_analysis",
@@ -1002,7 +1002,7 @@ class CodeReviewTool(WorkflowTool):
 
         # Rename status field and add mode-specific sub-fields
         if f"{tool_name}_status" in response_data:
-            if request.mode == "refactor":
+            if request.mode == "cleanup":
                 response_data["refactoring_status"] = response_data.pop(f"{tool_name}_status")
                 refactor_types: dict = {}
                 for issue in self.consolidated_findings.issues_found:
@@ -1020,7 +1020,7 @@ class CodeReviewTool(WorkflowTool):
                 response_data["code_review_status"]["review_validation_type"] = self.get_review_validation_type(request)
 
         # Map completion keys
-        if request.mode == "refactor":
+        if request.mode == "cleanup":
             if f"complete_{tool_name}" in response_data:
                 response_data["complete_refactoring"] = response_data.pop(f"complete_{tool_name}")
             if f"{tool_name}_complete" in response_data:

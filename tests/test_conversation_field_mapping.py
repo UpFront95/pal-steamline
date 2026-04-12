@@ -31,7 +31,7 @@ async def test_conversation_history_field_mapping():
             "original_value": "Getting undefined error",
         },
         {
-            "tool_name": "codereview",
+            "tool_name": "review",
             "original_value": "Review this implementation",
         },
         {

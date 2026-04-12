@@ -13,7 +13,7 @@ class TestDebugTool:
         tool = DebugIssueTool()
 
         assert tool.get_name() == "debug"
-        assert "debugging and root cause analysis" in tool.get_description()
+        assert "isn't working" in tool.get_description()
         assert tool.get_default_temperature() == 1.0  # TEMPERATURE_ANALYTICAL
         assert tool.requires_model() is True
 

@@ -252,7 +252,7 @@ TOOLS = {
     "chat": ChatTool(),  # Interactive development chat and brainstorming
     "thinkdeep": ThinkDeepTool(),  # Step-by-step deep thinking workflow with expert analysis
     "consensus": ConsensusTool(),  # Step-by-step consensus workflow with multi-model analysis
-    "codereview": CodeReviewTool(),  # Comprehensive step-by-step code review workflow with expert analysis
+    "review": CodeReviewTool(),  # Systematic code review and cleanup workflow with expert analysis
     "debug": DebugIssueTool(),  # Root cause analysis and debugging assistance
     "apilookup": LookupTool(),  # Quick web/API lookup instructions
     "listmodels": ListModelsTool(),  # List all available AI models by provider
@@ -277,21 +277,21 @@ PROMPT_TEMPLATES = {
         "description": "Step-by-step consensus workflow with multi-model analysis",
         "template": "Start comprehensive consensus workflow with {model}",
     },
-    "codereview": {
+    "review": {
         "name": "review",
-        "description": "Perform a comprehensive code review",
+        "description": "Check code that works but might have issues",
         "template": "Perform a comprehensive code review with {model}",
     },
     "debug": {
         "name": "debug",
-        "description": "Debug an issue or error",
+        "description": "Figure out why code isn't working",
         "template": "Help debug this issue with {model}",
     },
-    "refactor": {
-        "name": "refactor",
-        "description": "Refactor and improve code structure",
+    "cleanup": {
+        "name": "cleanup",
+        "description": "Clean up and improve code structure",
         "template": (
-            "Use the codereview tool with mode='refactor' and model='mimo'. "
+            "Use the review tool with mode='cleanup' and model='mimo'. "
             "refactor_type options: 'codesmells' (default — find anti-patterns and bad practices), "
             "'decompose' (break up large functions/classes), "
             "'modernize' (update to current language idioms), "
@@ -635,7 +635,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
     1. THREAD RESUMPTION: When continuation_id is present, it reconstructs complete conversation
        context from in-memory storage including conversation history and file references
 
-    2. CROSS-TOOL CONTINUATION: Enables seamless handoffs between different tools (codereview →
+    2. CROSS-TOOL CONTINUATION: Enables seamless handoffs between different tools (review →
        debug → thinkdeep) while preserving full conversation context and file references
 
     3. CONTEXT INJECTION: Reconstructed conversation history is embedded into tool prompts
@@ -654,7 +654,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
     - Supporting conversation chains across different tool types
 
     Args:
-        name: The name of the tool to execute (e.g., "chat", "debug", "codereview")
+        name: The name of the tool to execute (e.g., "chat", "debug", "review")
         arguments: Dictionary of arguments to pass to the tool, potentially including:
                   - continuation_id: UUID for conversation thread resumption
                   - files: File paths for analysis (subject to deduplication)
@@ -674,7 +674,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
     Example Conversation Flow:
         1. The CLI calls debug tool with files → creates new thread
         2. Thread ID returned in continuation offer
-        3. The CLI continues with codereview tool + continuation_id → full context preserved
+        3. The CLI continues with review tool + continuation_id → full context preserved
         4. Multiple tools can collaborate using same thread ID
     """
     logger.info(f"MCP tool call: {name}")
@@ -957,7 +957,7 @@ async def reconstruct_thread_context(arguments: dict[str, Any]) -> dict[str, Any
         1. CLI: "Continue reviewing the security issues" + continuation_id
         2. reconstruct_thread_context() loads previous conversation
         3. Debug tool receives full context including previous file analysis
-        4. Debug tool can reference specific findings from codereview
+        4. Debug tool can reference specific findings from review
         5. Natural cross-tool collaboration without context loss
     """
     from utils.conversation_memory import add_turn, build_conversation_history, get_thread

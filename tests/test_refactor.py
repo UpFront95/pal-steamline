@@ -1,8 +1,8 @@
 """
-Tests for refactor mode of the CodeReview tool.
+Tests for cleanup mode of the CodeReview tool (exposed as the 'review' tool).
 
-Since codereview and refactor are now a single merged tool, these tests
-verify that CodeReviewTool behaves correctly when called with mode='refactor'.
+Since review and cleanup are now a single merged tool, these tests
+verify that CodeReviewTool behaves correctly when called with mode='cleanup'.
 """
 
 import json
@@ -14,23 +14,22 @@ from utils.file_utils import read_file_content
 
 
 class TestRefactorMode:
-    """Test suite for the refactor mode of the CodeReview tool."""
+    """Test suite for the cleanup mode of the CodeReview tool."""
 
     @pytest.fixture
     def refactor_tool(self):
         """Create a CodeReviewTool instance for testing."""
         return CodeReviewTool()
 
-    def test_get_name_returns_codereview(self, refactor_tool):
-        """Tool name is always 'codereview' regardless of mode."""
-        assert refactor_tool.get_name() == "codereview"
+    def test_get_name_returns_review(self, refactor_tool):
+        """Tool name is 'review' regardless of mode."""
+        assert refactor_tool.get_name() == "review"
 
-    def test_get_description_mentions_refactor(self, refactor_tool):
+    def test_get_description_mentions_cleanup(self, refactor_tool):
         """Description covers both modes."""
         description = refactor_tool.get_description()
-        assert "refactor" in description.lower()
+        assert "cleanup" in description.lower()
         assert "code smell" in description.lower()
-        assert "decomposition" in description.lower()
 
     def test_get_input_schema_includes_refactor_fields(self, refactor_tool):
         """Input schema includes all refactor-specific fields."""
@@ -69,7 +68,7 @@ class TestRefactorMode:
     def test_refactor_mode_request_validation(self):
         """CodeReviewRequest validates correctly in refactor mode."""
         req = CodeReviewRequest(
-            mode="refactor",
+            mode="cleanup",
             step="Analysing code for smells",
             step_number=1,
             total_steps=2,
@@ -78,7 +77,7 @@ class TestRefactorMode:
             relevant_files=["/some/file.py"],
             refactor_type="codesmells",
         )
-        assert req.mode == "refactor"
+        assert req.mode == "cleanup"
         # confidence should default to "incomplete" when not provided
         assert req.confidence == "incomplete"
         assert req.refactor_type == "codesmells"
@@ -125,11 +124,11 @@ class TestRefactorMode:
                 confidence="partial",
             )
 
-    def test_cross_mode_validation_review_fields_in_refactor(self):
-        """Cross-mode field validation: review fields rejected in refactor mode."""
+    def test_cross_mode_validation_review_fields_in_cleanup(self):
+        """Cross-mode field validation: review fields rejected in cleanup mode."""
         with pytest.raises(ValueError, match="review_type"):
             CodeReviewRequest(
-                mode="refactor",
+                mode="cleanup",
                 step="step",
                 step_number=1,
                 total_steps=1,
@@ -142,7 +141,7 @@ class TestRefactorMode:
     def test_should_skip_expert_analysis_complete_confidence(self, refactor_tool):
         """Skip expert analysis when confidence='complete' and no more steps."""
         req = CodeReviewRequest(
-            mode="refactor",
+            mode="cleanup",
             step="done",
             step_number=2,
             total_steps=2,
@@ -153,13 +152,13 @@ class TestRefactorMode:
         )
         from unittest.mock import MagicMock
 
-        refactor_tool._current_mode = "refactor"
+        refactor_tool._current_mode = "cleanup"
         assert refactor_tool.should_skip_expert_analysis(req, MagicMock())
 
     def test_should_not_skip_expert_analysis_partial_confidence(self, refactor_tool):
         """Do not skip expert analysis when confidence is partial."""
         req = CodeReviewRequest(
-            mode="refactor",
+            mode="cleanup",
             step="partial analysis",
             step_number=2,
             total_steps=2,
@@ -170,14 +169,14 @@ class TestRefactorMode:
         )
         from unittest.mock import MagicMock
 
-        refactor_tool._current_mode = "refactor"
+        refactor_tool._current_mode = "cleanup"
         assert not refactor_tool.should_skip_expert_analysis(req, MagicMock())
 
     def test_system_prompt_switches_by_mode(self, refactor_tool):
         """get_system_prompt returns different prompts for each mode."""
         from systemprompts import CODEREVIEW_PROMPT, REFACTOR_PROMPT
 
-        refactor_tool._current_mode = "refactor"
+        refactor_tool._current_mode = "cleanup"
         assert refactor_tool.get_system_prompt() == REFACTOR_PROMPT
 
         refactor_tool._current_mode = "review"
@@ -187,7 +186,7 @@ class TestRefactorMode:
         """Step 1 must provide relevant_files regardless of mode."""
         with pytest.raises(ValueError, match="relevant_files"):
             CodeReviewRequest(
-                mode="refactor",
+                mode="cleanup",
                 step="step",
                 step_number=1,
                 total_steps=2,

@@ -119,9 +119,9 @@ class DebugIssueTool(WorkflowTool):
 
     def get_description(self) -> str:
         return (
-            "Performs systematic debugging and root cause analysis for any type of issue. "
-            "Use for complex bugs, mysterious errors, performance issues, race conditions, memory leaks, and integration problems. "
-            "Guides through structured investigation with hypothesis testing and expert analysis."
+            "Use when code isn't working and you don't know why. "
+            "Steps through the problem systematically, tests hypotheses, and finds the root cause. "
+            "For code that works but needs checking, use the review tool instead."
         )
 
     def get_system_prompt(self) -> str:
