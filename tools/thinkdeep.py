@@ -106,7 +106,9 @@ class ThinkDeepTool(WorkflowTool):
     description = (
         "Performs multi-stage investigation and reasoning for complex problem analysis. "
         "Use for architecture decisions, complex bugs, performance challenges, and security analysis. "
-        "Provides systematic hypothesis testing, evidence-based investigation, and expert validation."
+        "Provides systematic hypothesis testing, evidence-based investigation, and expert validation. "
+        "Accepts a continuation_id from a prior chat thread to inherit full conversation context "
+        "and extend the discussion into deep systematic reasoning."
     )
 
     def __init__(self):

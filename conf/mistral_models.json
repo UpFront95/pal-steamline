@@ -1,0 +1,41 @@
+{
+  "_README": {
+    "description": "Model metadata for Mistral API access.",
+    "documentation": "https://docs.mistral.ai/getting-started/quickstart",
+    "usage": "Models listed here are exposed directly through the Mistral provider. Aliases are case-insensitive.",
+    "field_notes": "Matches providers/shared/model_capabilities.py.",
+    "field_descriptions": {
+      "model_name": "The model identifier sent to the Mistral API",
+      "aliases": "Array of short names users can type instead of the full model name",
+      "context_window": "Total number of tokens the model can process (input + output combined)",
+      "max_output_tokens": "Maximum number of tokens the model can generate in a single response",
+      "supports_extended_thinking": "Whether the model supports extended reasoning tokens",
+      "supports_json_mode": "Whether the model can guarantee valid JSON output",
+      "supports_function_calling": "Whether the model supports function/tool calling",
+      "supports_images": "Whether the model can process images/visual input",
+      "supports_temperature": "Whether the model accepts temperature parameter in API calls",
+      "description": "Human-readable description of the model"
+    }
+  },
+  "models": [
+    {
+      "model_name": "mistral-large-latest",
+      "friendly_name": "Mistral (Mistral Large)",
+      "aliases": [
+        "mistral",
+        "mistral-large",
+        "mistral-large-latest"
+      ],
+      "description": "Mistral Large (256K context) - Top-tier reasoning model with function calling and JSON mode support",
+      "context_window": 256000,
+      "max_output_tokens": 32000,
+      "supports_extended_thinking": false,
+      "supports_system_prompts": true,
+      "supports_streaming": true,
+      "supports_function_calling": true,
+      "supports_json_mode": true,
+      "supports_images": false,
+      "supports_temperature": true
+    }
+  ]
+}

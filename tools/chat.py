@@ -225,6 +225,29 @@ class ChatTool(SimpleTool):
                 )
         return None
 
+    def _thinkdeep_hint(self, request: ChatRequest) -> str:
+        """
+        Return a thinkdeep suggestion string when the thread has reached 3+ turns,
+        or an empty string otherwise.
+        """
+        cid = self.get_request_continuation_id(request)
+        if not cid:
+            return ""
+        try:
+            from utils.conversation_memory import get_thread
+
+            thread = get_thread(cid)
+            # 5 turns = user1, assistant1, user2, assistant2, user3 → we're at the 3rd exchange
+            if thread and len(thread.turns) >= 5:
+                return (
+                    f"\n\n---\n\n"
+                    f"💡 **Go deeper?** Invoke `thinkdeep` with `continuation_id: {cid}` "
+                    f"to extend this thread into systematic deep reasoning."
+                )
+        except Exception:
+            pass
+        return ""
+
     def format_response(self, response: str, request: ChatRequest, model_info: Optional[dict] = None) -> str:
         """
         Format the chat response to match the original Chat tool exactly.
@@ -273,6 +296,8 @@ class ChatTool(SimpleTool):
 
                     instruction = self._build_agent_instruction(artifact_path)
                     body = self._join_sections(sanitized_text, instruction)
+
+        body = body + self._thinkdeep_hint(request)
 
         final_output = (
             f"{body}\n\n---\n\nAGENT'S TURN: Evaluate this perspective alongside your analysis to "

@@ -423,7 +423,10 @@ class SimpleTool(BaseTool):
                 base_system_prompt, capabilities
             )
             language_instruction = self.get_language_instruction()
-            system_prompt = language_instruction + capability_augmented_prompt
+            # Prepend model identity so models don't hallucinate their own name
+            friendly = getattr(capabilities, "friendly_name", None) or self._model_context.model_name
+            identity_line = f"You are {friendly}.\n\n"
+            system_prompt = language_instruction + identity_line + capability_augmented_prompt
 
             # Generate AI response using the provider
             logger.info(f"Sending request to {provider.get_provider_type().value} API for {self.get_name()}")

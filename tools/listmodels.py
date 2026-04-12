@@ -376,7 +376,7 @@ class ListModelsTool(BaseTool):
 
         # Add usage tips
         output_lines.append("\n**Usage Tips**:")
-        output_lines.append("- Use model aliases (`mimo`, `gemini`, `gpt`, `qwen`) for convenience")
+        output_lines.append("- Use model aliases (`mimo`, `gemini`, `gpt`, `qwen`, `mistral`) for convenience")
         output_lines.append("- Default model is `mimo` (xiaomi/mimo-v2-pro)")
         output_lines.append("- Custom models are only available when CUSTOM_API_URL is set")
         output_lines.append("- OpenRouter provides access to many cloud models with one API key")

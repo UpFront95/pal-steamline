@@ -66,7 +66,7 @@ DEFAULT_THINKING_MODE_THINKDEEP = get_env("DEFAULT_THINKING_MODE_THINKDEEP", "hi
 
 # Expert escalation model for workflow tools (thinkdeep, debug, codereview, consensus)
 # When set, the expert validation pass uses a different model than the primary analysis model.
-# Use an alias (mimo, gemini, gpt, qwen) or a full model name.
+# Use an alias (mimo, gemini, gpt, qwen, mistral) or a full model name.
 # Set to empty string to disable cross-model escalation (expert uses same model as primary).
 EXPERT_MODEL = get_env("EXPERT_MODEL", "gemini")
 

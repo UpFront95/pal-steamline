@@ -87,13 +87,13 @@ class TestOpenRouterModelRegistry:
         registry = OpenRouterModelRegistry()
 
         # Should be able to look up by full model name
-        config = registry.resolve("anthropic/claude-opus-4.1")
+        config = registry.resolve("openai/gpt-5.4")
         assert config is not None
-        assert config.model_name == "anthropic/claude-opus-4.1"
+        assert config.model_name == "openai/gpt-5.4"
 
-        config = registry.resolve("openai/o3")
+        config = registry.resolve("google/gemini-3.1-pro-preview")
         assert config is not None
-        assert config.model_name == "openai/o3"
+        assert config.model_name == "google/gemini-3.1-pro-preview"
 
     def test_unknown_model_resolution(self):
         """Test resolution of unknown models."""

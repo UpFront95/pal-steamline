@@ -23,11 +23,12 @@
   "models": [
     {
       "model_name": "xiaomi/mimo-v2-pro",
+      "friendly_name": "MiMo V2 Pro",
       "aliases": [
         "mimo"
       ],
       "context_window": 1000000,
-      "max_output_tokens": 131072,
+      "max_output_tokens": 32000,
       "supports_extended_thinking": true,
       "supports_json_mode": true,
       "supports_function_calling": true,
@@ -35,13 +36,13 @@
       "max_image_size_mb": 0.0,
       "supports_temperature": true,
       "allow_code_generation": true,
-      "description": "Xiaomi MiMo V2 Pro — 1M context, deep thinking, function calling, JSON, web search"
+      "description": "Xiaomi MiMo V2 Pro \u2014 1M context, deep thinking, function calling, JSON, web search"
     },
     {
       "model_name": "llama3.2",
       "aliases": [],
       "context_window": 128000,
-      "max_output_tokens": 64000,
+      "max_output_tokens": 32000,
       "supports_extended_thinking": false,
       "supports_json_mode": false,
       "supports_function_calling": false,
