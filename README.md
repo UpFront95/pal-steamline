@@ -17,7 +17,7 @@ The idea of this fork is legibility. The upstream PAL MCP server is powerful but
 
 ## Tools
 
-Eight tools. `version` and `listmodels` are always on; the rest can be individually disabled via `DISABLED_TOOLS`.
+Six tools, plus `apilookup`, `listmodels`, and `version` for internal use. Any tool can be disabled via `DISABLED_TOOLS`.
 
 Multi-turn conversations persist within a session using `continuation_id`. Start a thread with `debug` and continue it with `review` — full context carries over.
 
@@ -29,9 +29,6 @@ Multi-turn conversations persist within a session using `continuation_id`. Start
 | `review` | Code quality, security, and performance audit — for code that works but needs checking |
 | `cleanup` | Code smell detection, decomposition, and modernization (`mode="cleanup"` on the review tool) |
 | `consensus` | Multi-model answer synthesis — asks 2–3 models and compares |
-| `apilookup` | Web/API reference lookup |
-| `listmodels` | Lists available model aliases and their resolved names |
-| `version` | Server version and build info |
 
 ---
 
