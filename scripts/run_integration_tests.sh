@@ -78,13 +78,13 @@ echo ""
 if [[ "$1" == "--with-simulator" ]]; then
     echo "🤖 Running simulator tests..."
     echo "----------------------------"
-    python communication_simulator_test.py --verbose
+    python simulator_tests/communication_simulator_test.py --verbose
     echo ""
     echo "✅ Simulator tests completed!"
 fi
 
 echo "💡 Tips:"
-echo "- Run './run_integration_tests.sh' for integration tests only"
-echo "- Run './run_integration_tests.sh --with-simulator' to also run simulator tests"
-echo "- Run './code_quality_checks.sh' for unit tests and linting"
+echo "- Run './scripts/run_integration_tests.sh' for integration tests only"
+echo "- Run './scripts/run_integration_tests.sh --with-simulator' to also run simulator tests"
+echo "- Run './scripts/code_quality_checks.sh' for unit tests and linting"
 echo "- Check logs in logs/mcp_server.log if tests fail"

@@ -1,10 +1,10 @@
 #!/bin/bash
 # Wrapper script for Gemini CLI compatibility
 
-# Get the directory of this script
-DIR="$(cd "$(dirname "$0")" && pwd)"
+# Get the project root (one level up from scripts/)
+DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
-# Change to the pal-mcp-server directory
+# Change to the project root
 cd "$DIR"
 
 # Execute the Python server with all arguments passed through

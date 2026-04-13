@@ -15,7 +15,7 @@ class TestDockerMCPConfiguration:
     def test_dockerfile_configuration(self):
         """Test Dockerfile configuration"""
         project_root = Path(__file__).parent.parent
-        dockerfile = project_root / "Dockerfile"
+        dockerfile = project_root / "docker" / "Dockerfile"
 
         if not dockerfile.exists():
             pytest.skip("Dockerfile not found")
@@ -151,10 +151,10 @@ class TestIntegrationChecks:
 
         # Checklist for essential files
         essential_files = {
-            "Dockerfile": project_root / "Dockerfile",
+            "Dockerfile": project_root / "docker" / "Dockerfile",
             "server.py": project_root / "server.py",
             "requirements.txt": project_root / "requirements.txt",
-            "docker-compose.yml": project_root / "docker-compose.yml",
+            "docker-compose.yml": project_root / "docker" / "docker-compose.yml",
         }
 
         missing_files = []
@@ -174,7 +174,7 @@ class TestIntegrationChecks:
 
         # MCP integration checks
         checks = {
-            "dockerfile": (project_root / "Dockerfile").exists(),
+            "dockerfile": (project_root / "docker" / "Dockerfile").exists(),
             "server_script": (project_root / "server.py").exists(),
             "logs_dir": (project_root / "logs").exists() or True,
         }

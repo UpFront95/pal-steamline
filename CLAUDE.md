@@ -13,7 +13,7 @@ Before making any changes or submitting PRs, always run the comprehensive qualit
 source venv/bin/activate
 
 # Run all quality checks (linting, formatting, tests)
-./code_quality_checks.sh
+./scripts/code_quality_checks.sh
 ```
 
 This script automatically runs:
@@ -26,10 +26,10 @@ This script automatically runs:
 **Run Integration Tests (requires API keys):**
 ```bash
 # Run integration tests that make real API calls
-./run_integration_tests.sh
+./scripts/run_integration_tests.sh
 
 # Run integration tests + simulator tests
-./run_integration_tests.sh --with-simulator
+./scripts/run_integration_tests.sh --with-simulator
 ```
 
 ### Server Management
@@ -122,19 +122,19 @@ API keys to ensure the models are working and the server is able to communicate 
 #### Run All Simulator Tests
 ```bash
 # Run the complete test suite
-python communication_simulator_test.py
+python simulator_tests/communication_simulator_test.py
 
 # Run tests with verbose output
-python communication_simulator_test.py --verbose
+python simulator_tests/communication_simulator_test.py --verbose
 ```
 
 #### Quick Test Mode (Recommended for Time-Limited Testing)
 ```bash
 # Run quick test mode - 6 essential tests that provide maximum functionality coverage
-python communication_simulator_test.py --quick
+python simulator_tests/communication_simulator_test.py --quick
 
 # Run quick test mode with verbose output
-python communication_simulator_test.py --quick --verbose
+python simulator_tests/communication_simulator_test.py --quick --verbose
 ```
 
 **Quick mode runs these 5 essential tests:**
@@ -151,19 +151,19 @@ python communication_simulator_test.py --quick --verbose
 #### Run Individual Simulator Tests (For Detailed Testing)
 ```bash
 # List all available tests
-python communication_simulator_test.py --list-tests
+python simulator_tests/communication_simulator_test.py --list-tests
 
 # RECOMMENDED: Run tests individually for better isolation and debugging
-python communication_simulator_test.py --individual basic_conversation
-python communication_simulator_test.py --individual content_validation
-python communication_simulator_test.py --individual cross_tool_continuation
-python communication_simulator_test.py --individual memory_validation
+python simulator_tests/communication_simulator_test.py --individual basic_conversation
+python simulator_tests/communication_simulator_test.py --individual content_validation
+python simulator_tests/communication_simulator_test.py --individual cross_tool_continuation
+python simulator_tests/communication_simulator_test.py --individual memory_validation
 
 # Run multiple specific tests
-python communication_simulator_test.py --tests basic_conversation content_validation
+python simulator_tests/communication_simulator_test.py --tests basic_conversation content_validation
 
 # Run individual test with verbose output for debugging
-python communication_simulator_test.py --individual memory_validation --verbose
+python simulator_tests/communication_simulator_test.py --individual memory_validation --verbose
 ```
 
 Available simulator tests include:
@@ -236,22 +236,22 @@ python -m pytest tests/ -v
 
 #### Before Making Changes
 1. Ensure virtual environment is activated: `source .pal_venv/bin/activate`
-2. Run quality checks: `./code_quality_checks.sh`
+2. Run quality checks: `./scripts/code_quality_checks.sh`
 3. Check logs to ensure server is healthy: `tail -n 50 logs/mcp_server.log`
 
 #### After Making Changes
-1. Run quality checks again: `./code_quality_checks.sh`
-2. Run integration tests locally: `./run_integration_tests.sh`
-3. Run quick test mode for fast validation: `python communication_simulator_test.py --quick`
-4. Run relevant specific simulator tests if needed: `python communication_simulator_test.py --individual <test_name>`
+1. Run quality checks again: `./scripts/code_quality_checks.sh`
+2. Run integration tests locally: `./scripts/run_integration_tests.sh`
+3. Run quick test mode for fast validation: `python simulator_tests/communication_simulator_test.py --quick`
+4. Run relevant specific simulator tests if needed: `python simulator_tests/communication_simulator_test.py --individual <test_name>`
 5. Check logs for any issues: `tail -n 100 logs/mcp_server.log`
 6. Restart Claude session to use updated code
 
 #### Before Committing/PR
-1. Final quality check: `./code_quality_checks.sh`
-2. Run integration tests: `./run_integration_tests.sh`
-3. Run quick test mode: `python communication_simulator_test.py --quick`
-4. Run full simulator test suite (optional): `./run_integration_tests.sh --with-simulator`
+1. Final quality check: `./scripts/code_quality_checks.sh`
+2. Run integration tests: `./scripts/run_integration_tests.sh`
+3. Run quick test mode: `python simulator_tests/communication_simulator_test.py --quick`
+4. Run full simulator test suite (optional): `./scripts/run_integration_tests.sh --with-simulator`
 5. Verify all tests pass 100%
 
 ### Common Troubleshooting
@@ -272,16 +272,16 @@ which python
 #### Test Failures
 ```bash
 # First try quick test mode to see if it's a general issue
-python communication_simulator_test.py --quick --verbose
+python simulator_tests/communication_simulator_test.py --quick --verbose
 
 # Run individual failing test with verbose output
-python communication_simulator_test.py --individual <test_name> --verbose
+python simulator_tests/communication_simulator_test.py --individual <test_name> --verbose
 
 # Check server logs during test execution
 tail -f logs/mcp_server.log
 
 # Run tests with debug output
-LOG_LEVEL=DEBUG python communication_simulator_test.py --individual <test_name>
+LOG_LEVEL=DEBUG python simulator_tests/communication_simulator_test.py --individual <test_name>
 ```
 
 #### Linting Issues
@@ -299,7 +299,7 @@ isort --check-only .
 
 ### File Structure Context
 
-- `./code_quality_checks.sh` - Comprehensive quality check script
+- `./scripts/code_quality_checks.sh` - Comprehensive quality check script
 - `./run-server.sh` - Server setup and management
 - `communication_simulator_test.py` - End-to-end testing framework
 - `simulator_tests/` - Individual test modules

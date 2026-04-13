@@ -29,8 +29,8 @@ class TestDockerConfiguration:
     def setup_method(self):
         """Setup for each test"""
         self.project_root = Path(__file__).parent.parent
-        self.docker_compose_path = self.project_root / "docker-compose.yml"
-        self.dockerfile_path = self.project_root / "Dockerfile"
+        self.docker_compose_path = self.project_root / "docker" / "docker-compose.yml"
+        self.dockerfile_path = self.project_root / "docker" / "Dockerfile"
 
     def test_dockerfile_exists(self):
         """Test that Dockerfile exists and is valid"""
@@ -233,7 +233,7 @@ class TestDockerSecurity:
 
     def test_non_root_user_configuration(self):
         """Test that the container uses a non-root user"""
-        dockerfile_path = Path(__file__).parent.parent / "Dockerfile"
+        dockerfile_path = Path(__file__).parent.parent / "docker" / "Dockerfile"
 
         if dockerfile_path.exists():
             content = dockerfile_path.read_text()
@@ -257,7 +257,7 @@ class TestDockerSecurity:
 
     def test_environment_variable_security(self):
         """Test that sensitive environment variables are not hardcoded"""
-        dockerfile_path = Path(__file__).parent.parent / "Dockerfile"
+        dockerfile_path = Path(__file__).parent.parent / "docker" / "Dockerfile"
 
         if dockerfile_path.exists():
             content = dockerfile_path.read_text()

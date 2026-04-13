@@ -23,7 +23,7 @@ class TestDockerMCPValidation:
     def setup(self):
         """Automatic setup for each test"""
         self.project_root = Path(__file__).parent.parent
-        self.dockerfile_path = self.project_root / "Dockerfile"
+        self.dockerfile_path = self.project_root / "docker" / "Dockerfile"
 
     def test_dockerfile_exists_and_valid(self):
         """Test Dockerfile existence and validity"""
