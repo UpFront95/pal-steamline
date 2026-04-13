@@ -58,6 +58,15 @@ Five aliases across three providers.
 
 Workflow tools (`thinkdeep`, `debug`, `review`, `consensus`) run a two-pass analysis: the primary model does the main work, then `EXPERT_MODEL` (`gemini` by default) runs the validation pass. Set `EXPERT_MODEL=""` to disable and use a single model throughout.
 
+## Typical use
+
+**chat** — "hey can you look at this api design and tell me if anything seems off"
+**thinkdeep** — "i can't figure out if i should use websockets or polling here, help me think it through"
+**debug** — "this keeps throwing a 422 and i have no idea why"
+**review** — "this auth middleware is going to production next week, can you check it over"
+**cleanup** — "this file has gotten out of hand, it's 800 lines and really hard to follow"
+**consensus** — "should i use postgres or mongodb for this? i keep going back and forth"
+
 ---
 
 ## Installation
