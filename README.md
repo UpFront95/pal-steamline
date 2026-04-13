@@ -1,6 +1,7 @@
 # pal-STEAMline
 
 A stripped-down, opinionated fork of [PAL MCP Server](https://github.com/ppl-ai/pal-mcp-server), built specifically for use with Claude Code.
+Derived from upstream work by Fahad Gilani and the Zen MCP project. Core engine, provider abstractions, and MCP transport originate there.
 
 ---
 
@@ -142,8 +143,3 @@ source .pal_venv/bin/activate
 python -m pytest tests/ -v -m "not integration"   # unit tests only
 ```
 
----
-
-## Attribution
-
-This project is an opinionated fork of [PAL MCP Server](https://github.com/ppl-ai/pal-mcp-server) by Fahad Gilani, which was itself derived from Zen MCP. The core tool engine, provider abstractions, conversation memory system, and MCP transport layer originate from that upstream work.
