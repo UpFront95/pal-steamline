@@ -6,38 +6,28 @@ A stripped-down, opinionated fork of [PAL MCP Server](https://github.com/ppl-ai/
 
 ## Why this fork exists
 
-The upstream PAL MCP server is powerful but ships with 15+ tools, a dynamic auto-mode engine, and a large configuration surface. When used inside Claude Code, a high tool count clutters the tool picker, inflates context overhead, and can lead to unpredictable tool selection.
+Claude Code is genuinely excellent at what it does. But even excellent tools have blind spots shaped by their training, architecture, and design goals — and a second opinion from a model with different training data, different construction, and a different focus is often worth having.
 
-**pal-steamline** cuts the noise. Nine tools and the auto-mode intelligence are removed, leaving a focused set of high-value developer workflows with deterministic model routing via a dual-provider (fast primary + expert validator) setup.
+**pal-steamline** brings that into Claude Code. It gives you a set of purpose-built tools that reach out to other models mid-session: to review your code, debug a problem from a fresh angle, reason through something hard, or ask three models at once what they think. You stay in Claude Code. The conversation context carries over. You just get more perspectives.
 
----
-
-## What was removed
-
-| Removed | Reason |
-|---|---|
-| `planner`, `analyze`, `secaudit`, `tracer`, `docgen`, `precommit`, `testgen` | Workflow tools rarely used; added friction to tool picker |
-| `clink` | CLI-to-CLI bridge — not needed in Claude Code context |
-| `challenge` | Adversarial debate tool — replaced by `consensus` for most use cases |
-| `refactor` (standalone) | Merged into `codereview` as `mode="refactor"` — one tool, two modes |
-| Auto-mode intelligence | Dynamic model selection removed; routing is now explicit and deterministic |
-| HTTP cassette test suite | Was testing native OpenAI/Gemini paths this fork doesn't use |
+The idea of this fork is legibility. The upstream PAL MCP server is powerful but ships with 15+ tools and a large configuration surface that creates noise in the tool picker and overhead in context. This fork strips it to tools with a clear, distinct purpose — each one does a specific thing you'd actually ask for. Some you'll use constantly. Some you'll reach for rarely. But when you need one, you'll know exactly which it is.
 
 ---
 
 ## Tools
 
-Eight tools remain. `version` and `listmodels` are always enabled; the rest can be individually disabled via `DISABLED_TOOLS`.
+Eight tools. `version` and `listmodels` are always on; the rest can be individually disabled via `DISABLED_TOOLS`.
 
-Multi-turn conversations persist within a server session using `continuation_id`. You can start a thread with `debug` and continue it with `codereview` — the full context carries over.
+Multi-turn conversations persist within a session using `continuation_id`. Start a thread with `debug` and continue it with `review` — full context carries over.
 
 | Tool | What it does |
 |---|---|
 | `chat` | General Q&A, brainstorming, second opinions |
 | `thinkdeep` | Extended step-by-step reasoning on hard problems |
-| `debug` | Root-cause analysis workflow |
-| `codereview` | Code quality, security, and perf audit — also handles `mode="refactor"` |
-| `consensus` | Multi-model answer synthesis on a question |
+| `debug` | Root-cause analysis workflow — for code that isn't working |
+| `review` | Code quality, security, and performance audit — for code that works but needs checking |
+| `cleanup` | Code smell detection, decomposition, and modernization (`mode="cleanup"` on the review tool) |
+| `consensus` | Multi-model answer synthesis — asks 2–3 models and compares |
 | `apilookup` | Web/API reference lookup |
 | `listmodels` | Lists available model aliases and their resolved names |
 | `version` | Server version and build info |
@@ -46,13 +36,14 @@ Multi-turn conversations persist within a server session using `continuation_id`
 
 ## Model routing
 
-Two providers, four aliases.
+Five aliases across three providers.
 
 ### Providers
 
 | Provider | Role | Config |
 |---|---|---|
 | **Custom API** | Primary — fast and cheap for most tasks | `CUSTOM_API_URL` + `CUSTOM_API_KEY` |
+| **Mistral** | Native Mistral API | `MISTRAL_API_KEY` |
 | **OpenRouter** | Secondary — expert escalation and alternatives | `OPENROUTER_API_KEY` |
 
 ### Aliases
@@ -60,13 +51,14 @@ Two providers, four aliases.
 | Alias | Resolves to | Provider | Role |
 |---|---|---|---|
 | `mimo` | `xiaomi/mimo-v2-pro` | Custom API | **Default** |
+| `mistral` | `mistral-large-latest` | Mistral | Fast, strong reasoning |
 | `gemini` | `google/gemini-3.1-pro-preview` | OpenRouter | **Expert escalation** |
 | `gpt` | `openai/gpt-5.4` | OpenRouter | Alternative |
 | `qwen` | `qwen/qwen3.6-plus` | OpenRouter | Alternative |
 
 ### Expert escalation
 
-Workflow tools (`thinkdeep`, `debug`, `codereview`, `consensus`) run a two-pass analysis: the primary model (`mimo` by default) does the main work, then `EXPERT_MODEL` (`gemini`) runs the validation pass. Set `EXPERT_MODEL=""` to disable this and use a single model throughout.
+Workflow tools (`thinkdeep`, `debug`, `review`, `consensus`) run a two-pass analysis: the primary model does the main work, then `EXPERT_MODEL` (`gemini` by default) runs the validation pass. Set `EXPERT_MODEL=""` to disable and use a single model throughout.
 
 ---
 
@@ -116,11 +108,13 @@ EXPERT_MODEL=gemini
 CUSTOM_API_URL=https://your-custom-endpoint.com/v1
 CUSTOM_API_KEY=your-key
 
-# OpenRouter (secondary provider — gemini, gpt, qwen)
+# Mistral
+MISTRAL_API_KEY=your-mistral-key
+
+# OpenRouter (gemini, gpt, qwen)
 OPENROUTER_API_KEY=your-openrouter-key
 
 # Optional: restrict which OpenRouter models are visible
-# Leave unset to allow all models in conf/openrouter_models.json
 OPENROUTER_ALLOWED_MODELS=google/gemini-3.1-pro-preview,openai/gpt-5.4,qwen/qwen3.6-plus
 
 # Optional: disable individual tools (version and listmodels cannot be disabled)
@@ -132,11 +126,11 @@ LOCALE=
 
 ### Adding OpenRouter models
 
-The full OpenRouter model catalogue is defined in `conf/openrouter_models.json`. Each entry can have `aliases` — adding a short alias there makes it available by that name in any tool call. The `OPENROUTER_ALLOWED_MODELS` env var then acts as a runtime allowlist on top of that catalogue.
+The full OpenRouter model catalogue is defined in `conf/openrouter_models.json`. Each entry can have `aliases` — adding a short alias there makes it available by that name in any tool call. The `OPENROUTER_ALLOWED_MODELS` env var acts as a runtime allowlist on top of that catalogue.
 
 ### Using a different primary model
 
-Set `DEFAULT_MODEL` to any alias or full model name visible in `listmodels`. To use a different Custom API endpoint (e.g. local Ollama), set `CUSTOM_API_URL=http://localhost:11434/v1` and leave `CUSTOM_API_KEY` empty.
+Set `DEFAULT_MODEL` to any alias or full model name visible in `listmodels`. To use a local model (e.g. Ollama), set `CUSTOM_API_URL=http://localhost:11434/v1` and leave `CUSTOM_API_KEY` empty.
 
 ---
 
