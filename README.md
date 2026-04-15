@@ -25,10 +25,10 @@ Multi-turn conversations persist within a session using `continuation_id`. Start
 |---|---|
 | `chat` | General Q&A, brainstorming, second opinions |
 | `thinkdeep` | Extended step-by-step reasoning on hard problems |
+| `consensus` | Multi-model answer synthesis — asks 2–3 models and compares |
 | `debug` | Root-cause analysis workflow — for code that isn't working |
 | `review` | Code quality, security, and performance audit — for code that works but needs checking |
 | `cleanup` | Code smell detection, decomposition, and modernization (`mode="cleanup"` on the review tool) |
-| `consensus` | Multi-model answer synthesis — asks 2–3 models and compares |
 
 ---
 

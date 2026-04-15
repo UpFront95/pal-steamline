@@ -4,8 +4,8 @@
   "comment3": "For platform-specific examples, see the examples/ directory",
   "mcpServers": {
     "pal": {
-      "command": "/path/to/pal-mcp-server/.pal_venv/bin/python",
-      "args": ["/path/to/pal-mcp-server/server.py"]
+      "command": "/path/to/pal-steamline/.pal_venv/bin/python",
+      "args": ["/path/to/pal-steamline/server.py"]
     }
   }
 }
