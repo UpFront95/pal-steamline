@@ -51,21 +51,5 @@
       "supports_temperature": true,
       "description": "Gemini 3.1 Pro Preview via OpenRouter — 1M context, thinking, tool orchestration, multimodal"
     },
-    {
-      "model_name": "qwen/qwen3.6-plus",
-      "friendly_name": "Qwen 3.6 Plus",
-      "aliases": [
-        "qwen"
-      ],
-      "context_window": 1000000,
-      "max_output_tokens": 32000,
-      "supports_extended_thinking": true,
-      "supports_json_mode": false,
-      "supports_function_calling": true,
-      "supports_images": false,
-      "max_image_size_mb": 0.0,
-      "supports_temperature": true,
-      "description": "Qwen 3.6 Plus via OpenRouter — 1M context, reasoning, hybrid MoE architecture"
-    }
   ]
 }

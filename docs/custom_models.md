@@ -54,7 +54,6 @@ The fork configures three OpenRouter models, one per alias:
 |-------|-----------------|------------|
 | `gpt` | `openai/gpt-5.4` | GPT-5.4 — 1M context, reasoning, tools, vision |
 | `gemini` | `google/gemini-3.1-pro-preview` | Gemini 3.1 Pro — 1M context, thinking, multimodal |
-| `qwen` | `qwen/qwen3.6-plus` | Qwen 3.6 Plus — 1M context, reasoning, MoE architecture |
 
 To add more models, append entries to `conf/openrouter_models.json` and add the alias to `OPENROUTER_ALLOWED_MODELS` in `.env`.
 

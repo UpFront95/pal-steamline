@@ -52,10 +52,9 @@ Initial fork release. pal-steamline is a stripped-down, Claude Code–focused va
 ### Added
 
 **Model aliases (4 total):**
-- `mimo` — default; routes to `xiaomi/mimo-v2-pro` via Custom API
+- `mimo` — default; routes to `xiaomi/mimo-v2.5-pro` via Custom API
 - `gemini` — routes to `google/gemini-3.1-pro-preview` via OpenRouter; used as expert escalation model
 - `gpt` — routes to `openai/gpt-5.4` via OpenRouter
-- `qwen` — routes to `qwen/qwen3.6-plus` via OpenRouter
 
 **Expert escalation:**
 - `EXPERT_MODEL` config added — workflow tools (`thinkdeep`, `debug`, `codereview`, `consensus`) run a two-pass analysis: primary model does the work, `EXPERT_MODEL` (`gemini` by default) validates

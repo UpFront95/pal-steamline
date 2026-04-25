@@ -8,7 +8,7 @@ Claude Code loads `~/.claude/CLAUDE.md` automatically in every project session, 
 # PAL MCP Tools
 
 **Never invoke pal tools unless the user explicitly asks.**
-**Never call a model that isn't explicitly aliased. Available aliases: `mimo` (default), `gemini`, `gpt`, `qwen`.**
+**Never call a model that isn't explicitly aliased. Available aliases: `mimo` (default), `gemini`, `gpt`.**
 
 ## Responding to "pal, how can you help?" (or similar)
 
@@ -22,7 +22,7 @@ List the operational tools and available model aliases:
 - `refactor` — structural code improvement; types: `codesmells` (default), `decompose`, `modernize`, `organization`
 - `consensus` — get multiple models to weigh in on a question
 
-**Model aliases:** `mimo` (default), `gemini`, `gpt`, `qwen`
+**Model aliases:** `mimo` (default), `gemini`, `gpt`
 
 ## Tool picker
 

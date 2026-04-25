@@ -25,7 +25,7 @@
       "model_name": "xiaomi/mimo-v2.5-pro",
       "friendly_name": "MiMo V2.5 Pro",
       "aliases": [
-        "mimo-v2.5-pro"
+        "mimo"
       ],
       "context_window": 1000000,
       "max_output_tokens": 32000,

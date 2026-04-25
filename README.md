@@ -48,11 +48,10 @@ Five aliases across three providers.
 
 | Alias | Resolves to | Provider | Role |
 |---|---|---|---|
-| `mimo` | `xiaomi/mimo-v2-pro` | Custom API | **Default** |
+| `mimo` | `xiaomi/mimo-v2.5-pro` | Custom API | **Default** |
 | `mistral` | `mistral-large-latest` | Mistral | Fast, strong reasoning |
 | `gemini` | `google/gemini-3.1-pro-preview` | OpenRouter | **Expert escalation** |
 | `gpt` | `openai/gpt-5.4` | OpenRouter | Alternative |
-| `qwen` | `qwen/qwen3.6-plus` | OpenRouter | Alternative |
 
 ### Expert escalation
 
@@ -123,11 +122,11 @@ CUSTOM_API_KEY=your-key
 # Mistral
 MISTRAL_API_KEY=your-mistral-key
 
-# OpenRouter (gemini, gpt, qwen)
+# OpenRouter (gemini, gpt)
 OPENROUTER_API_KEY=your-openrouter-key
 
 # Optional: restrict which OpenRouter models are visible
-OPENROUTER_ALLOWED_MODELS=google/gemini-3.1-pro-preview,openai/gpt-5.4,qwen/qwen3.6-plus
+OPENROUTER_ALLOWED_MODELS=google/gemini-3.1-pro-preview,openai/gpt-5.4
 
 # Optional: disable individual tools (version and listmodels cannot be disabled)
 DISABLED_TOOLS=apilookup,consensus
