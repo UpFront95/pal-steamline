@@ -26,7 +26,7 @@ word verdict in the end.
 
 * We ask Claude code to pick one of two frameworks, then `chat` with `gemini` to make a final decision
 * Gemini responds, confirming choice. We use `continuation` to ask another question using the same conversation thread
-* Gemini responds with explanation. We use continuation again, using `/pal:continue (MCP)` command the second time
+* Gemini responds with explanation. We use continuation again, using `/pal:continue` command the second time
 
 <div style="center">
   
