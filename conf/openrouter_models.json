@@ -20,8 +20,8 @@
   },
   "models": [
     {
-      "model_name": "openai/gpt-5.4",
-      "friendly_name": "GPT-5.4",
+      "model_name": "openai/gpt-5.5",
+      "friendly_name": "GPT-5.5",
       "aliases": [
         "gpt"
       ],
@@ -33,7 +33,7 @@
       "supports_images": true,
       "max_image_size_mb": 20.0,
       "supports_temperature": true,
-      "description": "GPT-5.4 via OpenRouter — 1M context, reasoning, JSON mode, tools"
+      "description": "GPT-5.5 via OpenRouter — 1M context, reasoning, JSON mode, tools"
     },
     {
       "model_name": "google/gemini-3.1-pro-preview",
