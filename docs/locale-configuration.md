@@ -109,10 +109,7 @@ Output: "Les dictionnaires Python sont des paires clé-valeur qui permettent de 
 All MCP tools are affected by this configuration:
 
 - `chat` – General conversation
-- `codereview` – Code review
-- `analyze` – Code analysis
-- `debug` – Debugging
-- `refactor` – Refactoring
+- `review` – Code review
 - `thinkdeep` – Deep thinking
 - `consensus` – Model consensus
 - And all other tools...

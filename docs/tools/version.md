@@ -65,11 +65,8 @@ The tool provides:
 • chat - General development chat & collaborative thinking
 • thinkdeep - Extended reasoning partner  
 • consensus - Multi-model perspective gathering
-• codereview - Professional code review
-• refactor - Intelligent code refactoring
-• debug - Expert debugging assistant
+• review - Professional code review
 • apilookup - API/SDK documentation lookup
-• challenge - Critical thinking and analysis
 • listmodels - List available models
 • version - Server information
 

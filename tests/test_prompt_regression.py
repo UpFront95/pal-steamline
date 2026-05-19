@@ -33,7 +33,7 @@ import pytest
 from dotenv import load_dotenv
 
 from tools.chat import ChatTool
-from tools.debug import DebugIssueTool
+from tools.codereview import CodeReviewTool
 from tools.codereview import CodeReviewTool
 from tools.thinkdeep import ThinkDeepTool
 
@@ -206,7 +206,7 @@ def main():
     # @pytest.mark.asyncio
     # async def test_debug_normal_error(self, mock_model_response):
     #     """Test debug tool with normal error description."""
-    #     tool = DebugIssueTool()
+    #     tool = CodeReviewTool()
     #
     #     with patch.object(tool, "get_model_provider") as mock_get_provider:
     #         mock_provider = MagicMock()
@@ -237,7 +237,7 @@ def main():
         """Test debug tool with normal question using real API."""
         skip_if_no_custom_api()
 
-        tool = DebugIssueTool()
+        tool = CodeReviewTool()
 
         # Create a temporary Python file with a bug
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
@@ -350,7 +350,7 @@ class UserService:
         """Test handling of various file path formats using real API."""
         skip_if_no_custom_api()
 
-        tool = DebugIssueTool()
+        tool = CodeReviewTool()
 
         # Create multiple temporary files to test different path formats
         temp_files = []

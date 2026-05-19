@@ -137,4 +137,4 @@ See the [Configuration Guide](../configuration.md#code-generation-capability) fo
 - **Use `chat`** for: Open-ended discussions, brainstorming, getting second opinions, technology comparisons
 - **Use `thinkdeep`** for: Extending specific analysis, challenging assumptions, deeper reasoning
 - **Use `analyze`** for: Understanding existing code structure and patterns
-- **Use `debug`** for: Specific error diagnosis and troubleshooting
+- **Use `review`** for: Systematic code quality audits with expert validation

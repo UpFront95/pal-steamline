@@ -85,11 +85,11 @@ class TestClass:
             self.logger.info(f"    ✅ Step A1 completed - thread_id: {continuation_id_a1[:8]}...")
             conversation_chains["A1"] = continuation_id_a1
 
-            # Step A2: Continue with debug tool (creates thread_id_2 with parent=thread_id_1)
-            self.logger.info("    Step A2: Debug tool - continue Chain A")
+            # Step A2: Continue with review tool (creates thread_id_2 with parent=thread_id_1)
+            self.logger.info("    Step A2: Review tool - continue Chain A")
 
             response_a2, continuation_id_a2 = self.call_mcp_tool(
-                "debug",
+                "review",
                 {
                     "step": "Now analyze the code quality and suggest improvements.",
                     "step_number": 1,
@@ -152,10 +152,10 @@ class TestClass:
             conversation_chains["B1"] = continuation_id_b1
 
             # Step B2: Continue the new conversation (creates thread_id_5 with parent=thread_id_4)
-            self.logger.info("    Step B2: Debug tool - continue Chain B")
+            self.logger.info("    Step B2: Review tool - continue Chain B")
 
             response_b2, continuation_id_b2 = self.call_mcp_tool(
-                "debug",
+                "review",
                 {
                     "step": "Analyze the previous greeting and suggest improvements.",
                     "step_number": 1,

@@ -138,7 +138,7 @@ python simulator_tests/communication_simulator_test.py --quick --verbose
 ```
 
 **Quick mode runs these 5 essential tests:**
-- `cross_tool_continuation` - Cross-tool conversation memory testing (chat, thinkdeep, codereview, debug)
+- `cross_tool_continuation` - Cross-tool conversation memory testing (chat, thinkdeep, codereview)
 - `conversation_chain_validation` - Core conversation threading and memory validation
 - `consensus_workflow_accurate` - Consensus tool with flash model and stance testing
 - `codereview_validation` - CodeReview tool with flash model and multi-step workflows
@@ -146,7 +146,7 @@ python simulator_tests/communication_simulator_test.py --quick --verbose
 
 **Why these 5 tests:** They cover the core functionality including conversation memory (`utils/conversation_memory.py`), chat tool functionality, file processing and deduplication, model selection (flash/flashlite/o3), and cross-tool conversation workflows. These tests validate the most critical parts of the system in minimal time.
 
-**Note:** Some workflow tools (codereview, debug, consensus, etc.) require specific workflow parameters and may need individual testing rather than quick mode testing.
+**Note:** Some workflow tools (codereview, consensus, thinkdeep, etc.) require specific workflow parameters and may need individual testing rather than quick mode testing.
 
 #### Run Individual Simulator Tests (For Detailed Testing)
 ```bash
@@ -180,7 +180,6 @@ Available simulator tests include:
 - `openrouter_fallback` - OpenRouter fallback behavior when only provider
 - `openrouter_models` - OpenRouter model functionality and alias mapping
 - `token_allocation_validation` - Token allocation and conversation history validation
-- `refactor_validation` - Refactor tool validation with codesmells
 - `conversation_chain_validation` - Conversation chain and threading validation
 - `consensus_stance` - Consensus tool validation with stance steering (for/against/neutral)
 
@@ -192,10 +191,7 @@ Available simulator tests include:
 python -m pytest tests/ -v -m "not integration"
 
 # Run specific test file
-python -m pytest tests/test_refactor.py -v
-
-# Run specific test function
-python -m pytest tests/test_refactor.py::TestRefactorTool::test_format_response -v
+python -m pytest tests/test_tools.py -v
 
 # Run tests with coverage
 python -m pytest tests/ --cov=. --cov-report=html -m "not integration"

@@ -12,7 +12,7 @@ import os
 import pytest
 
 from providers.registry import ModelProviderRegistry
-from tools.debug import DebugIssueTool
+from tools.codereview import CodeReviewTool
 
 
 @pytest.mark.no_mock_provider
@@ -79,7 +79,7 @@ class TestModelEnumeration:
         """Test that no native models are included when no providers are configured."""
         self._setup_environment({})  # No providers configured
 
-        tool = DebugIssueTool()
+        tool = CodeReviewTool()
         models = tool._get_available_models()
 
         # After the fix, models should only be shown from enabled providers
@@ -100,7 +100,7 @@ class TestModelEnumeration:
         """Test that OpenRouter models are NOT included when API key is not configured."""
         self._setup_environment({})  # No OpenRouter key
 
-        tool = DebugIssueTool()
+        tool = CodeReviewTool()
         models = tool._get_available_models()
 
         # OpenRouter-specific models should NOT be present
@@ -113,7 +113,7 @@ class TestModelEnumeration:
         """Test that custom models are NOT included when CUSTOM_API_URL is not configured."""
         self._setup_environment({})  # No custom URL
 
-        tool = DebugIssueTool()
+        tool = CodeReviewTool()
         models = tool._get_available_models()
 
         # Custom-only models should NOT be present
@@ -126,7 +126,7 @@ class TestModelEnumeration:
         """Ensure OpenRouter access alone does not surface custom-only endpoints."""
         self._setup_environment({"OPENROUTER_API_KEY": "test-openrouter-key"})
 
-        tool = DebugIssueTool()
+        tool = CodeReviewTool()
         models = tool._get_available_models()
 
         for alias in ("local-llama", "llama3.2"):
@@ -141,7 +141,7 @@ class TestModelEnumeration:
             }
         )
 
-        tool = DebugIssueTool()
+        tool = CodeReviewTool()
         models = tool._get_available_models()
 
         # Count occurrences of each model
@@ -168,7 +168,7 @@ class TestModelEnumeration:
         """Test that native models are only present when their provider has API keys configured."""
         self._setup_environment({})  # No providers
 
-        tool = DebugIssueTool()
+        tool = CodeReviewTool()
         models = tool._get_available_models()
 
         if should_exist:
@@ -218,7 +218,7 @@ class TestModelEnumeration:
 
         ModelProviderRegistry.register_provider(ProviderType.OPENROUTER, OpenRouterProvider)
 
-        tool = DebugIssueTool()
+        tool = CodeReviewTool()
         models = tool._get_available_models()
 
         assert "deepseek/deepseek-r1:free" in models, "Canonical free model name should be available"

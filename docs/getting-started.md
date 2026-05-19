@@ -427,8 +427,8 @@ Versions 0.2.1 and newer currently ignore values above ~60 seconds for some tran
 ### Quick Tool Reference:
 
 **🤝 Collaboration**: `chat`, `thinkdeep`, `consensus`
-**🔍 Code Analysis**: `codereview`, `debug`, `refactor`
-**🔧 Utilities**: `challenge`, `apilookup`, `listmodels`, `version`
+**🔍 Code Analysis**: `review`
+**🔧 Utilities**: `apilookup`, `listmodels`, `version`
 
 👉 **[Complete Tools Reference](tools/)** with detailed examples and parameters
 

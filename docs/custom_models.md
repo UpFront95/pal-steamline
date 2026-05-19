@@ -188,14 +188,14 @@ CUSTOM_MODEL_NAME=your-loaded-model
 
 # Local models (with custom URL configured):
 "Use local-llama to analyze this code"     # → llama3.2 (local)
-"Use local to debug this function"         # → llama3.2 (local)
+"Use local to review this function"         # → llama3.2 (local)
 ```
 
 **Using full model names:**
 ```
 # OpenRouter models:
 "Use anthropic/claude-opus-4 via pal for deep analysis"
-"Use openai/gpt-4o via pal to debug this"
+"Use openai/gpt-4o via pal to review this"
 "Use deepseek/deepseek-coder via pal to generate code"
 
 # Local/custom models:

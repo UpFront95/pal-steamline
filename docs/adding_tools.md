@@ -15,7 +15,7 @@ PAL supports two architectures, implemented in `tools/simple/base.py` and `tools
   and response formatting hooks.
 - **WorkflowTool** (`WorkflowTool`): multi-step workflows driven by `BaseWorkflowMixin`. The tool accumulates
   findings across steps, forces Claude to pause between investigations, and optionally calls an expert model at
-  the end. Use this whenever you need structured multi-step work (debug, code review, consensus, etc.).
+  the end. Use this whenever you need structured multi-step work (review, consensus, thinkdeep, etc.).
 
 If you are unsure, compare `tools/chat.py` (SimpleTool) and `tools/consensus.py` (WorkflowTool) to see the patterns.
 

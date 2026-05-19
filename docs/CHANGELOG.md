@@ -24,7 +24,7 @@ Initial fork release. pal-steamline is a stripped-down, Claude Code–focused va
 - `challenge` — adversarial debate tool deleted
 
 **Tool consolidation:**
-- `refactor` merged into `codereview` as `mode="refactor"` — one tool, two modes
+- `review` tool (formerly `codereview`) — review-only mode (refactor mode removed)
 
 **Model routing:**
 - Auto-mode intelligence removed — dynamic model selection engine stripped out
@@ -57,7 +57,7 @@ Initial fork release. pal-steamline is a stripped-down, Claude Code–focused va
 - `gpt` — routes to `openai/gpt-5.4` via OpenRouter
 
 **Expert escalation:**
-- `EXPERT_MODEL` config added — workflow tools (`thinkdeep`, `debug`, `codereview`, `consensus`) run a two-pass analysis: primary model does the work, `EXPERT_MODEL` (`gemini` by default) validates
+- `EXPERT_MODEL` config added — workflow tools (`thinkdeep`, `review`, `consensus`) run a two-pass analysis: primary model does the work, `EXPERT_MODEL` (`gemini` by default) validates
 
 **Configuration:**
 - `DEFAULT_MODEL=mimo`, `EXPERT_MODEL=gemini` as fork defaults

@@ -16,7 +16,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from tools.chat import ChatTool
-from tools.debug import DebugIssueTool
+from tools.codereview import CodeReviewTool
 from tools.shared.exceptions import ToolExecutionError
 from utils.conversation_memory import (
     ConversationTurn,
@@ -157,8 +157,8 @@ class TestImageSupportIntegration:
         assert "visual context" in images_field["description"].lower()
 
     def test_debug_tool_schema_includes_images(self):
-        """Test that DebugIssueTool schema includes images field."""
-        tool = DebugIssueTool()
+        """Test that CodeReviewTool schema includes images field."""
+        tool = CodeReviewTool()
         schema = tool.get_input_schema()
 
         assert "images" in schema["properties"]

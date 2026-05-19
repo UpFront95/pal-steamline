@@ -200,11 +200,11 @@ if __name__ == "__main__":
 
             # Step 2: Different tool continuing same conversation - should build conversation history
             self.logger.info(
-                "  Step 2: Debug tool continuing chat conversation - checking conversation history buildup"
+                "  Step 2: Review tool continuing chat conversation - checking conversation history buildup"
             )
 
             response2, continuation_id2 = self.call_mcp_tool(
-                "debug",
+                "review",
                 {
                     "step": "Analyze the performance implications of these recursive functions.",
                     "step_number": 1,

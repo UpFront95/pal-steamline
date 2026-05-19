@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 
 from tools.codereview import CodeReviewTool
-from tools.debug import DebugIssueTool
+
 from tools.thinkdeep import ThinkDeepTool
 
 
@@ -27,7 +27,7 @@ class TestThinkingModes:
         tools = [
             (ThinkDeepTool(), "high"),
             (CodeReviewTool(), "medium"),
-            (DebugIssueTool(), "medium"),
+            (CodeReviewTool(), "medium"),
         ]
 
         for tool, expected_default in tools:
@@ -64,7 +64,7 @@ class TestThinkingModes:
 
             ModelProviderRegistry._instance = None
 
-            tool = DebugIssueTool()
+            tool = CodeReviewTool()
 
             # This should attempt to use the real OpenAI provider
             # Even with a fake API key, we can test the provider resolution logic
@@ -230,7 +230,7 @@ class TestThinkingModes:
 
             ModelProviderRegistry._instance = None
 
-            tool = DebugIssueTool()
+            tool = CodeReviewTool()
 
             # Test with real provider resolution
             try:
@@ -310,7 +310,7 @@ class TestThinkingModes:
 
             ModelProviderRegistry._instance = None
 
-            tool = DebugIssueTool()
+            tool = CodeReviewTool()
 
             # Test with real provider resolution
             try:

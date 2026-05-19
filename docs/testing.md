@@ -110,7 +110,7 @@ isort .
 ### Unit Tests
 Test isolated components and functions:
 - **Provider functionality**: Model initialization, API interactions, capability checks
-- **Tool operations**: All MCP tools (chat, analyze, debug, etc.)
+- **Tool operations**: All MCP tools (chat, review, thinkdeep, etc.)
 - **Conversation memory**: Threading, continuation, history management
 - **File handling**: Path validation, token limits, deduplication
 - **Auto mode**: Model selection logic and fallback behavior

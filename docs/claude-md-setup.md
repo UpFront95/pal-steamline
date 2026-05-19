@@ -17,9 +17,7 @@ List the operational tools and available model aliases:
 **Tools:**
 - `chat` — ask a model a question, get code, explanations, analysis
 - `thinkdeep` — extended reasoning on hard problems
-- `debug` — systematic multi-step debugging workflow
-- `codereview` — quality, security, and performance audit
-- `refactor` — structural code improvement; types: `codesmells` (default), `decompose`, `modernize`, `organization`
+- `review` — quality, security, and performance audit
 - `consensus` — get multiple models to weigh in on a question
 
 **Model aliases:** `mimo` (default), `gemini`, `gpt`
@@ -30,14 +28,12 @@ List the operational tools and available model aliases:
 |---|---|
 | Ask another model a question | `chat` |
 | Reason through something hard | `thinkdeep` |
-| Debug a specific issue | `debug` |
-| Audit code for quality/security/perf | `codereview` |
-| Restructure or clean up code | `refactor` |
+| Audit code for quality/security/perf | `review` |
 | Get multiple models to weigh in | `consensus` |
 
 ## Invocation notes
 
-- Workflow tools (`debug`, `codereview`, `thinkdeep`, `consensus`) are multi-step — they return a `continuation_id`. Pass it back to continue.
+- Workflow tools (`review`, `thinkdeep`, `consensus`) are multi-step — they return a `continuation_id`. Pass it back to continue.
 - If the user doesn't specify a model, use `mimo`.
 ```
 

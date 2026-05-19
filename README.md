@@ -9,7 +9,7 @@ Derived from upstream work by Fahad Gilani and the PAL MCP project. Core engine,
 
 Claude Code is genuinely excellent at what it does. But even excellent tools have blind spots shaped by their training, architecture, and design goals — and a second opinion from a model with different training data, different construction, and a different focus is often worth having.
 
-**pal-steamline** brings that into Claude Code. It gives you a set of purpose-built tools that reach out to other models mid-session: to review your code, debug a problem from a fresh angle, reason through something hard, or ask three models at once what they think. You stay in Claude Code. The conversation context carries over. You just get more perspectives.
+**pal-steamline** brings that into Claude Code. It gives you a set of purpose-built tools that reach out to other models mid-session: to review your code, reason through something hard, or ask three models at once what they think. You stay in Claude Code. The conversation context carries over. You just get more perspectives.
 
 The idea of this fork is legibility. The upstream PAL MCP server is powerful but ships with 15+ tools and a large configuration surface that creates noise in the tool picker and overhead in context. This fork strips it to tools with a clear, distinct purpose — each one does a specific thing you'd actually ask for. Some you'll use constantly. Some you'll reach for rarely. But when you need one, you'll know exactly which it is.
 
@@ -17,18 +17,16 @@ The idea of this fork is legibility. The upstream PAL MCP server is powerful but
 
 ## Tools
 
-Six tools, plus `apilookup`, `listmodels`, and `version` for internal use. Any tool can be disabled via `DISABLED_TOOLS`.
+Four tools, plus `apilookup`, `listmodels`, and `version` for internal use. Any tool can be disabled via `DISABLED_TOOLS`.
 
-Multi-turn conversations persist within a session using `continuation_id`. Start a thread with `debug` and continue it with `review` — full context carries over.
+Multi-turn conversations persist within a session using `continuation_id`. Start a thread with `review` and continue it — full context carries over.
 
 | Tool | What it does |
 |---|---|
 | `chat` | General Q&A, brainstorming, second opinions |
 | `thinkdeep` | Extended step-by-step reasoning on hard problems |
 | `consensus` | Multi-model answer synthesis — asks 2–3 models and compares |
-| `debug` | Root-cause analysis workflow — for code that isn't working |
 | `review` | Code quality, security, and performance audit — for code that works but needs checking |
-| `cleanup` | Code smell detection, decomposition, and modernization (`mode="cleanup"` on the review tool) |
 
 ---
 
@@ -55,7 +53,7 @@ Five aliases across three providers.
 
 ### Expert escalation
 
-Workflow tools (`thinkdeep`, `debug`, `review`, `consensus`) run a two-pass analysis: the primary model does the main work, then `EXPERT_MODEL` (`gemini` by default) runs the validation pass. Set `EXPERT_MODEL=""` to disable and use a single model throughout.
+Workflow tools (`thinkdeep`, `review`, `consensus`) run a two-pass analysis: the primary model does the main work, then `EXPERT_MODEL` (`gemini` by default) runs the validation pass. Set `EXPERT_MODEL=""` to disable and use a single model throughout.
 
 ## Typical use
 
@@ -63,11 +61,7 @@ Workflow tools (`thinkdeep`, `debug`, `review`, `consensus`) run a two-pass anal
 
 **thinkdeep** — "i can't figure out if i should use websockets or polling here, help me think it through"
 
-**debug** — "this keeps throwing a 422 and i have no idea why"
-
 **review** — "this auth middleware is going to production next week, can you check it over"
-
-**cleanup** — "this file has gotten out of hand, it's 800 lines and really hard to follow"
 
 **consensus** — "should i use postgres or mongodb for this? i keep going back and forth"
 

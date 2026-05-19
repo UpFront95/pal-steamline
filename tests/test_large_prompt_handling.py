@@ -19,7 +19,7 @@ from tools.chat import ChatTool
 from tools.codereview import CodeReviewTool
 from tools.shared.exceptions import ToolExecutionError
 
-# from tools.debug import DebugIssueTool  # Commented out - debug tool refactored
+
 
 
 class TestLargePromptHandling:
@@ -233,7 +233,7 @@ class TestLargePromptHandling:
     # @pytest.mark.asyncio
     # async def test_debug_large_error_description(self, large_prompt):
     #     """Test that debug tool detects large error_description."""
-    #     tool = DebugIssueTool()
+    
     #     result = await tool.execute({"prompt": large_prompt})
     #
     #     assert len(result) == 1
@@ -243,7 +243,7 @@ class TestLargePromptHandling:
     # @pytest.mark.asyncio
     # async def test_debug_large_error_context(self, large_prompt, normal_prompt):
     #     """Test that debug tool detects large error_context."""
-    #     tool = DebugIssueTool()
+    
     #     result = await tool.execute({"prompt": normal_prompt, "error_context": large_prompt})
     #
     #     assert len(result) == 1

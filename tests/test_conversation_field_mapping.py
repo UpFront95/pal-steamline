@@ -142,11 +142,11 @@ async def test_unknown_tool_defaults_to_prompt():
 async def test_tool_parameter_standardization():
     """Test that workflow tools use standardized investigation pattern"""
     from tools.codereview import CodeReviewRequest
-    from tools.debug import DebugInvestigationRequest
+    from tools.codereview import CodeReviewRequest
     from tools.thinkdeep import ThinkDeepWorkflowRequest
 
     # Debug tool uses self-investigation pattern with different fields
-    debug = DebugInvestigationRequest(
+    debug = CodeReviewRequest(
         step="Investigating error",
         step_number=1,
         total_steps=3,

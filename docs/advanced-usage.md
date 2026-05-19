@@ -25,7 +25,7 @@ This section focuses on **advanced model usage patterns** for power users:
 Regardless of your default configuration, you can specify models per request:
 - "Use **pro** for deep security analysis of auth.py"
 - "Use **flash** to quickly format this code"
-- "Use **o3** to debug this logic error"
+- "Use **o3** to review this algorithm for correctness"
 - "Review with **o4-mini** for balanced analysis"
 - "Use **gpt4.1** for comprehensive codebase analysis"
 
@@ -33,11 +33,11 @@ Regardless of your default configuration, you can specify models per request:
 
 | Model | Provider | Context | Strengths | Auto Mode Usage |
 |-------|----------|---------|-----------|------------------|
-| **`pro`** (Gemini 3.0 Pro) | Google | 1M tokens | Extended thinking (up to 32K tokens), deep analysis | Complex architecture, security reviews, deep debugging |
+| **`pro`** (Gemini 3.0 Pro) | Google | 1M tokens | Extended thinking (up to 32K tokens), deep analysis | Complex architecture, security reviews, deep analysis |
 | **`flash`** (Gemini 2.5 Flash) | Google | 1M tokens | Ultra-fast responses with thinking | Quick checks, formatting, simple analysis |
 | **`flash-2.0`** (Gemini 2.0 Flash) | Google | 1M tokens | Latest fast model with audio/video support | Quick analysis with multimodal input |
 | **`flashlite`** (Gemini 2.0 Flash Lite) | Google | 1M tokens | Lightweight text-only model | Fast text processing without vision |
-| **`o3`** | OpenAI | 200K tokens | Strong logical reasoning | Debugging logic errors, systematic analysis |
+| **`o3`** | OpenAI | 200K tokens | Strong logical reasoning | Code review, systematic analysis |
 | **`o3-mini`** | OpenAI | 200K tokens | Balanced speed/quality | Moderate complexity tasks |
 | **`o4-mini`** | OpenAI | 200K tokens | Latest reasoning model | Optimized for shorter contexts |
 | **`gpt4.1`** | OpenAI | 1M tokens | Latest GPT-4 with extended context | Large codebase analysis, comprehensive reviews |
@@ -131,7 +131,7 @@ These only apply to models that support customizing token usage for extended thi
 - Working within tight token budgets
 
 **Use higher modes (`high`, `max`) when quality justifies the cost:**
-- Debugging complex issues (worth the extra tokens to find root causes)
+- Reviewing complex code (worth the extra tokens to find root causes)
 - Reviewing security-critical code (cost of tokens < cost of vulnerabilities)
 - Analyzing system architecture (comprehensive analysis saves development time)
 - Finding subtle bugs or edge cases
@@ -150,8 +150,8 @@ These only apply to models that support customizing token usage for extended thi
 # Security audit with o3
 "Get o3 to do a security review of auth/ with thinking mode high"
 
-# Complex debugging, letting claude pick the best model
-"Use pal to debug this race condition with max thinking mode"
+# Complex reasoning with high thinking mode
+"Use pal to think through this race condition with max thinking mode"
 
 # Architecture analysis with Gemini 3.0 Pro
 "Analyze the entire src/ directory architecture with high thinking using pro"
@@ -195,22 +195,6 @@ All tools that work with files support **both individual files and entire direct
 "Use flash to quickly review src/ with focus on performance, only show critical issues"
 ```
 
-**`debug`** - Debug with file context
-- `error_description`: Description of the issue (required)
-- `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5.2|gpt5.1-codex|gpt5.1-codex-mini|gpt5|gpt5-mini|gpt5-nano (default: server default)
-- `error_context`: Stack trace or logs
-- `files`: Files or directories related to the issue
-- `runtime_info`: Environment details
-- `previous_attempts`: What you've tried
-- `thinking_mode`: minimal|low|medium|high|max (default: medium, Gemini only)
-- **Web search capability**: Automatically initiates searches for relevant error messages or recent fixes when needed
-
-```
-"Debug this logic error with context from backend/" (auto mode picks best model)
-"Use o3 to debug this algorithm correctness issue"
-"Use pro to debug this complex architecture problem"
-```
-
 **`thinkdeep`** - Extended analysis with file context
 - `current_analysis`: Your current thinking (required)
 - `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5.2|gpt5.1-codex|gpt5.1-codex-mini|gpt5|gpt5-mini|gpt5-nano (default: server default)
@@ -233,23 +217,6 @@ All tools that work with files support **both individual files and entire direct
 "Use pro to generate comprehensive tests for src/payment.py with max thinking mode"
 "Use o3 to generate tests for algorithm correctness in sort_functions.py"
 "Generate tests following patterns from tests/unit/ for new auth module"
-```
-
-**`refactor`** - Intelligent code refactoring with decomposition focus
-- `files`: Code files or directories to analyze for refactoring opportunities (required)
-- `prompt`: Description of refactoring goals, context, and specific areas of focus (required)
-- `refactor_type`: codesmells|decompose|modernize|organization (required)
-- `model`: auto|pro|flash|flash-2.0|flashlite|o3|o3-mini|o4-mini|gpt4.1|gpt5.2|gpt5.1-codex|gpt5.1-codex-mini|gpt5|gpt5-mini|gpt5-nano (default: server default)
-- `focus_areas`: Specific areas to focus on (e.g., 'performance', 'readability', 'maintainability', 'security')
-- `style_guide_examples`: Optional existing code files to use as style/pattern reference
-- `thinking_mode`: minimal|low|medium|high|max (default: medium, Gemini only)
-- `continuation_id`: Thread continuation ID for multi-turn conversations
-
-```
-"Analyze legacy codebase for decomposition opportunities" (auto mode picks best model)
-"Use pro to identify code smells in the authentication module with max thinking mode"
-"Use pro to modernize this JavaScript code following examples/modern-patterns.js"
-"Refactor src/ for better organization, focus on maintainability and readability"
 ```
 
 ## Context Revival: AI Memory Beyond Context Limits
@@ -297,35 +264,25 @@ the top and landing with animation. Once done, codereview with gemini pro and o3
 work. Fix medium to critical bugs / concerns / issues and show me the final product
 ```
 
-### Debug → Solution → Publish
+### Review → ThinkDeep → Implement
 ```
-Take a look at these log files saved under subfolder/diagnostics.log there's a bug where the user says the app
-crashes at launch. Think hard and go over each line, tallying it with corresponding code within the project. After
-you've performed initial investigation, ask gemini pro to analyze the log files and the related code where you 
-suspect lies the bug and then formulate and implement a bare minimal fix. Must not regress.
-```
-
-### Refactor → Review → Implement
-```
-Use pal to analyze this legacy authentication module for decomposition opportunities. The code is getting hard to 
-maintain and we need to break it down. Use gemini pro with high thinking mode to identify code smells and suggest 
-a modernization strategy. After reviewing the refactoring plan, implement the changes step by step.
+Use pal to review this legacy authentication module for quality and security issues. The code is going to production
+next week. Use gemini pro with high thinking mode to identify critical issues, then use thinkdeep to reason through
+the architectural implications. Implement the top priority fixes step by step.
 ```
 
 ### Tool Selection Guidance
 To help choose the right tool for your needs:
 
 **Decision Flow:**
-1. **Have a specific error/exception?** → Use `debug`
-2. **Want to find bugs/issues in code?** → Use `codereview`
-3. **Want to refactor/modernize code?** → Use `refactor`
-4. **Have analysis that needs extension/validation?** → Use `thinkdeep`
-5. **Want to brainstorm or discuss?** → Use `chat`
+1. **Want to find bugs/issues in code?** → Use `review`
+2. **Have analysis that needs extension/validation?** → Use `thinkdeep`
+3. **Want to brainstorm or discuss?** → Use `chat`
+4. **Need multiple perspectives?** → Use `consensus`
 
 **Key Distinctions:**
 - `chat` vs `thinkdeep`: chat is open-ended, thinkdeep extends specific analysis
-- `debug` vs `codereview`: debug diagnoses runtime errors, review finds static issues
-- `refactor` vs `codereview`: refactor suggests structural improvements, codereview finds bugs/issues
+- `review` vs `thinkdeep`: review audits code for issues, thinkdeep reasons through problems
 
 ## Vision Support
 
@@ -333,14 +290,14 @@ The PAL MCP server supports vision-capable models for analyzing images, diagrams
 
 **Supported Models:**
 - **Gemini 3.0 Pro & Flash**: Excellent for diagrams, architecture analysis, UI mockups (up to 20MB total)
-- **OpenAI O3/O4 series**: Strong for visual debugging, error screenshots (up to 20MB total)
+- **OpenAI O3/O4 series**: Strong for visual analysis, error screenshots (up to 20MB total)
 - **Claude models via OpenRouter**: Good for code screenshots, visual analysis (up to 5MB total)
 - **Custom models**: Support varies by model, with 40MB maximum enforced for abuse prevention
 
 **Usage Examples:**
 ```bash
-# Debug with error screenshots
-"Use pal to debug this error with the stack trace screenshot and error.py"
+# Review with screenshots for visual context
+"Use pal to review this error with the stack trace screenshot and error.py"
 
 # Architecture analysis with diagrams  
 "Analyze this system architecture diagram with gemini pro for bottlenecks"
@@ -365,7 +322,7 @@ The PAL MCP server supports vision-capable models for analyzing images, diagrams
 
 **Best Practices:**
 - Describe images when including them: "screenshot of login error", "system architecture diagram"
-- Use appropriate models: Gemini for complex diagrams, O3 for debugging visuals
+- Use appropriate models: Gemini for complex diagrams, O3 for error screenshots
 - Consider image sizes: Larger images consume more of the model's capacity
 
 ## Working with Large Prompts
@@ -414,10 +371,10 @@ Web search is now enabled by default for all tools. Instead of performing search
 
 **Example:**
 ```
-User: "Use gemini to debug this FastAPI async error"
+User: "Use gemini to review this FastAPI async code for issues"
 
 Gemini's Response:
-[... debugging analysis ...]
+[... review analysis ...]
 
 **Recommended Web Searches for Claude:**
 - "FastAPI async def vs def performance 2024" - to verify current best practices for async endpoints
@@ -452,9 +409,8 @@ The server uses carefully crafted system prompts to give each tool specialized e
 ### Specialized Expertise
 Each tool has a unique system prompt that defines its role and approach:
 - **`thinkdeep`**: Acts as a senior development partner, challenging assumptions and finding edge cases
-- **`codereview`**: Expert code reviewer with security/performance focus, uses severity levels
-- **`debug`**: Systematic debugger providing root cause analysis and prevention strategies
-- **`analyze`**: Code analyst focusing on architecture, patterns, and actionable insights
+- **`review`**: Expert code reviewer with security/performance focus, uses severity levels
+- **`chat`**: General assistant for brainstorming and code analysis
 
 ### Customization
 To modify tool behavior, you can:

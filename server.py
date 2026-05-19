@@ -47,7 +47,6 @@ from tools import (  # noqa: E402
     ChatTool,
     CodeReviewTool,
     ConsensusTool,
-    DebugIssueTool,
     ListModelsTool,
     LookupTool,
     ThinkDeepTool,
@@ -248,8 +247,7 @@ TOOLS = {
     "chat": ChatTool(),  # Interactive development chat and brainstorming
     "thinkdeep": ThinkDeepTool(),  # Step-by-step deep thinking workflow with expert analysis
     "consensus": ConsensusTool(),  # Step-by-step consensus workflow with multi-model analysis
-    "review": CodeReviewTool(),  # Systematic code review and cleanup workflow with expert analysis
-    "debug": DebugIssueTool(),  # Root cause analysis and debugging assistance
+    "review": CodeReviewTool(),  # Systematic code review workflow with expert analysis
     "apilookup": LookupTool(),  # Quick web/API lookup instructions
     "listmodels": ListModelsTool(),  # List all available AI models by provider
     "version": VersionTool(),  # Display server version and system information

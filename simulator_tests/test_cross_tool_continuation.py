@@ -143,23 +143,23 @@ class CrossToolContinuationTest(ConversationBaseTest):
                 self.logger.warning("Failed to start analyze conversation, skipping scenario 2")
                 return False
 
-            # Continue with debug
-            debug_response, _ = self.call_mcp_tool(
-                "debug",
+            # Continue with review
+            review_response, review_id = self.call_mcp_tool(
+                "review",
                 {
-                    "step": "Based on our analysis, help debug the performance issue in fibonacci",
+                    "step": "Based on our analysis, review the performance issue in fibonacci",
                     "step_number": 1,
                     "total_steps": 1,
                     "next_step_required": False,
-                    "findings": "Building on previous analysis to debug specific performance issue",
+                    "findings": "Building on previous analysis to review specific performance issue",
                     "relevant_files": [self.test_files["python"]],  # Same file should be deduplicated
                     "continuation_id": analyze_id,
                     "model": "mimo",
                 },
             )
 
-            if not debug_response:
-                self.logger.warning("  ⚠️ analyze -> debug continuation failed")
+            if not review_response:
+                self.logger.warning("  ⚠️ analyze -> review continuation failed")
                 return False
 
             # Continue with thinkdeep
@@ -170,7 +170,7 @@ class CrossToolContinuationTest(ConversationBaseTest):
                     "step_number": 1,
                     "total_steps": 1,
                     "next_step_required": False,
-                    "findings": "Building on analysis and debug findings to explore architectural implications",
+                    "findings": "Building on analysis and review findings to explore architectural implications",
                     "relevant_files": [self.test_files["python"]],  # Same file should be deduplicated
                     "continuation_id": analyze_id,
                     "model": "mimo",
@@ -178,14 +178,14 @@ class CrossToolContinuationTest(ConversationBaseTest):
             )
 
             if not final_response:
-                self.logger.warning("  ⚠️ debug -> thinkdeep continuation failed")
+                self.logger.warning("  ⚠️ review -> thinkdeep continuation failed")
                 return False
 
-            self.logger.info("  ✅ analyze -> debug -> thinkdeep working")
+            self.logger.info("  ✅ analyze -> review -> thinkdeep working")
             return True
 
         except Exception as e:
-            self.logger.error(f"Analyze -> debug -> thinkdeep scenario failed: {e}")
+            self.logger.error(f"Analyze -> review -> thinkdeep scenario failed: {e}")
             return False
 
     def _test_multi_file_continuation(self) -> bool:

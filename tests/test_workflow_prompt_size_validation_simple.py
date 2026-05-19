@@ -11,12 +11,12 @@ import json
 import pytest
 
 from config import MCP_PROMPT_SIZE_LIMIT
-from tools.debug import DebugIssueTool
+from tools.codereview import CodeReviewTool
 from tools.shared.exceptions import ToolExecutionError
 
 
 def build_debug_arguments(**overrides) -> dict[str, object]:
-    """Create a minimal set of workflow arguments for DebugIssueTool."""
+    """Create a minimal set of workflow arguments for CodeReviewTool."""
 
     base_arguments: dict[str, object] = {
         "step": "Investigate the authentication issue in the login module",
@@ -41,7 +41,7 @@ def build_debug_arguments(**overrides) -> dict[str, object]:
 async def test_workflow_tool_accepts_normal_step_content() -> None:
     """Verify a typical step executes through the real workflow path."""
 
-    tool = DebugIssueTool()
+    tool = CodeReviewTool()
     arguments = build_debug_arguments()
 
     responses = await tool.execute(arguments)
@@ -58,7 +58,7 @@ async def test_workflow_tool_rejects_oversized_step_with_guidance() -> None:
     """Large step content should trigger the size safeguard with helpful guidance."""
 
     oversized_step = "Investigate this issue: " + ("A" * (MCP_PROMPT_SIZE_LIMIT + 1000))
-    tool = DebugIssueTool()
+    tool = CodeReviewTool()
     arguments = build_debug_arguments(step=oversized_step)
 
     with pytest.raises(ToolExecutionError) as exc_info:

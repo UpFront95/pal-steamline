@@ -13,10 +13,7 @@ from .test_consensus_workflow_accurate import TestConsensusWorkflowAccurate
 from .test_content_validation import ContentValidationTest
 from .test_conversation_chain_validation import ConversationChainValidationTest
 from .test_cross_tool_continuation import CrossToolContinuationTest
-from .test_debug_certain_confidence import DebugCertainConfidenceTest
-from .test_debug_validation import DebugValidationTest
 from .test_prompt_size_limit_bug import PromptSizeLimitBugTest
-from .test_refactor_validation import RefactorValidationTest
 from .test_thinkdeep_validation import ThinkDeepWorkflowValidationTest
 from .test_token_allocation_validation import TokenAllocationValidationTest
 
@@ -28,9 +25,6 @@ TEST_REGISTRY = {
     "cross_tool_continuation": CrossToolContinuationTest,
     "token_allocation_validation": TokenAllocationValidationTest,
     "thinkdeep_validation": ThinkDeepWorkflowValidationTest,
-    "refactor_validation": RefactorValidationTest,
-    "debug_validation": DebugValidationTest,
-    "debug_certain_confidence": DebugCertainConfidenceTest,
     "conversation_chain_validation": ConversationChainValidationTest,
     "consensus_conversation": TestConsensusConversation,
     "consensus_workflow_accurate": TestConsensusWorkflowAccurate,
@@ -45,9 +39,6 @@ __all__ = [
     "CrossToolContinuationTest",
     "TokenAllocationValidationTest",
     "ThinkDeepWorkflowValidationTest",
-    "RefactorValidationTest",
-    "DebugValidationTest",
-    "DebugCertainConfidenceTest",
     "ConversationChainValidationTest",
     "TestConsensusConversation",
     "TestConsensusWorkflowAccurate",

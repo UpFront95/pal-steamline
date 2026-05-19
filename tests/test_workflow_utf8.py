@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import AsyncMock, Mock, patch
 
 from tools.codereview import CodeReviewTool
-from tools.debug import DebugIssueTool
+from tools.codereview import CodeReviewTool
 
 
 class TestWorkflowToolsUTF8(unittest.IsolatedAsyncioTestCase):
@@ -96,8 +96,8 @@ class TestWorkflowToolsUTF8(unittest.IsolatedAsyncioTestCase):
         mock_model_context.return_value = mock_context_instance
 
         # Test the tool
-        from tools.debug import DebugIssueTool
-        analyze_tool = DebugIssueTool()
+        from tools.codereview import CodeReviewTool
+        analyze_tool = CodeReviewTool()
         result = await analyze_tool.execute(
             {
                 "step": "Analyze system architecture to identify issues",
@@ -234,7 +234,7 @@ class TestWorkflowToolsUTF8(unittest.IsolatedAsyncioTestCase):
         mock_get_provider.return_value = mock_provider
 
         # Test the debug tool
-        debug_tool = DebugIssueTool()
+        debug_tool = CodeReviewTool()
         result = await debug_tool.execute(
             {
                 "step": "Analyze NameError in data processing file",

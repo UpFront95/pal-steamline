@@ -166,7 +166,6 @@ Reviews include:
 
 ## When to Use CodeReview vs Other Tools
 
-- **Use `codereview`** for: Finding bugs, security issues, performance problems, code quality assessment
-- **Use `analyze`** for: Understanding code structure without finding issues
-- **Use `debug`** for: Diagnosing specific runtime errors or exceptions
-- **Use `refactor`** for: Identifying structural improvements and modernization opportunities
+- **Use `review`** for: Finding bugs, security issues, performance problems, code quality assessment
+- **Use `chat`** for: Understanding code structure without finding issues
+- **Use `thinkdeep`** for: Deep analysis of architectural questions
