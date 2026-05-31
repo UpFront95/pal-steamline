@@ -312,3 +312,13 @@ isort --check-only .
 - Proper API keys configured in `.env` file
 
 This guide provides everything needed to efficiently work with the PAL MCP Server codebase using Claude. Always run quality checks before and after making changes to ensure code integrity.
+
+## Updating OpenRouter Models
+
+When adding or changing OpenRouter models, there are **three places** that must all be kept in sync:
+
+1. **`conf/openrouter_models.json`** — defines model entries and their aliases
+2. **`.env`** — `OPENROUTER_ALLOWED_MODELS` restricts which models the server will route to; must list the exact `model_name` values (not aliases) from the config
+3. **`.claude/commands/pal/help.md`** — the `/pal:help` output lists model aliases for users
+
+After editing `.env`, restart Claude Code to pick up the change (the MCP server reads `.env` at startup).
