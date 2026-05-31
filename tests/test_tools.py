@@ -8,109 +8,8 @@ import tempfile
 
 import pytest
 
-from tools import ChatTool, CodeReviewTool, ThinkDeepTool
+from tools import ChatTool, CodeReviewTool
 from tools.shared.exceptions import ToolExecutionError
-
-
-class TestThinkDeepTool:
-    """Test the thinkdeep tool"""
-
-    @pytest.fixture
-    def tool(self):
-        return ThinkDeepTool()
-
-    def test_tool_metadata(self, tool):
-        """Test tool metadata"""
-        assert tool.get_name() == "thinkdeep"
-        assert "investigation and reasoning" in tool.get_description()
-        assert tool.get_default_temperature() == 1.0
-
-        schema = tool.get_input_schema()
-        # ThinkDeep is now a workflow tool with step-based fields
-        assert "step" in schema["properties"]
-        assert "step_number" in schema["properties"]
-        assert "total_steps" in schema["properties"]
-        assert "next_step_required" in schema["properties"]
-        assert "findings" in schema["properties"]
-
-        # Required fields for workflow
-        expected_required = {"step", "step_number", "total_steps", "next_step_required", "findings"}
-        assert expected_required.issubset(set(schema["required"]))
-
-    @pytest.mark.asyncio
-    async def test_execute_success(self, tool):
-        """Test successful execution using real integration testing"""
-        import importlib
-        import os
-
-        # Save original environment
-        original_env = {
-            "OPENAI_API_KEY": os.environ.get("OPENAI_API_KEY"),
-            "DEFAULT_MODEL": os.environ.get("DEFAULT_MODEL"),
-        }
-
-        try:
-            # Set up environment for real provider resolution
-            os.environ["OPENAI_API_KEY"] = "sk-test-key-thinkdeep-success-test-not-real"
-            os.environ["DEFAULT_MODEL"] = "o3-mini"
-
-            # Clear other provider keys to isolate to OpenAI
-            for key in ["GEMINI_API_KEY", "XAI_API_KEY", "OPENROUTER_API_KEY"]:
-                os.environ.pop(key, None)
-
-            # Reload config and clear registry
-            import config
-
-            importlib.reload(config)
-            from providers.registry import ModelProviderRegistry
-
-            ModelProviderRegistry._instance = None
-
-            # Test with real provider resolution
-            try:
-                result = await tool.execute(
-                    {
-                        "step": "Initial analysis",
-                        "step_number": 1,
-                        "total_steps": 1,
-                        "next_step_required": False,
-                        "findings": "Initial thinking about building a cache",
-                        "problem_context": "Building a cache",
-                        "focus_areas": ["performance", "scalability"],
-                        "model": "o3-mini",
-                    }
-                )
-
-                # If we get here, check the response format
-                assert len(result) == 1
-                # Should be a valid JSON response
-                output = json.loads(result[0].text)
-                assert "status" in output
-
-            except Exception as e:
-                # Expected: API call will fail with fake key
-                error_msg = str(e)
-                # Should NOT be a mock-related error
-                assert "MagicMock" not in error_msg
-                assert "'<' not supported between instances" not in error_msg
-
-                # Should be a real provider error
-                assert any(
-                    phrase in error_msg
-                    for phrase in ["API", "key", "authentication", "provider", "network", "connection"]
-                )
-
-        finally:
-            # Restore environment
-            for key, value in original_env.items():
-                if value is not None:
-                    os.environ[key] = value
-                else:
-                    os.environ.pop(key, None)
-
-            # Reload config and clear registry
-            importlib.reload(config)
-            ModelProviderRegistry._instance = None
 
 
 class TestCodeReviewTool:
@@ -123,7 +22,7 @@ class TestCodeReviewTool:
     def test_tool_metadata(self, tool):
         """Test tool metadata"""
         assert tool.get_name() == "review"
-        assert "review" in tool.get_description()
+        assert "code" in tool.get_description().lower()
         assert tool.get_default_temperature() == 1.0
 
         schema = tool.get_input_schema()
@@ -217,26 +116,6 @@ class TestAbsolutePathValidation:
     # file reading stage. See simulator_tests/test_codereview_validation.py for comprehensive
     # workflow testing of the new codereview tool.
 
-    @pytest.mark.asyncio
-    async def test_thinkdeep_tool_relative_path_rejected(self):
-        """Test that thinkdeep tool rejects relative paths"""
-        tool = ThinkDeepTool()
-        with pytest.raises(ToolExecutionError) as exc_info:
-            await tool.execute(
-                {
-                    "step": "My analysis",
-                    "step_number": 1,
-                    "total_steps": 1,
-                    "next_step_required": False,
-                    "findings": "Initial analysis",
-                    "files_checked": ["./local/file.py"],
-                }
-            )
-
-        response = json.loads(exc_info.value.payload)
-        assert response["status"] == "error"
-        assert "must be FULL absolute paths" in response["content"]
-        assert "./local/file.py" in response["content"]
 
     @pytest.mark.asyncio
     async def test_chat_tool_relative_path_rejected(self):

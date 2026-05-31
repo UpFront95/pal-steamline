@@ -13,6 +13,7 @@ from .test_consensus_workflow_accurate import TestConsensusWorkflowAccurate
 from .test_content_validation import ContentValidationTest
 from .test_conversation_chain_validation import ConversationChainValidationTest
 from .test_cross_tool_continuation import CrossToolContinuationTest
+from .test_openrouter_models import OpenRouterModelsTest
 from .test_prompt_size_limit_bug import PromptSizeLimitBugTest
 from .test_thinkdeep_validation import ThinkDeepWorkflowValidationTest
 from .test_token_allocation_validation import TokenAllocationValidationTest
@@ -28,6 +29,7 @@ TEST_REGISTRY = {
     "conversation_chain_validation": ConversationChainValidationTest,
     "consensus_conversation": TestConsensusConversation,
     "consensus_workflow_accurate": TestConsensusWorkflowAccurate,
+    "openrouter_models": OpenRouterModelsTest,
     "prompt_size_limit_bug": PromptSizeLimitBugTest,
 }
 
@@ -42,6 +44,7 @@ __all__ = [
     "ConversationChainValidationTest",
     "TestConsensusConversation",
     "TestConsensusWorkflowAccurate",
+    "OpenRouterModelsTest",
     "PromptSizeLimitBugTest",
     "TEST_REGISTRY",
 ]

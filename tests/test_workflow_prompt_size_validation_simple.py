@@ -25,7 +25,7 @@ def build_debug_arguments(**overrides) -> dict[str, object]:
         "next_step_required": True,
         "findings": "Initial observations about the login failure",
         "files_checked": [],
-        "relevant_files": [],
+        "relevant_files": ["/code/login.py"],
         "relevant_context": [],
         "issues_found": [],
         "confidence": "low",
@@ -48,7 +48,7 @@ async def test_workflow_tool_accepts_normal_step_content() -> None:
     assert len(responses) == 1
 
     payload = json.loads(responses[0].text)
-    assert payload["status"] == "pause_for_investigation"
+    assert payload["status"] == "pause_for_code_review"
     assert payload["step_number"] == 1
     assert "error" not in payload
 

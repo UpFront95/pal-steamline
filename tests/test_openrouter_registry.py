@@ -87,9 +87,9 @@ class TestOpenRouterModelRegistry:
         registry = OpenRouterModelRegistry()
 
         # Should be able to look up by full model name
-        config = registry.resolve("openai/gpt-5.4")
+        config = registry.resolve("openai/gpt-5.5")
         assert config is not None
-        assert config.model_name == "openai/gpt-5.4"
+        assert config.model_name == "openai/gpt-5.5"
 
         config = registry.resolve("google/gemini-3.1-pro-preview")
         assert config is not None

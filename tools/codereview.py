@@ -54,7 +54,6 @@ CODEREVIEW_WORKFLOW_FIELD_DESCRIPTIONS = {
     "review_type": "Review mode: review focus (full/security/performance/quick). Defaults to 'full'.",
     "focus_on": "Review mode: areas to emphasise (e.g. 'threading', 'auth flow').",
     "standards": "Review mode: coding standards or style guides to enforce.",
-    "severity_filter": "Review mode: lowest severity to include when reporting issues (critical/high/medium/low/all). Defaults to 'all'.",
 }
 
 class CodeReviewRequest(WorkflowRequest):
@@ -101,11 +100,6 @@ class CodeReviewRequest(WorkflowRequest):
     )
     focus_on: Optional[str] = Field(None, description=CODEREVIEW_WORKFLOW_FIELD_DESCRIPTIONS["focus_on"])
     standards: Optional[str] = Field(None, description=CODEREVIEW_WORKFLOW_FIELD_DESCRIPTIONS["standards"])
-    severity_filter: Optional[Literal["critical", "high", "medium", "low", "all"]] = Field(
-        None,
-        description=CODEREVIEW_WORKFLOW_FIELD_DESCRIPTIONS["severity_filter"],
-    )
-
     # Exclude inherited fields that are not relevant to this tool's schema
     temperature: Optional[float] = Field(default=None, exclude=True)
     thinking_mode: Optional[str] = Field(default=None, exclude=True)
@@ -212,12 +206,6 @@ class CodeReviewTool(WorkflowTool):
             "standards": {
                 "type": "string",
                 "description": CODEREVIEW_WORKFLOW_FIELD_DESCRIPTIONS["standards"],
-            },
-            "severity_filter": {
-                "type": "string",
-                "enum": ["critical", "high", "medium", "low", "all"],
-                "default": "all",
-                "description": CODEREVIEW_WORKFLOW_FIELD_DESCRIPTIONS["severity_filter"],
             },
         }
 
@@ -608,7 +596,7 @@ class CodeReviewTool(WorkflowTool):
                     "review_type": request.review_type,
                     "focus_on": request.focus_on,
                     "standards": request.standards,
-                    "severity_filter": request.severity_filter,
+
                 }
 
         status_mapping = {

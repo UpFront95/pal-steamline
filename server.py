@@ -49,7 +49,6 @@ from tools import (  # noqa: E402
     ConsensusTool,
     ListModelsTool,
     LookupTool,
-    ThinkDeepTool,
     VersionTool,
 )
 from tools.models import ToolOutput  # noqa: E402
@@ -245,7 +244,6 @@ def filter_disabled_tools(all_tools: dict[str, Any]) -> dict[str, Any]:
 # Tools are instantiated once and reused across requests (stateless design)
 TOOLS = {
     "chat": ChatTool(),  # Interactive development chat and brainstorming
-    "thinkdeep": ThinkDeepTool(),  # Step-by-step deep thinking workflow with expert analysis
     "consensus": ConsensusTool(),  # Step-by-step consensus workflow with multi-model analysis
     "review": CodeReviewTool(),  # Systematic code review workflow with expert analysis
     "apilookup": LookupTool(),  # Quick web/API lookup instructions
@@ -585,7 +583,7 @@ async def handle_call_tool(name: str, arguments: dict[str, Any]) -> list[TextCon
        context from in-memory storage including conversation history and file references
 
     2. CROSS-TOOL CONTINUATION: Enables seamless handoffs between different tools (review →
-       debug → thinkdeep) while preserving full conversation context and file references
+       review → chat) while preserving full conversation context and file references
 
     3. CONTEXT INJECTION: Reconstructed conversation history is embedded into tool prompts
        using the dual prioritization strategy:
@@ -1148,10 +1146,6 @@ async def main():
     logger.info(f"Model mode: Fixed model '{DEFAULT_MODEL}'")
 
     # Import here to avoid circular imports
-    from config import DEFAULT_THINKING_MODE_THINKDEEP
-
-    logger.info(f"Default thinking mode (ThinkDeep): {DEFAULT_THINKING_MODE_THINKDEEP}")
-
     logger.info(f"Available tools: {list(TOOLS.keys())}")
     logger.info("Server ready - waiting for tool requests...")
 

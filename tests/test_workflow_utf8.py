@@ -200,7 +200,8 @@ class TestWorkflowToolsUTF8(unittest.IsolatedAsyncioTestCase):
             self.assertIn("✅", analysis)
 
     @patch("tools.shared.base_tool.BaseTool.get_model_provider")
-    async def test_debug_tool_french_error_analysis(self, mock_get_provider):
+    @patch("utils.model_context.ModelContext")
+    async def test_debug_tool_french_error_analysis(self, mock_model_context, mock_get_provider):
         """Test that the debug tool analyzes errors in French."""
         # Mock provider
         mock_provider = Mock()
@@ -210,7 +211,7 @@ class TestWorkflowToolsUTF8(unittest.IsolatedAsyncioTestCase):
             return_value=Mock(
                 content=json.dumps(
                     {
-                        "status": "pause_for_investigation",
+                        "status": "pause_for_code_review",
                         "step_number": 1,
                         "total_steps": 2,
                         "next_step_required": True,
@@ -219,19 +220,26 @@ class TestWorkflowToolsUTF8(unittest.IsolatedAsyncioTestCase):
                         ),
                         "files_checked": ["/src/data_processor.py"],
                         "relevant_files": ["/src/data_processor.py"],
-                        "hypothesis": ("Variable 'données' not defined - missing import"),
                         "confidence": "medium",
-                        "investigation_status": "in_progress",
-                        "error_analysis": ("L'erreur concerne la variable 'données' qui " "n'est pas définie."),
                     },
                     ensure_ascii=False,
                 ),
                 usage={},
-                model_name="test-model",
+                model_name="flash",
                 metadata={},
             )
         )
         mock_get_provider.return_value = mock_provider
+
+        # Mock ModelContext to bypass model validation for test-model
+        mock_context_instance = Mock()
+        mock_token_allocation = Mock()
+        mock_token_allocation.file_tokens = 1000
+        mock_token_allocation.total_tokens = 2000
+        mock_context_instance.calculate_token_allocation.return_value = mock_token_allocation
+        mock_context_instance.provider = mock_provider
+        mock_context_instance.capabilities = Mock(supports_extended_thinking=False)
+        mock_model_context.return_value = mock_context_instance
 
         # Test the debug tool
         debug_tool = CodeReviewTool()
@@ -241,12 +249,11 @@ class TestWorkflowToolsUTF8(unittest.IsolatedAsyncioTestCase):
                 "step_number": 1,
                 "total_steps": 1,
                 "next_step_required": False,
-                "findings": "Error detected during script execution",
+                "findings": "Erreur détectée: variable 'données' non définie.",
                 "files_checked": ["/src/data_processor.py"],
                 "relevant_files": ["/src/data_processor.py"],
-                "hypothesis": ("Variable 'données' not defined - missing import"),
                 "confidence": "medium",
-                "model": "test-model",
+                "model": "flash",
             }
         )
 
@@ -257,9 +264,9 @@ class TestWorkflowToolsUTF8(unittest.IsolatedAsyncioTestCase):
 
         # Check response structure
         self.assertIn("status", response_data)
-        self.assertIn("investigation_status", response_data)
+        self.assertIn("code_review_status", response_data)
 
-        # Check that UTF-8 characters are preserved
+        # Check that UTF-8 characters are preserved in the full response
         response_str = json.dumps(response_data, ensure_ascii=False)
         self.assertIn("données", response_str)
 

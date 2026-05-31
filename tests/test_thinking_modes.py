@@ -8,8 +8,6 @@ import pytest
 
 from tools.codereview import CodeReviewTool
 
-from tools.thinkdeep import ThinkDeepTool
-
 
 @pytest.fixture(autouse=True)
 def setup_test_env():
@@ -21,12 +19,9 @@ def setup_test_env():
 class TestThinkingModes:
     """Test thinking modes across all tools"""
 
-    @patch("config.DEFAULT_THINKING_MODE_THINKDEEP", "high")
     def test_default_thinking_modes(self):
         """Test that tools have correct default thinking modes"""
         tools = [
-            (ThinkDeepTool(), "high"),
-            (CodeReviewTool(), "medium"),
             (CodeReviewTool(), "medium"),
         ]
 
@@ -364,84 +359,3 @@ class TestThinkingModes:
             importlib.reload(config)
             ModelProviderRegistry._instance = None
 
-    @pytest.mark.asyncio
-    async def test_thinking_mode_max(self):
-        """Test max thinking mode (default for thinkdeep) using real integration testing"""
-        import importlib
-        import os
-
-        # Save original environment
-        original_env = {
-            "OPENAI_API_KEY": os.environ.get("OPENAI_API_KEY"),
-            "DEFAULT_MODEL": os.environ.get("DEFAULT_MODEL"),
-            "DEFAULT_THINKING_MODE_THINKDEEP": os.environ.get("DEFAULT_THINKING_MODE_THINKDEEP"),
-        }
-
-        try:
-            # Set up environment for OpenAI provider (which supports thinking mode)
-            os.environ["OPENAI_API_KEY"] = "sk-test-key-max-thinking-test-not-real"
-            os.environ["DEFAULT_MODEL"] = "o3-mini"
-            os.environ["DEFAULT_THINKING_MODE_THINKDEEP"] = "high"  # Set default to high for thinkdeep
-
-            # Clear other provider keys to isolate to OpenAI
-            for key in ["GEMINI_API_KEY", "XAI_API_KEY", "OPENROUTER_API_KEY"]:
-                os.environ.pop(key, None)
-
-            # Reload config and clear registry
-            import config
-
-            importlib.reload(config)
-            from providers.registry import ModelProviderRegistry
-
-            ModelProviderRegistry._instance = None
-
-            tool = ThinkDeepTool()
-
-            # Test with real provider resolution
-            try:
-                result = await tool.execute(
-                    {
-                        "prompt": "Initial analysis",
-                        "model": "o3-mini",
-                        # Not specifying thinking_mode, should use default (high)
-                    }
-                )
-                # If we get here, provider resolution worked
-                assert result is not None
-                # Should be a valid thinkdeep response
-                assert len(result) == 1
-
-            except Exception as e:
-                # Expected: API call will fail with fake key
-                error_msg = getattr(e, "payload", str(e))
-                # Should NOT be a mock-related error
-                assert "MagicMock" not in error_msg
-                assert "'<' not supported between instances" not in error_msg
-
-                # Should be a real provider error
-                import json
-
-                try:
-                    parsed = json.loads(error_msg)
-                except Exception:
-                    parsed = None
-
-                if isinstance(parsed, dict) and parsed.get("status", "").endswith("_failed"):
-                    assert "validation errors" in parsed.get("error", "")
-                else:
-                    assert any(
-                        phrase in error_msg
-                        for phrase in ["API", "key", "authentication", "provider", "network", "connection", "Model"]
-                    )
-
-        finally:
-            # Restore environment
-            for key, value in original_env.items():
-                if value is not None:
-                    os.environ[key] = value
-                else:
-                    os.environ.pop(key, None)
-
-            # Reload config and clear registry
-            importlib.reload(config)
-            ModelProviderRegistry._instance = None
