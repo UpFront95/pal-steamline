@@ -1226,6 +1226,34 @@ parse_env_variables() {
 # Claude Integration Functions
 # ----------------------------------------------------------------------------
 
+install_claude_commands() {
+    local script_dir="$1"
+    local src_dir="$script_dir/.claude/commands/pal"
+    local dest_dir="$HOME/.claude/commands/pal"
+
+    if [[ ! -d "$src_dir" ]]; then
+        return
+    fi
+
+    mkdir -p "$dest_dir"
+
+    local updated=0
+    for src_file in "$src_dir"/*.md; do
+        [[ -f "$src_file" ]] || continue
+        local dest_file="$dest_dir/$(basename "$src_file")"
+        if [[ ! -f "$dest_file" ]] || ! diff -q "$src_file" "$dest_file" >/dev/null 2>&1; then
+            cp "$src_file" "$dest_file"
+            updated=1
+        fi
+    done
+
+    if [[ $updated -eq 1 ]]; then
+        print_success "Installed PAL slash commands to $dest_dir"
+    else
+        print_info "PAL slash commands already up to date"
+    fi
+}
+
 # Check if MCP is added to Claude CLI and verify it's correct
 check_claude_cli_integration() {
     local python_cmd="$1"
@@ -2691,6 +2719,7 @@ main() {
     # Step 9: Check Claude integrations
     check_claude_cli_integration "$python_cmd" "$server_path"
     check_claude_desktop_integration "$python_cmd" "$server_path"
+    install_claude_commands "$script_dir"
 
     # Step 10: Check Gemini CLI integration
     check_gemini_cli_integration "$script_dir"
