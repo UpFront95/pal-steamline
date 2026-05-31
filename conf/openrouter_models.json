@@ -36,20 +36,36 @@
       "description": "GPT-5.5 via OpenRouter — 1M context, reasoning, JSON mode, tools"
     },
     {
-      "model_name": "google/gemini-3.1-pro-preview",
-      "friendly_name": "Gemini 3.1 Pro",
+      "model_name": "google/gemini-3.5-flash",
+      "friendly_name": "Gemini 3.5 Flash",
       "aliases": [
         "gemini"
       ],
       "context_window": 1048576,
       "max_output_tokens": 32000,
-      "supports_extended_thinking": true,
+      "supports_extended_thinking": false,
       "supports_json_mode": true,
       "supports_function_calling": true,
       "supports_images": true,
       "max_image_size_mb": 20.0,
       "supports_temperature": true,
-      "description": "Gemini 3.1 Pro Preview via OpenRouter — 1M context, thinking, tool orchestration, multimodal"
+      "description": "Gemini 3.5 Flash via OpenRouter — fast, multimodal, 1M context"
+    },
+    {
+      "model_name": "qwen/qwen3.6-plus",
+      "friendly_name": "Qwen 3.6 Plus",
+      "aliases": [
+        "qwen"
+      ],
+      "context_window": 1000000,
+      "max_output_tokens": 65500,
+      "supports_extended_thinking": false,
+      "supports_json_mode": true,
+      "supports_function_calling": true,
+      "supports_images": false,
+      "max_image_size_mb": 0.0,
+      "supports_temperature": true,
+      "description": "Qwen 3.6 Plus via OpenRouter"
     }
   ]
 }
