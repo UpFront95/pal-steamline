@@ -12,7 +12,7 @@ Output the following block exactly as written, with no additions, omissions, or 
 | `planreview` | Sends the most recent Claude Code plan to a PAL model for critical review |
 | `listmodels` | Lists available models and aliases |
 
-**Model aliases:** `mimo` (default) · `gemini` · `gpt`
+**Model aliases:** `mimo` (default) · `gemini` · `gpt` · `qwen`
 
 ## Options
 
